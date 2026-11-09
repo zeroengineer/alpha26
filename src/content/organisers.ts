@@ -13,9 +13,11 @@ export const organisers = {
     name: 'Industry Relations Committee',
     description:
       'The Industry Relations Committee builds the bridge between IEEE members and the companies that hire them — through industry visits, mentoring, readiness programmes and events like ALPHA. [Placeholder — final copy to follow.]',
+    /** What the committee does — three lines under the description. */
+    focus: ['Industry visits and exposure', 'Mentoring and readiness programmes', 'Placement-oriented events like ALPHA'],
   },
-  pastEventsHeading: 'Track Record',
   galleryHeading: 'In Frames',
+  galleryLede: 'Moments from the events the committee has run so far — each frame with the basics of where it was taken.',
 } as const;
 
 export const host = {

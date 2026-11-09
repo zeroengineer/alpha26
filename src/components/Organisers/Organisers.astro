@@ -1,7 +1,7 @@
 ---
 /**
- * 02 — The Team: who builds ALPHA (IEEE MSS + Industry Relations Committee),
- * Track Record (horizontal slider of previous events) and In Frames (gallery + lightbox).
+ * 0N — The Team: who builds ALPHA (IEEE MSS + Industry Relations Committee, descriptive content),
+ * then In Frames: photos from previous events, each carrying basic event details, with a lightbox.
  */
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
@@ -10,8 +10,7 @@ import { organisers } from '@/content/organisers';
 import { resolveImage } from '@/lib/images';
 import mss from '@/assets/brand/ieee-mss-lockup.png';
 
-const events = (await getCollection('pastEvents')).map((e) => e.data);
-const gallery = await Promise.all(
+const frames = await Promise.all(
   (await getCollection('gallery')).map(async (g) => {
     const meta = resolveImage(g.data.image.src);
     const full = await getImage({ src: meta, format: 'webp', width: 1800, quality: 82 });
@@ -33,72 +32,42 @@ const gallery = await Promise.all(
       <span class="team__mark metal-text" aria-hidden="true">IRC</span>
       <h3 class="team__name">{organisers.committee.name}</h3>
       <p class="team__text">{organisers.committee.description}</p>
-      <p class="team__link team__link--static">Organisers of {`ALPHA '26`}</p>
-    </article>
-  </div>
-
-  <!-- Track Record -->
-  <div class="block" id="track-record">
-    <header class="block__head">
-      <div>
-        <p class="section-no"><span>02.1</span><span class="block__eyebrow">Previous events</span></p>
-        <h3 class="block__title metal-text">{organisers.pastEventsHeading}</h3>
-      </div>
-      <div class="slider__ctl" aria-hidden="true">
-        <p class="slider__counter"><span data-slider-current>01</span><i></i><span data-slider-total>{String(events.length).padStart(2, '0')}</span></p>
-      </div>
-    </header>
-
-    <div class="slider" data-slider tabindex="0" aria-roledescription="carousel" aria-label="Previous events">
-      <ul class="slider__track" data-slider-track data-lenis-prevent>
-        {events.map((e, i) => (
-          <li class="slide" data-slide aria-roledescription="slide" aria-label={`${i + 1} of ${events.length}`}>
-            <figure class="slide__media">
-              <Image src={resolveImage(e.cover.src)} alt={e.cover.alt} widths={[480, 800, 1200]} sizes="(max-width: 768px) 85vw, 46rem" loading="lazy" decoding="async" />
-              <figcaption class="slide__year">{e.year}</figcaption>
-            </figure>
-            <div class="slide__body" data-slide-body>
-              <h4 class="slide__name">{e.name}</h4>
-              <p class="slide__tag eyebrow">{e.tagline}</p>
-              <p class="slide__summary">{e.summary}</p>
-              {e.stats && (
-                <ul class="slide__stats">
-                  {e.stats.map((s) => (
-                    <li><span class="slide__stat-value metal-text">{s.value}</span><span class="slide__stat-label">{s.label}</span></li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </li>
+      <ul class="team__focus">
+        {organisers.committee.focus.map((f, i) => (
+          <li><span class="team__focus-no">{String(i + 1).padStart(2, '0')}</span>{f}</li>
         ))}
       </ul>
-      <div class="slider__foot">
-        <div class="slider__progress"><i data-slider-progress></i></div>
-        <div class="slider__btns">
-          <button class="slider__btn" type="button" data-slider-prev aria-label="Previous event">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M20 12H4m6-6-6 6 6 6"/></svg>
-          </button>
-          <button class="slider__btn" type="button" data-slider-next aria-label="Next event">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+    </article>
   </div>
 
   <!-- In Frames -->
   <div class="block" id="gallery">
     <header class="block__head">
       <div>
-        <p class="section-no"><span>02.2</span><span class="block__eyebrow">Gallery</span></p>
+        <p class="section-no"><span>Previous events</span></p>
         <h3 class="block__title metal-text">{organisers.galleryHeading}</h3>
       </div>
+      <p class="block__lede">{organisers.galleryLede}</p>
     </header>
-    <ul class="gallery" data-gallery>
-      {gallery.map((g, i) => (
-        <li class:list={['gallery__item', { 'gallery__item--wide': g.span === '2' }]} data-gallery-item>
-          <button type="button" class="gallery__btn" data-lightbox-open={i} data-full={g.full} data-alt={g.image.alt} aria-label={`Open image: ${g.image.alt}`}>
-            <Image src={g.meta} alt={g.image.alt} widths={[400, 700, 1000]} sizes={g.span === '2' ? '(max-width: 768px) 100vw, 40rem' : '(max-width: 768px) 50vw, 20rem'} loading="lazy" decoding="async" />
+    <ul class="frames" data-gallery>
+      {frames.map((f, i) => (
+        <li class:list={['frame', { 'frame--wide': f.span === '2' }]} data-gallery-item>
+          <button
+            type="button"
+            class="frame__btn"
+            data-lightbox-open={i}
+            data-full={f.full}
+            data-alt={f.image.alt}
+            data-event={f.event}
+            data-year={f.year}
+            data-detail={f.detail}
+            aria-label={`Open: ${f.event} ${f.year} — ${f.image.alt}`}
+          >
+            <Image src={f.meta} alt={f.image.alt} widths={[400, 700, 1000]} sizes={f.span === '2' ? '(max-width: 768px) 100vw, 40rem' : '(max-width: 768px) 50vw, 20rem'} loading="lazy" decoding="async" />
+            <span class="frame__cap">
+              <span class="frame__meta"><b>{f.event}</b><i aria-hidden="true"></i>{f.year}</span>
+              <span class="frame__detail">{f.detail}</span>
+            </span>
           </button>
         </li>
       ))}
@@ -114,7 +83,11 @@ const gallery = await Promise.all(
     </button>
     <figure class="lightbox__figure">
       <img class="lightbox__img" data-lightbox-img alt="" />
-      <figcaption class="lightbox__cap"><span data-lightbox-cap></span><span class="lightbox__count" data-lightbox-count></span></figcaption>
+      <figcaption class="lightbox__cap">
+        <span class="lightbox__event" data-lightbox-event></span>
+        <span class="lightbox__detail" data-lightbox-cap></span>
+        <span class="lightbox__count" data-lightbox-count></span>
+      </figcaption>
     </figure>
     <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="Next image">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.25"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>
@@ -135,75 +108,39 @@ const gallery = await Promise.all(
   .team__name { font-size: var(--text-xl); font-weight: 400; letter-spacing: -0.01em; }
   .team__text { font-weight: 300; color: var(--fg-dim); }
   .team__link { margin-top: var(--space-2); font-size: var(--text-sm); letter-spacing: 0.05em; }
-  .team__link:not(.team__link--static):hover { text-decoration: underline; text-underline-offset: 0.3em; }
-  .team__link--static { color: var(--fg-dim); }
+  .team__link:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+  .team__focus { display: grid; margin-top: var(--space-2); border-top: 1px solid var(--line); }
+  .team__focus li { display: flex; gap: var(--space-4); padding-block: var(--space-3); border-bottom: 1px solid var(--line); font-size: var(--text-sm); }
+  .team__focus-no { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-dim); padding-top: 0.2em; }
 
-  /* ---- Blocks ---- */
+  /* ---- Block head ---- */
   .block { margin-top: clamp(5rem, 10vw, 8rem); }
   .block__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6); margin-bottom: var(--space-8); }
-  .block__eyebrow { margin-left: var(--space-2); }
   .block__title { margin-top: var(--space-4); font-size: var(--text-xl); font-weight: 300; letter-spacing: -0.01em; }
+  .block__lede { max-width: 28rem; font-size: var(--text-sm); font-weight: 300; color: var(--fg-dim); text-align: right; }
+  @media (max-width: 640px) { .block__head { flex-direction: column; align-items: flex-start; } .block__lede { text-align: left; } }
 
-  /* ---- Slider ---- */
-  .slider { outline-offset: 8px; }
-  /* Bleed the track to the viewport edges; --pad is the distance from the viewport edge to the container
-     (percentages are avoided because scroll-padding resolves them against the scrollport, not the parent). */
-  .slider__track {
-    --pad: max(var(--gutter), calc((100vw - var(--container)) / 2));
-    --slide-w: min(85vw, 46rem);
-    display: flex; gap: var(--space-6);
-    width: 100vw; margin-left: calc(-1 * var(--pad)); padding-inline: var(--pad);
-    /* Enough end padding for the last slide to reach the snap start, so every slide can be "current". */
-    padding-inline-end: max(var(--pad), calc(100vw - var(--slide-w) - var(--pad)));
-    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--pad);
-    scrollbar-width: none; cursor: grab;
-  }
-  .slider__track::-webkit-scrollbar { display: none; }
-  .slider__track.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
-  .slide { flex: 0 0 var(--slide-w); scroll-snap-align: start; display: grid; gap: var(--space-5, 1.25rem); }
-  .slide__media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
-  .slide__media :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: transform 1.2s var(--ease-out), filter 0.6s; transform: scale(1.04); }
-  .slide.is-active .slide__media :global(img) { transform: scale(1); }
-  .slide__media:hover :global(img) { filter: grayscale(0.85) contrast(1.05); }
-  .slide__year {
-    position: absolute; top: var(--space-4); left: var(--space-4);
-    font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; padding: 0.4em 0.7em;
-    background: rgba(0, 0, 0, 0.6); border: 1px solid var(--line); backdrop-filter: blur(6px);
-  }
-  .slide__body { display: grid; gap: var(--space-3); max-width: 36rem; }
-  .slide__name { font-size: var(--text-lg); font-weight: 500; }
-  .slide__summary { font-size: var(--text-sm); font-weight: 300; color: var(--fg-dim); }
-  .slide__stats { display: flex; gap: var(--space-8); margin-top: var(--space-2); }
-  .slide__stats li { display: grid; gap: 2px; }
-  .slide__stat-value { font-size: var(--text-xl); font-weight: 200; line-height: 1; }
-  .slide__stat-label { font-size: var(--text-xs); letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg-dim); }
-
-  .slider__counter { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-sm); letter-spacing: 0.2em; color: var(--fg-dim); }
-  .slider__counter [data-slider-current] { color: var(--fg); }
-  .slider__counter i { width: 2.5rem; height: 1px; background: var(--line-strong); }
-
-  .slider__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); margin-top: var(--space-8); }
-  .slider__progress { flex: 1; height: 1px; background: var(--line); }
-  .slider__progress i { display: block; height: 100%; background: var(--fg); transform: scaleX(0); transform-origin: left; transition: transform 0.6s var(--ease-out); }
-  .slider__btns { display: flex; gap: var(--space-3); }
-  .slider__btn {
-    width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center;
-    transition: background var(--dur-fast), border-color var(--dur-fast), opacity var(--dur-fast), transform var(--dur-fast);
-  }
-  .slider__btn:hover:not(:disabled) { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-  .slider__btn:disabled { opacity: 0.3; cursor: default; }
-
-  /* ---- Gallery ---- */
-  .gallery {
+  /* ---- Frames ---- */
+  .frames {
     display: grid; gap: var(--space-3);
-    grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(9rem, 22vw); grid-auto-flow: dense;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(10rem, 24vw); grid-auto-flow: dense;
   }
-  @media (min-width: 768px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(10rem, 16vw); } }
-  .gallery__item { opacity: 0; }
-  .gallery__item--wide { grid-column: span 2; }
-  .gallery__btn { display: block; width: 100%; height: 100%; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
-  .gallery__btn :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: transform 0.9s var(--ease-out), filter 0.5s; }
-  .gallery__btn:hover :global(img), .gallery__btn:focus-visible :global(img) { transform: scale(1.04); filter: grayscale(0.7) contrast(1.05); }
+  @media (min-width: 768px) { .frames { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(11rem, 17vw); } }
+  .frame { position: relative; opacity: 0; }
+  .frame--wide { grid-column: span 2; }
+  .frame__btn { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; border: 1px solid var(--line); background: var(--surface); text-align: left; }
+  .frame__btn :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: transform 0.9s var(--ease-out), filter 0.5s; }
+  .frame__btn:hover :global(img), .frame__btn:focus-visible :global(img) { transform: scale(1.04); filter: grayscale(0.7) contrast(1.05); }
+  .frame__cap {
+    position: absolute; inset: auto 0 0 0; display: grid; gap: 0.3rem; padding: var(--space-3) var(--space-4);
+    background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85)); pointer-events: none;
+  }
+  .frame__meta { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg); }
+  .frame__meta b { font-weight: 500; }
+  .frame__meta i { width: 1.2rem; height: 1px; background: var(--line-strong); }
+  .frame__detail { font-size: var(--text-xs); color: var(--fg-dim); opacity: 0; transform: translateY(4px); transition: opacity 0.4s, transform 0.4s var(--ease-out); }
+  .frame__btn:hover .frame__detail, .frame__btn:focus-visible .frame__detail { opacity: 1; transform: none; }
+  @media (hover: none) { .frame__detail { opacity: 1; transform: none; } }
 
   /* ---- Lightbox ---- */
   .lightbox {
@@ -213,9 +150,11 @@ const gallery = await Promise.all(
   .lightbox[open] { display: grid; }
   .lightbox::backdrop { background: transparent; }
   .lightbox__figure { display: grid; gap: var(--space-4); width: min(92vw, 1400px); max-height: 90vh; align-content: center; justify-items: center; }
-  .lightbox__img { max-width: 100%; max-height: 78vh; object-fit: contain; filter: grayscale(1) contrast(1.05); }
-  .lightbox__cap { display: flex; gap: var(--space-6); font-size: var(--text-sm); color: var(--fg-dim); }
-  .lightbox__count { font-family: var(--font-mono); letter-spacing: 0.2em; }
+  .lightbox__img { max-width: 100%; max-height: 74vh; object-fit: contain; filter: grayscale(1) contrast(1.05); }
+  .lightbox__cap { display: grid; justify-items: center; gap: 0.35rem; text-align: center; }
+  .lightbox__event { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; text-transform: uppercase; }
+  .lightbox__detail { font-size: var(--text-sm); color: var(--fg-dim); max-width: 48rem; }
+  .lightbox__count { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-mute); }
   .lightbox__close, .lightbox__nav {
     position: absolute; width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center;
     transition: background var(--dur-fast), color var(--dur-fast);

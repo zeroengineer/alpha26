@@ -27,7 +27,7 @@ src/
   components/<Section>/   Section.astro (+ island.ts for behaviour)
   content/site.ts         event copy, links and LAUNCH FLAGS
   content/organisers.ts   "The Team" + "The Venue" copy
-  content/data/*.json     speakers, sessions, sponsors, collaborators, past events, gallery
+  content/data/*.json     speakers, sessions, sponsors, collaborators, gallery (photos + event details)
   content.config.ts       zod schemas for the JSON collections
   lib/                    island loader, nav builder, motion primitives
   styles/tokens.css       design tokens from the Figma poster
