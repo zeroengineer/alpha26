@@ -13,27 +13,35 @@ export default function hero(section: HTMLElement): () => void {
   const cue = section.querySelector<HTMLElement>('[data-cue]')!;
   const rm = reducedMotion();
 
-  // ---- Entrance: the poster surfaces out of black, type settles from wide tracking ----
+  // ---- Entrance: the α resolves in place (under the loader's outline), type settles from wide tracking ----
   onReady(() => {
     if (rm) {
       gsap.set([scene, caption, title, handle, cue, ...extras], { opacity: 1 });
       return;
     }
     const tl = gsap.timeline();
-    tl.fromTo(scene, { opacity: 0, scale: 1.06, filter: 'blur(14px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 2.4, ease: 'expo.out' }, 0)
-      .add(settleTracking(caption, '1.4em', '0.5em'), 0.6)
-      .add(settleTracking(title.querySelector('.wipe__text') ?? title, '1.8em', '1em'), 0.9)
-      .fromTo(handle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2 }, 1.6)
-      .to(cue, { opacity: 1, duration: 1 }, 2);
+    // the chrome α resolves inside the loader's outline, then the poster's type settles around it
+    tl.fromTo(scene, { opacity: 0, filter: 'blur(10px) brightness(1.6)' }, { opacity: 1, filter: 'blur(0px) brightness(1)', duration: 1.5, ease: 'power2.out' }, 0)
+      .add(settleTracking(caption, '1.4em', '0.5em'), 0.9)
+      .add(settleTracking(title.querySelector('.wipe__text') ?? title, '1.8em', '1em'), 1.2)
+      .fromTo(handle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2 }, 1.9)
+      .to(cue, { opacity: 1, duration: 1 }, 2.3);
     if (extras.length) tl.fromTo(extras, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.1 }, 1.5);
   });
 
   if (rm) return () => {};
 
-  // ---- Scroll: the copy lifts away; the camera move on the live stage is the transition ----
-  gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: true } })
-    .to(copy, { yPercent: -18, opacity: 0, ease: 'none' }, 0)
-    .to(cue, { opacity: 0, ease: 'none', duration: 0.2 }, 0);
+  // ---- Scroll: each line leaves on its own path and speed, as the camera dollies in behind them ----
+  //   caption   rises fast and opens its tracking as it blurs away (it was the top of the poster)
+  //   title     sinks slower and spreads its letters wide — it feels nearer, passing the camera
+  //   handle    drops and fades first
+  const titleText = title.querySelector<HTMLElement>('.wipe__text') ?? title;
+  gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 0.6 } })
+    .fromTo(caption, { y: 0, letterSpacing: '0.5em', filter: 'blur(0px)', opacity: 1 }, { y: () => -window.innerHeight * 0.22, letterSpacing: '1.1em', filter: 'blur(10px)', opacity: 0, ease: 'power1.in', duration: 0.7, immediateRender: false }, 0)
+    .fromTo(titleText, { y: 0, letterSpacing: '1em', scale: 1, filter: 'blur(0px)', opacity: 1 }, { y: () => window.innerHeight * 0.12, letterSpacing: '1.6em', scale: 1.12, filter: 'blur(12px)', opacity: 0, ease: 'power1.in', duration: 0.85, immediateRender: false }, 0.05)
+    .fromTo(handle, { y: 0, opacity: 1 }, { y: 40, opacity: 0, ease: 'power1.in', duration: 0.35, immediateRender: false }, 0)
+    .to(cue, { opacity: 0, ease: 'none', duration: 0.15 }, 0)
+    .to(copy, { opacity: 1, duration: 1 }, 0); // keeps the timeline's length = the hero's height
 
   // Fallback until (or unless) the live scene exists: the raster poster recedes as before.
   const recede = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: true } })

@@ -2,7 +2,7 @@
 import '@/styles/global.css';
 import { site } from '@/content/site';
 import Stage from '@/components/Stage/Stage.astro';
-import Ruler from '@/components/Ruler/Ruler.astro';
+import Loader from '@/components/Loader/Loader.astro';
 
 interface Props {
   title?: string;
@@ -36,9 +36,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <slot name="head" />
   </head>
   <body>
+    <Loader />
     <Stage />
     <slot />
-    <Ruler />
     <script>
       import '@/lib/app';
     </script>

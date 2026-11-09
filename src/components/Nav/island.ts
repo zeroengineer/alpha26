@@ -23,7 +23,7 @@ export default function nav(bar: HTMLElement): void {
     links.forEach((l) => l.classList.toggle('is-active', l.dataset.navLink === id));
   };
   const resolveActive = () => {
-    const line = window.innerHeight * 0.5; // same mid-line as the scale ruler
+    const line = window.innerHeight * 0.5; // a section is active once its top passes mid-screen
     let active = sections[0]?.id ?? '';
     for (const s of sections) {
       if (s.getBoundingClientRect().top <= line) active = s.id;

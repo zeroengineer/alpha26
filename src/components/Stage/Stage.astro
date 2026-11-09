@@ -37,21 +37,29 @@ import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
 <script>
   import { defineIsland } from '@/lib/island';
   import { onReady, reducedMotion } from '@/lib/motion/core';
-  // The raster poster and the live scene are composed identically, so the live scene can take over
-  // whenever it is ready. It is built on the visitor's first interaction (a mouse move counts on
-  // desktop) or after a few seconds, never during the initial load.
-  onReady(() => {
-    if (reducedMotion()) return;
-    let started = false;
+  // The first-paint still and the live scene are composed identically, so the live scene can take
+  // over whenever it is ready. It is built after the first interaction (a mouse move counts on
+  // desktop — including one made while the loader plays) or after a few seconds, and never before
+  // the page is ready, so it stays off the initial load.
+  if (!reducedMotion()) {
+    let wanted = false;
+    let mounted = false;
     const events = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'pointermove', 'keydown'] as const;
-    const start = () => {
-      if (started) return;
-      started = true;
-      events.forEach((e) => window.removeEventListener(e, start));
+    const mount = () => {
+      if (mounted) return;
+      mounted = true;
       defineIsland('[data-stage]', () => import('./island'), { strategy: 'load' });
     };
-    events.forEach((e) => window.addEventListener(e, start, { passive: true, once: true }));
-    if (window.scrollY > 0) start();
-    setTimeout(start, 6000);
-  });
+    const want = () => {
+      if (wanted) return;
+      wanted = true;
+      events.forEach((e) => window.removeEventListener(e, want));
+      onReady(mount);
+    };
+    events.forEach((e) => window.addEventListener(e, want, { passive: true }));
+    onReady(() => {
+      if (window.scrollY > 0) want();
+      setTimeout(want, 6000);
+    });
+  }
 </script>

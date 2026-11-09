@@ -49,3 +49,28 @@ test('the hero poster stays centred on an ultra-wide screen', async ({ page, isM
   const centre = await page.locator('.layer--base').evaluate((el) => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; });
   expect(Math.abs(centre - 1280)).toBeLessThan(40);
 });
+
+test.describe('opening loader', () => {
+  test('draws, hands over to the hero, removes itself, and is skipped on reload', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-loader]')).toHaveCount(1);
+    await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 15_000 });
+    await expect(page.locator('[data-loader]')).toHaveCount(0, { timeout: 6_000 });
+    await expect(page.locator('#hero [data-title]')).toBeVisible();
+    await page.reload();
+    await expect(page.locator('[data-loader]')).toHaveCount(0);
+  });
+
+  test.describe('with reduced motion', () => {
+    test.use({ reducedMotion: 'reduce' });
+    test('never shows', async ({ page }) => {
+      await page.goto('/');
+      await expect(page.locator('[data-loader]')).toHaveCount(0);
+    });
+  });
+});
+
+test('the scale ruler is gone', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('[data-ruler]')).toHaveCount(0);
+});
