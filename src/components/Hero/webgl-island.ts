@@ -28,7 +28,6 @@ export default async function heroWebgl(section: HTMLElement): Promise<() => voi
   }
 
   const THREE = await import('three');
-  const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
 
   // ----- Renderer / camera -----
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
@@ -43,8 +42,10 @@ export default async function heroWebgl(section: HTMLElement): Promise<() => voi
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 20);
   camera.position.set(0, 0, CAM_Z);
 
+  // Dark studio environment: a black room with a few thin strip lights, so the glass picks up
+  // crisp chrome-like edge glints instead of a milky white haze over the artwork.
   const pmrem = new THREE.PMREMGenerator(renderer);
-  world.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  world.environment = pmrem.fromScene(studioEnvironment(THREE), 0.02).texture;
   pmrem.dispose();
 
   // ----- Poster plane -----
@@ -63,10 +64,10 @@ export default async function heroWebgl(section: HTMLElement): Promise<() => voi
     thickness: 0.05,
     roughness: 0.06,
     ior: 1.25,
-    clearcoat: 1,
-    clearcoatRoughness: 0.08,
-    envMapIntensity: 1.3,
-    specularIntensity: 1,
+    clearcoat: 0.6,
+    clearcoatRoughness: 0.15,
+    envMapIntensity: 0.9,
+    specularIntensity: 0.6,
   });
   const slatGroup = new THREE.Group();
   const slatGeo = new THREE.BoxGeometry(1, 1, 0.035);
@@ -80,10 +81,10 @@ export default async function heroWebgl(section: HTMLElement): Promise<() => voi
   world.add(slatGroup);
 
   // ----- Lights: a key light for clearcoat glints + a sweeping light moving across the slats -----
-  const key = new THREE.DirectionalLight(0xffffff, 1.2);
+  const key = new THREE.DirectionalLight(0xffffff, 0.35);
   key.position.set(-2, 3, 4);
   world.add(key);
-  const sweep = new THREE.PointLight(0xffffff, 6, 4, 1.6);
+  const sweep = new THREE.PointLight(0xffffff, 3.5, 3.5, 1.8);
   sweep.position.set(-2.5, 0.6, 1.2);
   world.add(sweep);
 
@@ -157,4 +158,23 @@ export default async function heroWebgl(section: HTMLElement): Promise<() => voi
     texture.dispose();
     renderer.dispose();
   };
+}
+
+/** Black room with thin emissive strips — the reflections a chrome poster would get in a studio. */
+function studioEnvironment(THREE: typeof import('three')): import('three').Scene {
+  const env = new THREE.Scene();
+  env.background = new THREE.Color(0x000000);
+  const strip = (w: number, h: number, x: number, y: number, z: number, ry: number, intensity: number) => {
+    const m = new THREE.Mesh(
+      new THREE.PlaneGeometry(w, h),
+      new THREE.MeshBasicMaterial({ color: new THREE.Color().setScalar(intensity), side: THREE.DoubleSide }),
+    );
+    m.position.set(x, y, z);
+    m.rotation.y = ry;
+    env.add(m);
+  };
+  strip(0.4, 6, -4, 0, 2, Math.PI / 3, 3.5);   // tall strip, upper left
+  strip(0.25, 6, 4.5, 0.5, 1, -Math.PI / 3, 2.5); // tall strip, right
+  strip(6, 0.2, 0, 4, -2, 0, 1.5);               // thin top light
+  return env;
 }
