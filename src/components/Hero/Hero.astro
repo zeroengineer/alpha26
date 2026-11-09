@@ -2,12 +2,12 @@
 /**
  * Hero — the poster, centred. As the visitor scrolls it recedes (scales down, softens, fades) and
  * hands over to the 3D α on the stage behind it, which sits in the same place.
- * Layers: poster raster, six CSS glass slats, crosshair ticks and a light sweep (cursor parallax).
+ * First paint: a still rendered from the live α stage (scripts/capture-hero.mjs) — α, glass slats and
+ * crosshairs, no crowd — so the hand-off to the live scene is pixel-identical.
  */
 import { Picture } from 'astro:assets';
-import poster from '@/assets/figma/alpha-crowd.png';
+import poster from '@/assets/figma/alpha-render.png';
 import HeroText from './HeroText.astro';
-const slats = [0, 1, 2, 3, 4, 5];
 ---
 <section id="hero" class="hero" data-hero data-station="hero" data-station-at="top" aria-label="ALPHA '26 — coming soon">
   <div class="hero__frame" data-hero-frame>
@@ -24,15 +24,6 @@ const slats = [0, 1, 2, 3, 4, 5];
           decoding="async"
         />
       </div>
-      <div class="layer layer--slats" data-depth="0.9" data-slats>
-        {slats.map((i) => <i class="slat" style={`--i:${i}`} data-slat></i>)}
-      </div>
-      <div class="layer layer--ticks" data-depth="1.5">
-        <span class="tick" style="left:14%; top:46%"></span>
-        <span class="tick" style="left:78%; top:17%"></span>
-        <span class="tick" style="left:60%; top:82%"></span>
-      </div>
-      <div class="sweep" data-sweep></div>
     </div>
     <div class="vignette vignette--top"></div>
     <div class="vignette vignette--bottom"></div>
@@ -64,27 +55,6 @@ const slats = [0, 1, 2, 3, 4, 5];
   /* feather the poster's edges into the stage on wide screens */
   .layer--base { -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
 
-  .slat {
-    position: absolute; top: 8.5%; height: 83%; width: 11%;
-    left: calc(13.5% + var(--i) * 13%);
-    transform: skewY(-2deg) scaleY(0); transform-origin: center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.02) 35%, rgba(255,255,255,0.03) 70%, rgba(255,255,255,0.1) 100%);
-    backdrop-filter: blur(1.2px) brightness(1.14) contrast(1.06);
-    -webkit-backdrop-filter: blur(1.2px) brightness(1.14) contrast(1.06);
-    border-left: 1px solid rgba(255,255,255,0.38);
-    border-right: 1px solid rgba(255,255,255,0.06);
-    box-shadow: inset 0 0 50px rgba(255,255,255,0.05), 0 0 30px rgba(0,0,0,0.35);
-  }
-  .slat::after { content: ''; position: absolute; inset: 0 0 auto 0; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.1)); }
-  .tick { position: absolute; width: 14px; height: 14px; opacity: 0.6; }
-  .tick::before, .tick::after { content: ''; position: absolute; background: var(--fg); }
-  .tick::before { left: 50%; top: 0; width: 1px; height: 100%; }
-  .tick::after { top: 50%; left: 0; height: 1px; width: 100%; }
-  .sweep {
-    position: absolute; inset: 0;
-    background: linear-gradient(100deg, transparent 42%, rgba(255,255,255,0.16) 50%, transparent 58%);
-    mix-blend-mode: screen; transform: translateX(-120%); pointer-events: none;
-  }
 
   .hero__cue {
     position: absolute; right: var(--gutter); bottom: 2rem; z-index: var(--z-content);

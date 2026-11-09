@@ -5,8 +5,6 @@ export default function hero(section: HTMLElement): () => void {
   const frame = section.querySelector<HTMLElement>('[data-hero-frame]')!;
   const scene = section.querySelector<HTMLElement>('[data-scene]')!;
   const layers = Array.from(section.querySelectorAll<HTMLElement>('[data-depth]'));
-  const slats = Array.from(section.querySelectorAll<HTMLElement>('[data-slat]'));
-  const sweep = section.querySelector<HTMLElement>('[data-sweep]')!;
   const copy = section.querySelector<HTMLElement>('[data-hero-copy]')!;
   const caption = section.querySelector<HTMLElement>('[data-caption]')!;
   const title = section.querySelector<HTMLElement>('[data-title]')!;
@@ -19,18 +17,15 @@ export default function hero(section: HTMLElement): () => void {
   onReady(() => {
     if (rm) {
       gsap.set([scene, caption, title, handle, cue, ...extras], { opacity: 1 });
-      gsap.set(slats, { scaleY: 1 });
       return;
     }
     const tl = gsap.timeline();
     tl.fromTo(scene, { opacity: 0, scale: 1.06, filter: 'blur(14px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 2.4, ease: 'expo.out' }, 0)
-      .to(slats, { scaleY: 1, duration: 1.8, ease: 'expo.out', stagger: { each: 0.08, from: 'center' } }, 0.4)
       .add(settleTracking(caption, '1.4em', '0.5em'), 0.6)
       .add(settleTracking(title.querySelector('.wipe__text') ?? title, '1.8em', '1em'), 0.9)
       .fromTo(handle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2 }, 1.6)
       .to(cue, { opacity: 1, duration: 1 }, 2);
     if (extras.length) tl.fromTo(extras, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.1 }, 1.5);
-    tl.add(gsap.to(sweep, { xPercent: 240, duration: 2.6, ease: 'power2.inOut', repeat: -1, repeatDelay: 6 }), 2.2);
   });
 
   if (rm) return () => {};

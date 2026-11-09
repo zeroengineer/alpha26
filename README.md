@@ -26,9 +26,9 @@ npm run build      # production build to dist/
 - **α stage** (`src/components/Stage/`): a fixed three.js scene behind the whole page that **opens as the poster**.
   At the hero station it reproduces the Figma composition exactly — the α (GFS Didot outline, extruded chrome with
   pillowed faces), the six refracting glass slats and the crosshair ticks at their measured poster positions
-  (`poster-fit.ts`), over the poster's own crowd backdrop (`scripts/make-backdrop.mjs` removes the α from the raster).
-  The raster poster is only the instant first paint; once the live scene is built (first interaction, or after 6 s)
-  it dissolves into it in place, so scrolling is one continuous camera move on the same object: a dolly-zoom from the
+  (`poster-fit.ts`) on plain black — no crowd. The hero's first-paint image is a still rendered from this same scene
+  (`scripts/capture-hero.mjs`); once the live scene is built (first interaction, or after 6 s) the still dissolves into
+  it in place, pixel-identical, so scrolling is one continuous camera move on the same object: a dolly-zoom from the
   long "poster" lens into the tour, then stations (`stations.ts`, unit-tested) — turned aside for the programme, low
   blueprint view for the pillars, through the bowl for the statement, behind for the team, plan view under the photo
   collage, back to the poster frame for contact. Static poster / α outline for reduced motion, missing WebGL2 or
@@ -84,8 +84,8 @@ npm run e2e:launched               # Playwright suite for the launched layout
 - Update `site.url` in `src/content/site.ts` and `site` in `astro.config.mjs` once the final domain is known
   (canonical URL, Open Graph image, sitemap and JSON-LD all derive from it).
 - `public/og.jpg` is generated from the poster with `node scripts/og-image.mjs`.
-- If the Figma poster changes: re-export `src/assets/figma/alpha-crowd.png`, update the measurements in
-  `src/components/Stage/poster-fit.ts` if the α or slats moved, and run `node scripts/make-backdrop.mjs`.
+- If the α/slat layout changes: update `src/components/Stage/poster-fit.ts`, then with `npm run dev` running
+  re-render the hero still with `node scripts/capture-hero.mjs` (writes `src/assets/figma/alpha-render.png`).
 
 ## Performance
 Lighthouse (production build, 2026-11-09): mobile 97 · 100 · 100 · 100 (LCP 2.5 s, TBT 40 ms); desktop 100 · 100 · 100 · 100.

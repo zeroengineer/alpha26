@@ -17,24 +17,22 @@ export interface Pose {
   wire: number;
   crowd: number;
   slats: number;
-  /** the poster's crowd backdrop behind the α (full in the poster view, gone once we tour) */
-  backdrop: number;
   /** 1 = the long "poster" lens, 0 = the tour lens (blended → dolly-zoom) */
   lens: number;
 }
 
 const base: Pose = {
   cam: [0, 0, 7.2], target: [0, 0, 0], alphaPos: [0, 0, 0], alphaRotY: 0,
-  stage: 1, chrome: 1, wire: 0.25, crowd: 1, slats: 0.3, backdrop: 0, lens: 0,
+  stage: 1, chrome: 1, wire: 0.25, crowd: 1, slats: 0.3, lens: 0,
 };
 const pose = (p: Partial<Pose>): Pose => ({ ...base, ...p });
 
 export const STATIONS: Record<string, Pose> = {
-  // the poster, rendered live: front-on α, slats and crowd exactly where the Figma poster has them
+  // the poster, rendered live: front-on α and slats exactly where the Figma poster has them
   // (camera further back with a long lens → nearly flat like the poster; see the dolly-zoom in island.ts)
-  hero: pose({ cam: [0, 0, 12], wire: 0, crowd: 0, slats: 1, backdrop: 1, lens: 1 }),
-  // first scroll: the camera eases in and the crowd starts to dissolve into points
-  intro: pose({ cam: [0.15, 0.1, 7.6], wire: 0.1, crowd: 0.8, slats: 0.12, backdrop: 0.35 }),
+  hero: pose({ cam: [0, 0, 12], wire: 0, crowd: 0, slats: 1, lens: 1 }),
+  // first scroll: the camera eases in (dolly-zoom) and points begin to swirl in the bowl
+  intro: pose({ cam: [0.15, 0.1, 7.6], wire: 0.1, crowd: 0.8, slats: 0.12 }),
   // programme copy on the left: α steps right and turns to show its depth
   about: pose({ cam: [0.6, 0.6, 6.6], target: [1.4, 0, 0], alphaPos: [2.8, 0, 0], alphaRotY: -0.62, chrome: 0.85, wire: 0.45, slats: 0 }),
   // pillars: low camera, blueprint mode (wireframe up, chrome down) — the "drawing board"
@@ -72,7 +70,6 @@ export function blend(a: Pose, b: Pose, t: number): Pose {
     wire: mix(a.wire, b.wire, k),
     crowd: mix(a.crowd, b.crowd, k),
     slats: mix(a.slats, b.slats, k),
-    backdrop: mix(a.backdrop, b.backdrop, k),
     lens: mix(a.lens, b.lens, k),
   };
 }

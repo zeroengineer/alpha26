@@ -3,8 +3,6 @@ import { gsap, ScrollTrigger, isTouch } from '@/lib/motion/core';
 import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
 import { poseAt, STATIONS, type Stop } from './stations';
 import { POSTER, fitFov, parsePath, slatLayout } from './poster-fit';
-import { BACKDROP_FRAG, BACKDROP_VERT } from './backdrop';
-import backdropUrl from '@/assets/stage/backdrop.webp?url';
 
 /**
  * True when WebGL2 is available on real graphics hardware. Software rasterisers (SwiftShader,
@@ -188,25 +186,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const ticks = new THREE.LineSegments(tickGeo, tickMat);
   alpha.add(ticks);
 
-  // ---- crowd backdrop: the poster's own background, α removed, placed to coincide with the poster ----
-  const bz = -1.4;
-  const bk = (HERO_DIST - bz) / (HERO_DIST - FRONT);
-  const backTex = await new THREE.TextureLoader().loadAsync(backdropUrl);
-  backTex.colorSpace = THREE.NoColorSpace;
-  backTex.minFilter = THREE.LinearMipmapLinearFilter;
-  backTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
   const bowlX = (0.42 - POSTER.alphaCx) * posterW;
-  const backU = {
-    uMap: { value: backTex }, uTime: { value: 0 }, uOpacity: { value: 0 },
-    uBowl: { value: new THREE.Vector2(0.42, 1 - 0.49) }, uAspect: { value: POSTER.aspect },
-  };
-  const backGeo = new THREE.PlaneGeometry(posterW * bk, posterH * bk);
-  const backMat = new THREE.ShaderMaterial({ uniforms: backU, vertexShader: BACKDROP_VERT, fragmentShader: BACKDROP_FRAG, depthWrite: false });
-  const backdrop = new THREE.Mesh(backGeo, backMat);
-  // poster centre relative to the α centre, pushed back in depth
-  backdrop.position.set((0.5 - POSTER.alphaCx) * posterW * bk, -(0.5 - POSTER.alphaCy) * posterH * bk, bz);
-  backdrop.renderOrder = -1;
-  alpha.add(backdrop);
 
   // ---- swirling points in the bowl (the crowd, abstracted, for the tour) ----
   const N = small ? 2600 : 6500;
@@ -285,7 +265,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     composer?.setSize(w, h);
     camera.aspect = w / h;
     // two lenses: a long one that reproduces the poster from the hero position, and the tour's normal
-    // one; the loop blends between them by the backdrop weight (a dolly-zoom as the camera moves in)
+    // one; the loop blends between them by the lens weight (a dolly-zoom as the camera moves in)
     fovHero = fitFov(w, h, ALPHA_H, HERO_DIST - FRONT);
     fovTour = fitFov(w, h, ALPHA_H, TOUR_DIST - FRONT);
     camera.fov = fovHero;
@@ -322,7 +302,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     pointer.x += (pointer.tx - pointer.x) * 0.05;
     pointer.y += (pointer.ty - pointer.y) * 0.05;
     // less sway in the poster view so it reads as the poster
-    const sway = 0.06 + 0.2 * (1 - p.backdrop);
+    const sway = 0.06 + 0.2 * (1 - p.lens);
     camera.position.set(camPos.x + pointer.x * sway, camPos.y - pointer.y * sway * 0.6, camPos.z);
     camera.lookAt(camTarget);
     const fov = fovTour + (fovHero - fovTour) * p.lens;
@@ -354,15 +334,12 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     }
     slats.visible = p.slats > 0.02;
     for (const m of glassMeshes) m.visible = small || glassVisible;
-    tickMat.opacity = 0.55 * p.backdrop;
-    backU.uOpacity.value = p.stage * p.backdrop;
-    backdrop.visible = p.backdrop > 0.01;
+    tickMat.opacity = 0.55 * p.lens;
     crowdU.uOpacity.value = p.stage * p.crowd;
     crowd.visible = p.crowd > 0.01;
-    gridMat.opacity = p.stage * 0.06 * (1 - p.backdrop);
+    gridMat.opacity = p.stage * 0.06 * (1 - p.lens);
 
     const sec = dt / 1000;
-    backU.uTime.value += sec;
     crowdU.uTime.value += sec;
     if (composer) composer.render();
     else renderer.render(scene, camera);
@@ -383,11 +360,10 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     window.removeEventListener('resize', resize);
     window.removeEventListener('pointermove', onMove);
     document.removeEventListener('visibilitychange', onVis);
-    [geo, edges, tickGeo, backGeo, crowdGeo, grid.geometry as BufferGeometry, ...slatGeos].forEach((g) => g.dispose());
-    [chromeMat, wireMat, slatGlass, slatLineMat, tickMat, backMat, crowdMat, gridMat].forEach((m) => m.dispose());
+    [geo, edges, tickGeo, crowdGeo, grid.geometry as BufferGeometry, ...slatGeos].forEach((g) => g.dispose());
+    [chromeMat, wireMat, slatGlass, slatLineMat, tickMat, crowdMat, gridMat].forEach((m) => m.dispose());
     composer?.dispose();
     envTex.dispose();
-    backTex.dispose();
     renderer.dispose();
   };
 }
