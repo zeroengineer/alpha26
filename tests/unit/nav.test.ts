@@ -6,6 +6,7 @@ const allOn: Features = { dates: true, speakers: true, host: true, sponsors: tru
 
 describe('launch flags', () => {
   it('ship with every flag off while the event is coming soon', () => {
+    if (import.meta.env.ALPHA_FLAGS) return; // build-time override in use
     expect(Object.values(features).every((v) => v === false)).toBe(true);
   });
 });

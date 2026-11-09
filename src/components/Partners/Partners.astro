@@ -1,0 +1,85 @@
+---
+/**
+ * Powered Together (flag: sponsors). Sponsor tiers as logo grids; collaborators as a marquee
+ * (flag: collaborators). Logos live in public/partners/ and are referenced by filename.
+ */
+import { getCollection } from 'astro:content';
+import Section from '@/components/Section/Section.astro';
+import { features } from '@/content/site';
+
+const sponsors = (await getCollection('sponsors')).map((s) => s.data);
+const collaborators = features.collaborators ? (await getCollection('collaborators')).map((c) => c.data) : [];
+const tiers = [
+  { key: 'title', label: 'Title sponsor' },
+  { key: 'gold', label: 'Gold' },
+  { key: 'silver', label: 'Silver' },
+  { key: 'community', label: 'Community' },
+] as const;
+const logoSrc = (file: string) => `/partners/${file}`;
+---
+<Section id="partners" heading="Powered Together" eyebrow="Sponsors & collaborators" class="partners">
+  <div class="tiers" data-partners>
+    {tiers.map((tier) => {
+      const list = sponsors.filter((s) => s.tier === tier.key);
+      if (list.length === 0) return null;
+      return (
+        <div class:list={['tier', `tier--${tier.key}`]} data-tier>
+          <p class="tier__label section-no"><span>{tier.label}</span></p>
+          <ul class="tier__grid">
+            {list.map((s) => (
+              <li class="logo" data-logo>
+                {s.url ? (
+                  <a href={s.url} target="_blank" rel="noreferrer" aria-label={s.name}><img src={logoSrc(s.logo.src)} alt={s.logo.alt} loading="lazy" decoding="async" /></a>
+                ) : (
+                  <img src={logoSrc(s.logo.src)} alt={s.logo.alt} loading="lazy" decoding="async" />
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    })}
+  </div>
+
+  {collaborators.length > 0 && (
+    <div class="collab" aria-label="Collaborators">
+      <p class="section-no"><span>Collaborators</span></p>
+      <div class="marquee" data-marquee>
+        <ul class="marquee__track">
+          {[...collaborators, ...collaborators].map((c, i) => (
+            <li class="marquee__item" aria-hidden={i >= collaborators.length ? 'true' : undefined}>
+              <img src={logoSrc(c.logo.src)} alt={i >= collaborators.length ? '' : c.logo.alt} loading="lazy" decoding="async" />
+              <span>{c.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )}
+</Section>
+
+<style>
+  .tiers { display: grid; gap: var(--space-12); }
+  .tier { display: grid; gap: var(--space-6); }
+  .tier__grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); }
+  .tier--title .tier__grid { grid-template-columns: minmax(0, 24rem); }
+  .tier--gold .tier__grid { grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+  .logo { display: grid; place-items: center; aspect-ratio: 3 / 1; border: 1px solid var(--line); background: var(--surface); padding: var(--space-6); opacity: 0; transition: background var(--dur-fast); }
+  .logo:hover { background: var(--surface-hover); }
+  .logo img, .logo a { max-height: 100%; }
+  .logo img { width: 100%; height: 100%; object-fit: contain; filter: grayscale(1) brightness(1.6) contrast(0.9); }
+
+  .collab { display: grid; gap: var(--space-6); margin-top: clamp(4rem, 8vw, 6rem); }
+  .marquee { overflow: hidden; border-block: 1px solid var(--line); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .marquee__track { display: flex; gap: var(--space-12); width: max-content; padding-block: var(--space-6); animation: marquee 40s linear infinite; }
+  .marquee:hover .marquee__track { animation-play-state: paused; }
+  .marquee__item { display: flex; align-items: center; gap: var(--space-4); white-space: nowrap; color: var(--fg-dim); font-size: var(--text-sm); letter-spacing: 0.1em; text-transform: uppercase; }
+  .marquee__item img { height: 2rem; width: auto; filter: grayscale(1) brightness(1.6); }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; flex-wrap: wrap; width: auto; } .marquee__item[aria-hidden] { display: none; } }
+</style>
+
+<script>
+  import { defineIsland } from '@/lib/island';
+  defineIsland('#partners', () => import('./island'));
+</script>

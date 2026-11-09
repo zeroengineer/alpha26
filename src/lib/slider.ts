@@ -45,7 +45,8 @@ export function createSlider(root: HTMLElement, { onChange, scope = root }: Slid
   /** Scroll position that puts slide i at the track's padded left edge. */
   const leftOf = (i: number) => {
     const padding = parseFloat(getComputedStyle(track).paddingLeft) || 0;
-    return track.scrollLeft + slides[i].getBoundingClientRect().left - track.getBoundingClientRect().left - padding;
+    const raw = track.scrollLeft + slides[i].getBoundingClientRect().left - track.getBoundingClientRect().left - padding;
+    return Math.max(0, Math.min(raw, track.scrollWidth - track.clientWidth));
   };
   const nearest = () => {
     const x = track.scrollLeft;

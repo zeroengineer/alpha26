@@ -17,6 +17,7 @@ npm install
 npm run dev        # http://localhost:4321
 npm test           # unit tests
 npm run check      # astro check (types + templates)
+npm run e2e        # Playwright (desktop + mobile) against a fresh production build
 npm run build      # production build to dist/
 ```
 
@@ -42,6 +43,14 @@ The event is currently "coming soon". Speakers, venue, partners, dates and regis
 1. Open `src/content/site.ts` and flip the flag(s) in `features` to `true`.
 2. Fill in the real data under `src/content/data/` (schemas in `src/content.config.ts` will validate it at build).
 3. Commit and push — Cloudflare Pages rebuilds.
+
+To preview or test the hidden sections **without** editing the flags, force them on at build time:
+
+```sh
+ALPHA_FLAGS=all npm run dev        # or a comma list: ALPHA_FLAGS=speakers,host
+npm run build:launched             # production build with every flag on
+npm run e2e:launched               # Playwright suite for the launched layout
+```
 
 | Flag | Section | Data |
 | --- | --- | --- |

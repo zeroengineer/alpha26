@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "ALPHA '26 — Built to Become. Event website for IEEE Malabar Subsection Industry Relations Committee.",
+  "description": "ALPHA '26 \u2014 Built to Become. Event website for IEEE Malabar Subsection Industry Relations Committee.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -12,7 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "fonts:subset": "bash scripts/subset-fonts.sh"
+    "fonts:subset": "bash scripts/subset-fonts.sh",
+    "e2e:launched": "playwright test -c playwright.launched.config.ts",
+    "build:launched": "ALPHA_FLAGS=all astro build"
   },
   "engines": {
     "node": ">=22"

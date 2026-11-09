@@ -6,7 +6,10 @@ import Hero from '@/components/Hero/Hero.astro';
 import Section from '@/components/Section/Section.astro';
 import About from '@/components/About/About.astro';
 import Organisers from '@/components/Organisers/Organisers.astro';
-import { site } from '@/content/site';
+import Speakers from '@/components/Speakers/Speakers.astro';
+import Venue from '@/components/Venue/Venue.astro';
+import Partners from '@/components/Partners/Partners.astro';
+import { site, features } from '@/content/site';
 ---
 <Layout>
   <Preloader />
@@ -15,6 +18,11 @@ import { site } from '@/content/site';
     <Hero />
 
     <About />
+
+    {/* Launch-gated sections: not rendered at all until their flag in src/content/site.ts is true */}
+    {features.speakers && <Speakers />}
+    {features.host && <Venue />}
+    {features.sponsors && <Partners />}
 
     <Organisers />
 

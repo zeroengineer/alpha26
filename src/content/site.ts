@@ -4,20 +4,30 @@
  * nav link are not rendered at all. To launch a section, set its flag to true and fill in the
  * data under src/content/data/. Nothing else needs to change.
  */
+/**
+ * Build-time override for previews and tests: `ALPHA_FLAGS=all npm run build` (or a comma list such
+ * as `speakers,host`) forces flags on without editing this file. Unset in production.
+ */
+const forced = String(import.meta.env.ALPHA_FLAGS ?? '')
+  .split(',')
+  .map((f) => f.trim())
+  .filter(Boolean);
+const on = (key: string, value: boolean) => value || forced.includes('all') || forced.includes(key);
+
 export const features = {
   /** Show event dates in the hero / schedule. */
-  dates: false,
+  dates: on('dates', false),
   /** "The Lineup" — speakers and sessions. */
-  speakers: false,
+  speakers: on('speakers', false),
   /** "The Venue" — host institution. */
-  host: false,
+  host: on('host', false),
   /** "Powered Together" — sponsors tiers. */
-  sponsors: false,
+  sponsors: on('sponsors', false),
   /** Collaborators marquee inside the partners section. */
-  collaborators: false,
+  collaborators: on('collaborators', false),
   /** Registration CTA in the hero and footer. */
-  registration: false,
-} as const satisfies Record<string, boolean>;
+  registration: on('registration', false),
+} satisfies Record<string, boolean>;
 
 export type FeatureKey = keyof typeof features;
 export type Features = Record<FeatureKey, boolean>;

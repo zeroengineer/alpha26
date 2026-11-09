@@ -4,6 +4,7 @@ const PORT = 4322;
 
 export default defineConfig({
   testDir: 'tests/e2e',
+  testIgnore: /launched\.spec\.ts/,
   fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'list',
