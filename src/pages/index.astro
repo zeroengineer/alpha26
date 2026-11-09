@@ -5,8 +5,8 @@ import Nav from '@/components/Nav/Nav.astro';
 import Hero from '@/components/Hero/Hero.astro';
 import Section from '@/components/Section/Section.astro';
 import About from '@/components/About/About.astro';
+import Organisers from '@/components/Organisers/Organisers.astro';
 import { site } from '@/content/site';
-import { organisers } from '@/content/organisers';
 ---
 <Layout>
   <Preloader />
@@ -16,10 +16,7 @@ import { organisers } from '@/content/organisers';
 
     <About />
 
-    {/* Phase 4 fills this with the team, track record slider and gallery */}
-    <Section id="organisers" heading={organisers.heading} eyebrow={organisers.eyebrow}>
-      <p class="lede">{organisers.org.description}</p>
-    </Section>
+    <Organisers />
 
     {/* Phase 6 turns this into the footer */}
     <Section id="contact" heading="Stay in the Loop" eyebrow="Contact">
