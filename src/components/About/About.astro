@@ -1,30 +1,17 @@
 ---
 /**
- * 01 — The Programme. The brief's three paragraphs with line reveals, a facts strip,
- * the four pillars, and the closing statement set as a display line.
+ * 01 — The Programme. The brief's three paragraphs with line reveals and the four pillars.
+ * (Key facts and the closing statement now live in the hero sequence.)
  */
 import Section from '@/components/Section/Section.astro';
 import { site } from '@/content/site';
 const { about } = site;
 ---
 <Section id="about" heading={about.heading} eyebrow={about.eyebrow} class="about">
-  <div class="about__grid" data-about>
-    <div class="about__copy">
-      {about.paragraphs.map((p, i) => (
-        <p class:list={['about__p', { 'about__p--lede': i === 0 }]} data-reveal>{p}</p>
-      ))}
-    </div>
-
-    <aside class="about__facts" aria-label="At a glance">
-      <ul>
-        {about.facts.map((f) => (
-          <li data-fact>
-            <span class="about__fact-value metal-text">{f.value}</span>
-            <span class="about__fact-label eyebrow">{f.label}</span>
-          </li>
-        ))}
-      </ul>
-    </aside>
+  <div class="about__copy" data-about>
+    {about.paragraphs.map((p, i) => (
+      <p class:list={['about__p', { 'about__p--lede': i === 0 }]} data-reveal>{p}</p>
+    ))}
   </div>
 
   <ol class="pillars" aria-label="What the programme is built from">
@@ -36,35 +23,12 @@ const { about } = site;
       </li>
     ))}
   </ol>
-
-  <p class="about__closing display metal-text wipe" data-closing>
-    <span class="wipe__text">{about.closing}</span>
-    <i class="wipe__block" aria-hidden="true"></i>
-  </p>
 </Section>
 
 <style>
-  .about__grid {
-    display: grid; gap: clamp(2.5rem, 6vw, 6rem);
-    grid-template-columns: minmax(0, 1fr);
-  }
-  @media (min-width: 900px) {
-    .about__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); align-items: start; }
-    .about__facts { position: sticky; top: calc(var(--nav-h) + var(--space-8)); }
-  }
-
-  .about__copy { display: grid; gap: var(--space-6); max-width: 44rem; }
+  .about__copy { display: grid; gap: var(--space-6); max-width: 46rem; }
   .about__p { font-weight: 300; color: var(--fg-dim); font-size: var(--text-base); opacity: 0; }
   .about__p--lede { font-size: var(--text-lg); color: var(--fg); }
-
-  .about__facts ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
-  .about__facts li {
-    display: grid; gap: var(--space-2); padding: var(--space-6) var(--space-4) var(--space-6) 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .about__facts li:nth-child(odd) { border-right: 1px solid var(--line); }
-  .about__facts li:nth-child(even) { padding-left: var(--space-4); }
-  .about__fact-value { font-size: var(--text-xl); font-weight: 200; letter-spacing: -0.02em; line-height: 1; }
 
   .pillars {
     display: grid; gap: 0; margin-top: clamp(4rem, 8vw, 7rem);
@@ -72,9 +36,9 @@ const { about } = site;
     border-top: 1px solid var(--line);
   }
   .pillar {
-    display: grid; align-content: start; gap: var(--space-3);
+    position: relative; display: grid; align-content: start; gap: var(--space-3);
     padding: var(--space-8) var(--space-6) var(--space-8) 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--line); opacity: 0;
   }
   @media (min-width: 900px) {
     .pillar + .pillar { padding-left: var(--space-6); border-left: 1px solid var(--line); }
@@ -82,15 +46,6 @@ const { about } = site;
   .pillar__no { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-dim); }
   .pillar__title { font-size: var(--text-lg); font-weight: 500; letter-spacing: -0.01em; }
   .pillar__text { font-size: var(--text-sm); font-weight: 300; color: var(--fg-dim); }
-
-  .about__closing {
-    position: relative; margin-top: clamp(4rem, 9vw, 8rem);
-    font-size: clamp(1rem, 0.5rem + 1.6vw, 1.9rem); letter-spacing: 0.32em; text-indent: 0;
-    line-height: 1.6; text-transform: uppercase; text-wrap: balance;
-    --ghost: 0; --ghost-a: 0;
-  }
-  .about__closing .wipe__text { opacity: 0; }
-  .about__closing .wipe__block { position: absolute; inset: 0; background: var(--fg); transform: scaleX(0); transform-origin: left center; }
 </style>
 
 <script>

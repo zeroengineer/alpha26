@@ -1,0 +1,51 @@
+---
+/**
+ * Decorative HUD readouts in the hero's corners (zrk pattern) — desktop only, aria-hidden.
+ * Lines scramble in after the reveal; the clock ticks in IST; cursor coordinates in the bottom corners.
+ */
+import { site } from '@/content/site';
+const left = [
+  `${site.shortOrganiser} — ${site.committee}`,
+  'Two-day residential programme',
+  'Industry-readiness · AI-first',
+  'Status — Coming soon',
+];
+const right = ['Malabar, Kerala · 11.25°N 75.78°E', 'IST — 00:00:00', `Edition ${site.edition}`];
+---
+<div class="hud" data-hud aria-hidden="true">
+  <ul class="hud__col hud__col--left">
+    {left.map((l) => <li data-hud-line>{l}</li>)}
+  </ul>
+  <ul class="hud__col hud__col--right">
+    {right.map((l, i) => <li data-hud-line data-clock={i === 1 ? '' : undefined}>{l}</li>)}
+  </ul>
+  <span class="hud__xy hud__xy--l" data-hud-x>X: 0000</span>
+  <span class="hud__xy hud__xy--r" data-hud-y>Y: 0000</span>
+</div>
+
+<style>
+  .hud { display: none; }
+  @media (min-width: 1100px) and (hover: hover) {
+    .hud { display: contents; }
+    .hud__col {
+      position: absolute; top: calc(var(--nav-h) + 1.5rem); z-index: var(--z-content);
+      display: grid; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--fg-dim); pointer-events: none;
+    }
+    .hud__col li { opacity: 0; white-space: nowrap; }
+    .hud__col--left { left: var(--gutter); }
+    .hud__col--right { right: var(--gutter); text-align: right; }
+    .hud__xy {
+      position: absolute; bottom: 1.4rem; z-index: var(--z-content); font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.18em; color: var(--fg-mute); opacity: 0; pointer-events: none; font-variant-numeric: tabular-nums;
+    }
+    .hud__xy--l { left: var(--gutter); }
+    .hud__xy--r { right: var(--gutter); }
+  }
+  @media (prefers-reduced-motion: reduce) { .hud__col li, .hud__xy { opacity: 1; } }
+</style>
+
+<script>
+  import { defineIsland } from '@/lib/island';
+  defineIsland('[data-hud]', () => import('./island'), { strategy: 'load' });
+</script>
