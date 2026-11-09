@@ -1,0 +1,19 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+<Layout title="Spike · hero variants">
+  <main class="container spike">
+    <p class="section-no">Phase 1 spike</p>
+    <h1>Hero variants</h1>
+    <ul>
+      <li><a href="/spike/hero-gsap?pre=1">A — layered raster + GSAP</a></li>
+      <li><a href="/spike/hero-webgl?pre=1">B — three.js glass slats</a></li>
+    </ul>
+  </main>
+</Layout>
+<style>
+  .spike { min-height: 100svh; display: grid; align-content: center; gap: var(--space-6); }
+  h1 { font-size: var(--text-2xl); font-weight: 500; }
+  ul { display: grid; gap: var(--space-3); }
+  a { font-size: var(--text-lg); text-decoration: underline; text-underline-offset: 0.3em; }
+</style>

@@ -1,0 +1,17 @@
+---
+/**
+ * Hero entry point. `variant` picks the implementation; the page registers the matching island.
+ * (During the Phase 1 spike both variants exist; the chosen one becomes the default.)
+ */
+import HeroGsap from './HeroGsap.astro';
+import HeroWebgl from './HeroWebgl.astro';
+interface Props { variant?: 'gsap' | 'webgl' }
+const { variant = 'gsap' } = Astro.props;
+---
+{variant === 'webgl' ? <HeroWebgl /> : <HeroGsap />}
+
+<script>
+  import { defineIsland } from '@/lib/island';
+  defineIsland('[data-hero="gsap"]', () => import('./gsap-island'), { strategy: 'load' });
+  defineIsland('[data-hero="webgl"]', () => import('./webgl-island'), { strategy: 'load' });
+</script>

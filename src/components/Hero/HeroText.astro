@@ -1,0 +1,74 @@
+---
+/** Poster copy shared by every hero variant: caption, COMING SOON, Instagram handle (+ dates/CTA when flagged). */
+import { site, features } from '@/content/site';
+import Instagram from '@/assets/icons/instagram.svg';
+---
+<div class="hero__copy" data-hero-copy>
+  <p class="hero__caption metal-text" data-caption>IEEE MSS ALPHA’26 - BUILT TO BECOME</p>
+
+  <div class="hero__bottom">
+    {features.dates && <p class="hero__dates eyebrow" data-dates>{site.dates.display}</p>}
+    <h1 class="hero__title display metal-text wipe" data-title>
+      <span class="wipe__text">Coming Soon</span>
+      <i class="wipe__block" aria-hidden="true"></i>
+    </h1>
+    {features.registration && (
+      <a class="hero__cta" href={site.registrationUrl} data-cta>Register</a>
+    )}
+    <a class="hero__handle" href={site.socials.instagram.url} target="_blank" rel="noreferrer" data-handle>
+      <Instagram width={17} height={17} aria-hidden="true" />
+      <span>{site.socials.instagram.handle}</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .hero__copy {
+    position: absolute; inset: 0; z-index: var(--z-content);
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    padding-top: max(calc(var(--nav-h) + 2vh), 11svh);
+    padding-bottom: 3svh;
+    text-align: center; pointer-events: none;
+  }
+  .hero__copy a { pointer-events: auto; }
+
+  .hero__caption {
+    font-weight: 600; text-transform: uppercase; white-space: nowrap;
+    font-size: clamp(0.56rem, calc(var(--copy-w) * 0.0184), 1.4rem);
+    letter-spacing: var(--track-wide); text-indent: var(--track-wide);
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+    opacity: 0;
+  }
+
+  .hero__bottom { display: grid; justify-items: center; gap: clamp(1rem, 3svh, 2.5rem); }
+  .hero__dates { letter-spacing: var(--track-wide); }
+
+  .hero__title {
+    position: relative; white-space: nowrap;
+    font-size: clamp(1.1rem, calc(var(--copy-w) * 0.044), 3.4rem);
+    filter: drop-shadow(0 0 4px #000);
+    --ghost: 0; --ghost-a: 0;
+  }
+  .hero__title .wipe__text {
+    display: inline-block; opacity: 0;
+    filter: drop-shadow(calc(var(--ghost) * 1px) 0 0 rgba(255, 255, 255, var(--ghost-a)))
+            drop-shadow(calc(var(--ghost) * -1px) 0 0 rgba(140, 140, 140, var(--ghost-a)));
+  }
+  .hero__title .wipe__block {
+    position: absolute; inset: -0.1em 0; background: var(--fg); transform: scaleX(0); transform-origin: left center;
+  }
+
+  .hero__cta {
+    font-size: var(--text-sm); letter-spacing: var(--track-eyebrow); text-transform: uppercase;
+    padding: 0.9em 2.2em; border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+    transition: background var(--dur-fast), border-color var(--dur-fast);
+  }
+  .hero__cta:hover { background: var(--surface-hover); border-color: var(--fg); }
+
+  .hero__handle {
+    display: inline-flex; align-items: center; gap: 0.5em;
+    font-size: clamp(0.8rem, calc(var(--copy-w) * 0.0175), 1.25rem); font-weight: 400; color: var(--fg);
+    opacity: 0;
+  }
+  .hero__handle svg { width: 1em; height: 1em; }
+</style>

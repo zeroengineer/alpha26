@@ -1,0 +1,15 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Preloader from '@/components/Preloader/Preloader.astro';
+import Header from '@/components/Header/Header.astro';
+import Hero from '@/components/Hero/Hero.astro';
+import SpikeFiller from '@/components/Hero/SpikeFiller.astro';
+---
+<Layout title="Spike · GSAP hero">
+  <Preloader />
+  <Header />
+  <main id="main">
+    <Hero variant="gsap" />
+    <SpikeFiller variant="gsap" />
+  </main>
+</Layout>

@@ -1,0 +1,52 @@
+---
+/**
+ * Hero variant B — three.js.
+ * The poster artwork is a textured plane; six physically-based glass slats refract and reflect it in
+ * real time, with a sweeping light, cursor-driven camera parallax and the scroll scrub pushing the
+ * camera in. Falls back to the static poster when WebGL2 is unavailable or motion is reduced.
+ */
+import { Picture, getImage } from 'astro:assets';
+import poster from '@/assets/figma/alpha-crowd.png';
+import HeroText from './HeroText.astro';
+
+const texture = await getImage({ src: poster, format: 'webp', width: 1620, quality: 82 });
+---
+<section id="hero" class="hero" data-hero="webgl" data-texture={texture.src} aria-label="ALPHA '26 — coming soon">
+  <div class="hero__scene" data-scene aria-hidden="true">
+    <canvas class="hero__canvas" data-canvas></canvas>
+    <div class="hero__fallback" data-fallback hidden>
+      <Picture
+        src={poster}
+        alt=""
+        formats={['avif', 'webp']}
+        widths={[720, 1080, 1620]}
+        sizes="(max-width: 768px) 130vw, 90vh"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+  </div>
+  <div class="vignette vignette--top"></div>
+  <div class="vignette vignette--bottom"></div>
+  <HeroText />
+</section>
+
+<style>
+  .hero {
+    position: relative; height: 100svh; overflow: hidden; background: var(--bg);
+    /* Landscape: poster is 115% of the viewport height, centred, black sides blend into the ground.
+       Portrait: poster covers the viewport width instead. --copy-w keeps the type inside the viewport. */
+    --poster-h: 115svh;
+    --poster-w: calc(var(--poster-h) * 0.75);
+    --copy-w: min(var(--poster-w), 100vw);
+  }
+  @media (orientation: portrait) {
+    .hero { --poster-h: max(100svh, calc(100vw / 0.75)); }
+  }
+  .hero__scene { position: absolute; inset: 0; z-index: var(--z-hero-scene); opacity: 0; }
+  .hero__canvas { width: 100%; height: 100%; display: block; }
+  .hero__fallback { position: absolute; left: 50%; top: 50%; width: var(--poster-w); height: var(--poster-h); translate: -50% -50%; }
+  .hero__fallback[hidden] { display: none; }
+  .hero__fallback :global(img) { width: 100%; height: 100%; object-fit: cover; }
+</style>
