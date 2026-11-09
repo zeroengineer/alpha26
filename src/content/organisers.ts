@@ -7,12 +7,7 @@ export const organisers = {
     short: 'IEEE MSS',
     description:
       'IEEE Malabar Subsection is the IEEE unit serving the Malabar region of Kerala, connecting student branches, professional members and industry across the region. [Placeholder — final copy from the subsection to follow.]',
-    url: 'https://ieeemalabar.org',
-  },
-  committee: {
-    name: 'Industry Relations Committee',
-    description:
-      'The Industry Relations Committee builds the bridge between IEEE members and the companies that hire them — through industry visits, mentoring, readiness programmes and events like ALPHA. [Placeholder — final copy to follow.]',
+    url: 'https://site.ieee.org/malabar/',
   },
   pastEventsHeading: 'Track Record',
   galleryHeading: 'In Frames',
