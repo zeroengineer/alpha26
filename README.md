@@ -7,7 +7,6 @@ Industry Relations Committee of IEEE Malabar Subsection.
 - [Astro 5](https://astro.build) — static output, zero JS by default
 - Vanilla-TS **islands** (`src/lib/island.ts`) — each section's behaviour is lazy-loaded when it nears the viewport
 - [GSAP 3](https://gsap.com) (ScrollTrigger, SplitText, ScrambleText, Observer) + [Lenis](https://lenis.darkroom.engineering) for motion
-- [three.js](https://threejs.org) — the persistent particle-field background only (lazy chunk, loads on idle after the preloader)
 - Vitest (unit) · Playwright (e2e) · Sharp via `astro:assets` (AVIF/WebP)
 - Hosted on **Cloudflare Pages** — build `npm run build`, output `dist`
 
@@ -22,25 +21,13 @@ npm run e2e        # Playwright (desktop + mobile) against a fresh production bu
 npm run build      # production build to dist/
 ```
 
-## Experience (v2)
-- **Background** (`src/components/Background/`): a fixed monochrome WebGL layer — ~16k GPU points on a breathing noise
-  terrain with a faint grid, brightening near the cursor. Sections publish to `src/lib/scene-bus.ts` and the camera
-  dollies to a keyframe per scene. CSS gradient fallback for reduced motion / no WebGL2.
-- **Hero sequence** (`src/components/Hero/`): three wheel/swipe/keyboard-driven scenes (poster → key facts → statement)
-  via a GSAP `Observer`; Lenis is parked while the hero owns the gesture and released afterwards. Nav clicks and hash links
-  skip the sequence. Reduced motion shows the scenes in flow.
-- **Stacking scenes** (`src/lib/motion/stack.ts`): every section is pinned once scrolled through so the next one slides
-  over it; the covered scene scales and dims. Headings glitch in letter by letter; blocks reveal with a white wipe.
-- **HUD + cursor** (`src/components/Hud/`, `src/components/Cursor/`): decorative mono readouts in the hero corners
-  (IST clock, coordinates, cursor X/Y) and a crosshair follower — desktop fine pointers only.
-
 ## Project layout
 ```
 src/
   components/<Section>/   Section.astro (+ island.ts for behaviour)
   content/site.ts         event copy, links and LAUNCH FLAGS
-  content/organisers.ts   "The Team" + "The Venue" copy, gallery heading/lede
-  content/data/*.json     speakers, sessions, sponsors, collaborators, gallery (photos + event details)
+  content/organisers.ts   "The Team" + "The Venue" copy
+  content/data/*.json     speakers, sessions, sponsors, collaborators, past events, gallery
   content.config.ts       zod schemas for the JSON collections
   lib/                    island loader, nav builder, motion primitives
   styles/tokens.css       design tokens from the Figma poster
@@ -81,18 +68,9 @@ npm run e2e:launched               # Playwright suite for the launched layout
   (canonical URL, Open Graph image, sitemap and JSON-LD all derive from it).
 - `public/og.jpg` is generated from the poster with `node scripts/og-image.mjs`.
 
-## Editing the gallery ("In Frames")
-Each entry in `src/content/data/gallery.json` is one photo with the basics of the event it came from:
-```json
-{ "id": "g1", "image": { "src": "pexels-2774556.jpg", "alt": "Audience at a session" },
-  "event": "Previous Event One", "year": "2025", "detail": "Two-day camp — 300+ participants", "span": "2" }
-```
-Drop real photos into `src/assets/gallery/` and reference them by filename; `span: "2"` makes a wide frame.
-
 ## Performance
-Lighthouse (mobile, production build, v0.2.0): Performance 88 · Accessibility 100 · Best Practices 100 · SEO 100 —
-LCP 2.7 s, TBT 260 ms, CLS 0. The three.js background (193 KB gz) loads on idle after the preloader and accounts for
-most of the TBT; v0.1.0 without it scored 94.
+Lighthouse (mobile, production build, 2026-11-09): Performance 94 · Accessibility 100 · Best Practices 100 ·
+SEO 100 — LCP 2.4 s, TBT 20 ms, CLS 0. Speed Index is held back only by the intentional preloader.
 Techniques: zero-JS-by-default Astro, lazy vanilla-TS islands, dynamic-imported GSAP plugins, AVIF/WebP via
 `astro:assets`, subset woff2 fonts with preload, and full reduced-motion paths.
 

@@ -6,8 +6,6 @@ export default defineConfig({
   testDir: 'tests/e2e',
   testIgnore: /launched\.spec\.ts/,
   fullyParallel: true,
-  timeout: 60_000,
-  expect: { timeout: 8_000 },
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: { baseURL: `http://localhost:${PORT}`, trace: 'on-first-retry' },

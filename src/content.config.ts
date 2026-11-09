@@ -44,17 +44,22 @@ const collaborators = defineCollection({
   schema: z.object({ id: z.string(), name: z.string(), logo: image, url: z.string().url().optional() }),
 });
 
-/** In Frames: each photo carries the basic details of the event it comes from. */
-const gallery = defineCollection({
-  loader: file('src/content/data/gallery.json'),
+const pastEvents = defineCollection({
+  loader: file('src/content/data/past-events.json'),
   schema: z.object({
     id: z.string(),
-    image,
-    event: z.string(),
+    name: z.string(),
     year: z.string(),
-    detail: z.string(),
-    span: z.enum(['1', '2']).default('1'),
+    tagline: z.string(),
+    summary: z.string(),
+    cover: image,
+    stats: z.array(z.object({ value: z.string(), label: z.string() })).optional(),
   }),
 });
 
-export const collections = { speakers, sessions, sponsors, collaborators, gallery };
+const gallery = defineCollection({
+  loader: file('src/content/data/gallery.json'),
+  schema: z.object({ id: z.string(), image, eventId: z.string().optional(), span: z.enum(['1', '2']).default('1') }),
+});
+
+export const collections = { speakers, sessions, sponsors, collaborators, pastEvents, gallery };

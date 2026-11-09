@@ -31,14 +31,10 @@ export function initLenis(): Lenis | null {
 /** Scroll to an element or selector, respecting Lenis when active. */
 export function scrollToTarget(target: string | HTMLElement, offset = 0): void {
   // Note: both Lenis and scrollIntoView honour the element's scroll-margin-top, so pass offset only for extra nudges.
-  const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
-  if (!el) return;
-  // A pinned scene is position: fixed while covered; its pin-spacer holds the real document position.
-  const anchor = (el.closest<HTMLElement>('.pin-spacer') ?? el) as HTMLElement;
   if (instance) {
-    const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
-    instance.scrollTo(anchor, { offset: offset - margin, duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    instance.scrollTo(target, { offset, duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4) });
     return;
   }
-  anchor.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth' });
+  const el = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target;
+  el?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth' });
 }

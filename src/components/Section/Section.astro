@@ -32,15 +32,7 @@ const number = sectionNumber(id, features);
 </section>
 
 <style>
-  /* Each section is a scene: full-viewport minimum, a near-black panel (the particle field shows
-     through faintly) with a hairline top edge, so it reads as a sheet sliding over the previous scene. */
-  .section {
-    position: relative; min-height: 100svh; display: grid; align-content: center;
-    padding-block: calc(var(--nav-h) + var(--space-12)) var(--section-y); scroll-margin-top: 0;
-    background: rgba(0, 0, 0, 0.94); border-top: 1px solid var(--line);
-    transform-origin: 50% 0; will-change: transform, opacity;
-  }
-  .section__title :global(.char) { display: inline-block; background: inherit; -webkit-background-clip: text; background-clip: text; }
+  .section { position: relative; padding-block: var(--section-y); scroll-margin-top: var(--nav-h); }
   .section__head { display: grid; gap: var(--space-6); margin-bottom: clamp(2.5rem, 6vw, 5rem); max-width: 48rem; }
   .section__head--wide { max-width: none; }
   .section-no { opacity: 0; }
@@ -50,6 +42,8 @@ const number = sectionNumber(id, features);
     background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
     opacity: 0;
   }
+  /* SplitText line masks need visible overflow on the wrapper and clipping on the line parents */
+  .section__title :global(.line) { background: inherit; -webkit-background-clip: text; background-clip: text; }
 </style>
 
 <script>

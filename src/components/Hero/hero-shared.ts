@@ -1,7 +1,8 @@
 /**
- * Hero helpers: entrance after the preloader and a lerped pointer tracker for parallax.
+ * Behaviour common to both hero variants: entrance after the preloader, the pinned scroll scrub,
+ * and a lerped pointer tracker that variants use for parallax.
  */
-import { gsap, onReveal, reducedMotion, isTouch } from '@/lib/motion/core';
+import { gsap, ScrollTrigger, onReveal, reducedMotion, isTouch } from '@/lib/motion/core';
 import { scrambleIn, wipeIn } from '@/lib/motion/reveal';
 
 export function heroEntrance(section: HTMLElement, onStart?: (tl: gsap.core.Timeline) => void): void {
@@ -18,6 +19,29 @@ export function heroEntrance(section: HTMLElement, onStart?: (tl: gsap.core.Time
       .fromTo(handle, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 1 }, 1.5);
     if (extras.length) tl.fromTo(extras, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 1, stagger: 0.1 }, 1.4);
   });
+}
+
+/**
+ * Pins the hero for an extra 120% of viewport and reports progress 0→1 while the visitor scrolls
+ * through it. Variants darken / push the scene; the copy drifts up and fades.
+ */
+export function heroScrub(section: HTMLElement, onProgress?: (p: number) => void): ScrollTrigger | null {
+  const copy = section.querySelector<HTMLElement>('[data-hero-copy]')!;
+  if (reducedMotion()) return null;
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: 'top top',
+      end: '+=120%',
+      pin: true,
+      scrub: 0.8,
+      anticipatePin: 1,
+      onUpdate: (self) => onProgress?.(self.progress),
+    },
+  });
+  tl.to(copy, { y: -80, opacity: 0, ease: 'none', duration: 1 }, 0);
+  return tl.scrollTrigger ?? null;
 }
 
 export interface Pointer {
