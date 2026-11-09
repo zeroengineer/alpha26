@@ -92,7 +92,7 @@ const items = buildNav(features);
   .nav__toggle[aria-expanded='true'] i:nth-child(3) { top: 22px; transform: rotate(-45deg); }
 
   .menu {
-    position: fixed; inset: 0; z-index: var(--z-menu); background: var(--bg);
+    position: fixed; inset: 0; z-index: calc(var(--z-nav) - 1); background: var(--bg); /* below the bar so the toggle stays reachable */
     display: grid; align-content: center; justify-items: start; gap: var(--space-12);
     padding: calc(var(--nav-h) + var(--space-8)) var(--gutter) var(--space-12);
     clip-path: inset(0 0 100% 0);

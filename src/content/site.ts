@@ -48,11 +48,18 @@ export const site = {
       "More than just a learning experience, ALPHA '26 is an opportunity to build professional connections, discover career pathways, and prepare to turn engineering potential into real-world opportunities.",
     ],
     closing: "The future of engineering is evolving. ALPHA '26 is where you prepare to become part of it.",
-    stats: [
-      { value: 2, suffix: '', label: 'Days, residential' },
-      { value: 100, suffix: '%', label: 'Industry-led sessions' },
-      { value: 1, suffix: '', label: 'AI-first curriculum' },
-      { value: 0, suffix: '', label: 'Gap between campus and industry', isTagline: true },
+    /** The four things the programme is built from — lifted straight from the brief. */
+    pillars: [
+      { title: 'Expert-led sessions', text: 'Professionals who are hiring, building and leading in an AI-first industry.' },
+      { title: 'Hands-on training', text: 'Technical workshops where you ship something, not just watch it being shipped.' },
+      { title: 'Industry exposure', text: 'How roles are changing, what teams actually need, and where the openings are.' },
+      { title: 'Direct interaction', text: 'Two residential days of conversations, mentoring and connections that outlast the event.' },
+    ],
+    facts: [
+      { value: '02', label: 'Days' },
+      { value: 'Residential', label: 'Format' },
+      { value: 'Graduates', label: 'Built for' },
+      { value: 'AI-first', label: 'Focus' },
     ],
   },
 } as const;

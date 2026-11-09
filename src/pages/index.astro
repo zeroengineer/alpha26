@@ -4,6 +4,7 @@ import Preloader from '@/components/Preloader/Preloader.astro';
 import Nav from '@/components/Nav/Nav.astro';
 import Hero from '@/components/Hero/Hero.astro';
 import Section from '@/components/Section/Section.astro';
+import About from '@/components/About/About.astro';
 import { site } from '@/content/site';
 import { organisers } from '@/content/organisers';
 ---
@@ -13,10 +14,7 @@ import { organisers } from '@/content/organisers';
   <main id="main">
     <Hero />
 
-    {/* Phase 3 fills this with the full programme block */}
-    <Section id="about" heading={site.about.heading} eyebrow={site.about.eyebrow}>
-      <p class="lede">{site.about.paragraphs[0]}</p>
-    </Section>
+    <About />
 
     {/* Phase 4 fills this with the team, track record slider and gallery */}
     <Section id="organisers" heading={organisers.heading} eyebrow={organisers.eyebrow}>

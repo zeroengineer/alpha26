@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, reducedMotion } from '@/lib/motion/core';
+import { gsap, ScrollTrigger, reducedMotion, onReveal } from '@/lib/motion/core';
 import { getLenis, scrollToTarget } from '@/lib/motion/lenis';
 
 export default function nav(bar: HTMLElement): void {
@@ -97,11 +97,14 @@ export default function nav(bar: HTMLElement): void {
     if (e.matches && menuOpen) closeMenu();
   });
 
-  // Deep link on load (#about etc.) — jump after the preloader so the pin maths are stable.
+  // Deep link on load (#about etc.) — jump after the preloader and a layout pass so the pin maths are stable.
   if (location.hash) {
     const target = document.querySelector<HTMLElement>(location.hash);
     if (target) {
-      window.addEventListener('alpha:reveal', () => scrollToTarget(target), { once: true });
+      onReveal(() => {
+        ScrollTrigger.refresh();
+        requestAnimationFrame(() => scrollToTarget(target));
+      });
     }
   }
 }
