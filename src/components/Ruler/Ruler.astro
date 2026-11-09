@@ -1,0 +1,38 @@
+---
+/**
+ * Scale ruler (doyourdesign's corner ruler): a fixed drawing-board scale that fills with scroll
+ * and names the chapter you're in. Decorative; hidden on small screens.
+ */
+const ticks = Array.from({ length: 21 }, (_, i) => i);
+---
+<div class="ruler" data-ruler aria-hidden="true">
+  <span class="ruler__label" data-ruler-label>Home</span>
+  <span class="ruler__scale">
+    {ticks.map((i) => <i class:list={{ major: i % 5 === 0 }}></i>)}
+    <b class="ruler__marker" data-ruler-marker></b>
+  </span>
+  <span class="ruler__ends"><span>0</span><span>α</span></span>
+</div>
+
+<style>
+  .ruler {
+    position: fixed; right: var(--gutter); bottom: 1.5rem; z-index: var(--z-nav);
+    display: grid; gap: 0.35rem; width: 9.5rem; padding: 0.55rem 0.7rem 0.45rem;
+    border: 1px solid var(--line); background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-dim);
+    opacity: 0; transition: opacity 0.8s;
+  }
+  :global(html[data-ready='true']) .ruler { opacity: 1; }
+  .ruler__label { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ruler__scale { position: relative; display: flex; justify-content: space-between; align-items: flex-end; height: 10px; }
+  .ruler__scale i { width: 1px; height: 4px; background: var(--fg-mute); }
+  .ruler__scale i.major { height: 9px; background: var(--fg-dim); }
+  .ruler__marker { position: absolute; left: 0; bottom: -2px; width: 1px; height: 14px; background: var(--fg); transform: translateX(0); }
+  .ruler__ends { display: flex; justify-content: space-between; text-transform: none; }
+  @media (max-width: 760px) { .ruler { display: none; } }
+</style>
+
+<script>
+  import { defineIsland } from '@/lib/island';
+  defineIsland('[data-ruler]', () => import('./island'), { strategy: 'idle' });
+</script>

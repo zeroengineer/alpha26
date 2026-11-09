@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, reducedMotion, onReveal } from '@/lib/motion/core';
+import { gsap, ScrollTrigger, reducedMotion, onReady } from '@/lib/motion/core';
 import { getLenis, scrollToTarget } from '@/lib/motion/lenis';
 
 export default function nav(bar: HTMLElement): void {
@@ -23,7 +23,7 @@ export default function nav(bar: HTMLElement): void {
     links.forEach((l) => l.classList.toggle('is-active', l.dataset.navLink === id));
   };
   const resolveActive = () => {
-    const line = navH() + 2;
+    const line = window.innerHeight * 0.5; // same mid-line as the scale ruler
     let active = sections[0]?.id ?? '';
     for (const s of sections) {
       if (s.getBoundingClientRect().top <= line) active = s.id;
@@ -101,7 +101,7 @@ export default function nav(bar: HTMLElement): void {
   if (location.hash) {
     const target = document.querySelector<HTMLElement>(location.hash);
     if (target) {
-      onReveal(() => {
+      onReady(() => {
         ScrollTrigger.refresh();
         requestAnimationFrame(() => scrollToTarget(target));
       });

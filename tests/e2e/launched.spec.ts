@@ -17,13 +17,10 @@ test.describe('launched build', () => {
     await expect(page.locator('#hero [data-cta]')).toHaveText('Register');
   });
 
-  test('speakers slider and sessions render from the collections', async ({ page }) => {
+  test('speakers and sessions render from the collections', async ({ page }) => {
     await page.goto('/#lineup');
-    await page.locator('#speakers [data-slider]').scrollIntoViewIfNeeded();
-    await page.waitForSelector('[data-island-ready~="#speakers"]');
     await expect(page.locator('#speakers [data-slide]')).toHaveCount(4);
-    await page.locator('#speakers [data-slider-next]').click();
-    await expect(page.locator('#speakers [data-slider-current]')).toHaveText('02');
+    await expect(page.locator('#speakers [data-slider]')).toHaveCount(0);
     await expect(page.locator('#sessions [data-session]')).toHaveCount(5);
   });
 

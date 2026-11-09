@@ -1,30 +1,24 @@
 ---
 /**
- * Numbered section shell used by every block below the hero:
- *   01 ——— EYEBROW
- *   Heading
- *   <slot />
- * Heading and label reveal on scroll via the section island.
+ * Chapter shell for every block below the hero. No panels, no numbered counters: the α stage shows
+ * through, the head is an α-marked eyebrow plus a large light heading that focuses in line by line.
+ *   align   where the head sits (left / right / center) — chapters alternate to break the column
+ *   station the α-stage camera stop this chapter's head corresponds to
  */
-import { features } from '@/content/site';
-import { sectionNumber } from '@/lib/nav';
-
 interface Props {
   id: string;
   heading: string;
   eyebrow: string;
-  /** Optional extra classes on the <section>. */
   class?: string;
-  /** Use a wider head (e.g. heading spans full width). */
-  wide?: boolean;
+  align?: 'left' | 'right' | 'center';
+  station?: string;
 }
-const { id, heading, eyebrow, class: className = '', wide = false } = Astro.props;
-const number = sectionNumber(id, features);
+const { id, heading, eyebrow, class: className = '', align = 'left', station } = Astro.props;
 ---
-<section id={id} class:list={['section', className]} data-section aria-labelledby={`${id}-title`}>
+<section id={id} class:list={['section', `section--${align}`, className]} data-section aria-labelledby={`${id}-title`}>
   <div class="container">
-    <header class:list={['section__head', { 'section__head--wide': wide }]}>
-      <p class="section-no" data-section-no><span>{number}</span><span class="section__eyebrow">{eyebrow}</span></p>
+    <header class="section__head" data-station={station}>
+      <p class="section-no" data-soft data-section-eyebrow>{eyebrow}</p>
       <h2 class="section__title" id={`${id}-title`} data-section-title>{heading}</h2>
     </header>
     <slot />
@@ -32,17 +26,15 @@ const number = sectionNumber(id, features);
 </section>
 
 <style>
-  .section { position: relative; padding-block: var(--section-y); scroll-margin-top: var(--nav-h); }
-  .section__head { display: grid; gap: var(--space-6); margin-bottom: clamp(2.5rem, 6vw, 5rem); max-width: 48rem; }
-  .section__head--wide { max-width: none; }
-  .section-no { opacity: 0; }
-  .section__eyebrow { margin-left: var(--space-2); }
+  .section { position: relative; padding-block: clamp(6rem, 16vh, 12rem); scroll-margin-top: var(--nav-h); }
+  .section__head { display: grid; gap: var(--space-6); max-width: 60rem; margin-bottom: clamp(4rem, 14vh, 9rem); }
+  .section--right .section__head { margin-left: auto; text-align: right; justify-items: end; }
+  .section--center .section__head { margin-inline: auto; text-align: center; justify-items: center; }
   .section__title {
-    font-size: var(--text-2xl); font-weight: 300; letter-spacing: -0.02em; line-height: 1.02;
+    font-size: clamp(2.6rem, 1rem + 6vw, 7rem); font-weight: 200; letter-spacing: 0.02em; line-height: 0.98;
+    text-transform: uppercase; opacity: 0;
     background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
-    opacity: 0;
   }
-  /* SplitText line masks need visible overflow on the wrapper and clipping on the line parents */
   .section__title :global(.line) { background: inherit; -webkit-background-clip: text; background-clip: text; }
 </style>
 

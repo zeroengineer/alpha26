@@ -15,7 +15,8 @@ test.describe('navigation', () => {
 
   test('nav link scrolls to its section', async ({ page, isMobile }) => {
     await page.goto('/');
-    await page.waitForFunction(() => document.documentElement.dataset.revealed === 'true', null, { timeout: 15_000 });
+    await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 15_000 });
+    await page.waitForSelector('header[data-island-ready]', { state: 'attached' });
     if (isMobile) {
       await page.getByRole('button', { name: 'Menu' }).click();
       await page.locator('#menu [data-nav-link="organisers"]').click();
@@ -31,7 +32,8 @@ test.describe('navigation', () => {
   test('mobile menu opens, traps Escape, and closes', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'mobile only');
     await page.goto('/');
-    await page.waitForFunction(() => document.documentElement.dataset.revealed === 'true', null, { timeout: 15_000 });
+    await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 15_000 });
+    await page.waitForSelector('header[data-island-ready]', { state: 'attached' });
     const toggle = page.getByRole('button', { name: 'Menu' });
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');

@@ -1,8 +1,8 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import Preloader from '@/components/Preloader/Preloader.astro';
 import Nav from '@/components/Nav/Nav.astro';
 import Hero from '@/components/Hero/Hero.astro';
+import Prelude from '@/components/Prelude/Prelude.astro';
 import About from '@/components/About/About.astro';
 import Organisers from '@/components/Organisers/Organisers.astro';
 import Speakers from '@/components/Speakers/Speakers.astro';
@@ -14,11 +14,10 @@ import { features } from '@/content/site';
 ---
 <Layout>
   <JsonLd slot="head" />
-  <Preloader />
   <Nav />
   <main id="main">
     <Hero />
-
+    <Prelude />
     <About />
 
     {/* Launch-gated sections: not rendered at all until their flag in src/content/site.ts is true */}
@@ -27,7 +26,6 @@ import { features } from '@/content/site';
     {features.sponsors && <Partners />}
 
     <Organisers />
-
     <Footer />
   </main>
 </Layout>

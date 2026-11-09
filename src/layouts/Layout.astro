@@ -1,6 +1,8 @@
 ---
 import '@/styles/global.css';
 import { site } from '@/content/site';
+import Stage from '@/components/Stage/Stage.astro';
+import Ruler from '@/components/Ruler/Ruler.astro';
 
 interface Props {
   title?: string;
@@ -14,6 +16,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -33,7 +36,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <slot name="head" />
   </head>
   <body>
+    <Stage />
     <slot />
+    <Ruler />
     <script>
       import '@/lib/app';
     </script>

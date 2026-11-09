@@ -17,14 +17,14 @@ const tiers = [
 ] as const;
 const logoSrc = (file: string) => `/partners/${file}`;
 ---
-<Section id="partners" heading="Powered Together" eyebrow="Sponsors & collaborators" class="partners">
+<Section id="partners" heading="Powered Together" eyebrow="Sponsors & collaborators" station="partners" class="partners">
   <div class="tiers" data-partners>
     {tiers.map((tier) => {
       const list = sponsors.filter((s) => s.tier === tier.key);
       if (list.length === 0) return null;
       return (
         <div class:list={['tier', `tier--${tier.key}`]} data-tier>
-          <p class="tier__label section-no"><span>{tier.label}</span></p>
+          <p class="tier__label section-no">{tier.label}</p>
           <ul class="tier__grid">
             {list.map((s) => (
               <li class="logo" data-logo>
@@ -43,7 +43,7 @@ const logoSrc = (file: string) => `/partners/${file}`;
 
   {collaborators.length > 0 && (
     <div class="collab" aria-label="Collaborators">
-      <p class="section-no"><span>Collaborators</span></p>
+      <p class="section-no">Collaborators</p>
       <div class="marquee" data-marquee>
         <ul class="marquee__track">
           {[...collaborators, ...collaborators].map((c, i) => (

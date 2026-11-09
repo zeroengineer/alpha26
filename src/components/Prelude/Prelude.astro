@@ -1,0 +1,29 @@
+---
+/**
+ * Prelude — the beat right after the poster recedes: the 3D α now stands alone, centred, on the
+ * stage. Copy holds opposite corners so the α keeps the middle of the screen.
+ */
+import { site } from '@/content/site';
+---
+<div class="prelude" data-station="intro" data-prelude>
+  <p class="prelude__a section-no" data-soft data-speed="0.82">{site.shortOrganiser} · {site.committee}</p>
+  <p class="prelude__b" data-soft data-speed="1.18">
+    <span class="prelude__big metal-text">Built</span>
+    <span class="prelude__big metal-text">to Become</span>
+  </p>
+  <p class="prelude__c" data-soft data-speed="0.94">A two-day residential industry-readiness programme for engineering graduates in an AI-driven job market.</p>
+</div>
+
+<style>
+  .prelude { position: relative; min-height: 180vh; padding-inline: var(--gutter); }
+  .prelude__a { position: absolute; left: var(--gutter); top: 38vh; }
+  .prelude__b { position: absolute; right: var(--gutter); top: 92vh; display: grid; justify-items: end; text-align: right; }
+  .prelude__big { font-size: clamp(2.6rem, 1rem + 6.5vw, 8rem); font-weight: 200; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.95; }
+  .prelude__c { position: absolute; left: var(--gutter); top: 128vh; max-width: 26rem; font-weight: 300; color: var(--fg-dim); text-shadow: 0 0 24px #000; }
+  @media (max-width: 760px) { .prelude__b { top: 80vh; } .prelude__c { top: 132vh; right: var(--gutter); } }
+</style>
+
+<script>
+  import { defineIsland } from '@/lib/island';
+  defineIsland('[data-prelude]', () => import('./island'));
+</script>

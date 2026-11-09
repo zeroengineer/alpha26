@@ -1,48 +1,50 @@
 ---
 /**
- * Hero — layered raster + GSAP (chosen over a three.js variant in the Phase 1 spike).
- * The poster artwork is the base layer; six CSS glass slats, crosshair ticks and a light sweep sit on
- * top as separate depth layers driven by cursor parallax and the scroll scrub.
+ * Hero — the poster, centred. As the visitor scrolls it recedes (scales down, softens, fades) and
+ * hands over to the 3D α on the stage behind it, which sits in the same place.
+ * Layers: poster raster, six CSS glass slats, crosshair ticks and a light sweep (cursor parallax).
  */
 import { Picture } from 'astro:assets';
 import poster from '@/assets/figma/alpha-crowd.png';
 import HeroText from './HeroText.astro';
 const slats = [0, 1, 2, 3, 4, 5];
 ---
-<section id="hero" class="hero" data-hero aria-label="ALPHA '26 — coming soon">
-  <div class="hero__scene" data-scene aria-hidden="true">
-    <div class="layer layer--base" data-depth="0.35">
-      <Picture
-        src={poster}
-        alt=""
-        formats={['avif', 'webp']}
-        widths={[720, 1080, 1620]}
-        sizes="(max-width: 768px) 130vw, 90vh"
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-      />
+<section id="hero" class="hero" data-hero data-station="hero" data-station-at="top" aria-label="ALPHA '26 — coming soon">
+  <div class="hero__frame" data-hero-frame>
+    <div class="hero__scene" data-scene aria-hidden="true">
+      <div class="layer layer--base" data-depth="0.35">
+        <Picture
+          src={poster}
+          alt=""
+          formats={['avif', 'webp']}
+          widths={[720, 1080, 1620]}
+          sizes="(max-width: 768px) 130vw, 90vh"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+      <div class="layer layer--slats" data-depth="0.9" data-slats>
+        {slats.map((i) => <i class="slat" style={`--i:${i}`} data-slat></i>)}
+      </div>
+      <div class="layer layer--ticks" data-depth="1.5">
+        <span class="tick" style="left:14%; top:46%"></span>
+        <span class="tick" style="left:78%; top:17%"></span>
+        <span class="tick" style="left:60%; top:82%"></span>
+      </div>
+      <div class="sweep" data-sweep></div>
     </div>
-    <div class="layer layer--slats" data-depth="0.9" data-slats>
-      {slats.map((i) => <i class="slat" style={`--i:${i}`} data-slat></i>)}
-    </div>
-    <div class="layer layer--ticks" data-depth="1.5">
-      <span class="tick" style="left:14%; top:46%"></span>
-      <span class="tick" style="left:78%; top:17%"></span>
-      <span class="tick" style="left:60%; top:82%"></span>
-    </div>
-    <div class="sweep" data-sweep></div>
+    <div class="vignette vignette--top"></div>
+    <div class="vignette vignette--bottom"></div>
   </div>
-  <div class="vignette vignette--top"></div>
-  <div class="vignette vignette--bottom"></div>
   <HeroText />
+  <p class="hero__cue" data-cue aria-hidden="true"><span>Scroll</span><i></i></p>
 </section>
 
 <style>
   .hero {
-    position: relative; height: 100svh; overflow: hidden; background: var(--bg);
-    /* Landscape: poster is 115% of the viewport height, centred, black sides blend into the ground.
-       Portrait: poster covers the viewport width instead. --copy-w keeps the type inside the viewport. */
+    position: relative; height: 100svh; overflow: hidden; background: transparent;
+    /* Landscape: poster is 115% of the viewport height, centred. Portrait: covers the width. */
     --poster-h: 115svh;
     --poster-w: calc(var(--poster-h) * 0.75);
     --copy-w: min(var(--poster-w), 100vw);
@@ -50,14 +52,18 @@ const slats = [0, 1, 2, 3, 4, 5];
   @media (orientation: portrait) {
     .hero { --poster-h: max(100svh, calc(100vw / 0.75)); }
   }
-  .hero__scene { position: absolute; inset: 0; z-index: var(--z-hero-scene); opacity: 0; transform: scale(1.1); will-change: transform, filter; }
+  .hero__frame { position: absolute; inset: 0; will-change: transform, opacity, filter; }
+  .hero__scene { position: absolute; inset: 0; z-index: var(--z-hero-scene); opacity: 0; }
+  /* Centred with margins, not `translate`: GSAP resets the individual translate/rotate/scale
+     properties on elements it animates, which would un-centre the poster. */
   .layer {
     position: absolute; left: 50%; top: 50%; width: var(--poster-w); height: var(--poster-h);
-    translate: -50% -50%; will-change: transform;
+    margin-left: calc(var(--poster-w) / -2); margin-top: calc(var(--poster-h) / -2); will-change: transform;
   }
   .layer--base :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  /* feather the poster's edges into the stage on wide screens */
+  .layer--base { -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
 
-  /* Glass slats — six tilted panels matching the poster's rhythm */
   .slat {
     position: absolute; top: 8.5%; height: 83%; width: 11%;
     left: calc(13.5% + var(--i) * 13%);
@@ -69,21 +75,25 @@ const slats = [0, 1, 2, 3, 4, 5];
     border-right: 1px solid rgba(255,255,255,0.06);
     box-shadow: inset 0 0 50px rgba(255,255,255,0.05), 0 0 30px rgba(0,0,0,0.35);
   }
-  .slat::after {
-    content: ''; position: absolute; inset: 0 0 auto 0; height: 1px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
-  }
-
+  .slat::after { content: ''; position: absolute; inset: 0 0 auto 0; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.1)); }
   .tick { position: absolute; width: 14px; height: 14px; opacity: 0.6; }
   .tick::before, .tick::after { content: ''; position: absolute; background: var(--fg); }
   .tick::before { left: 50%; top: 0; width: 1px; height: 100%; }
   .tick::after { top: 50%; left: 0; height: 1px; width: 100%; }
-
   .sweep {
     position: absolute; inset: 0;
     background: linear-gradient(100deg, transparent 42%, rgba(255,255,255,0.16) 50%, transparent 58%);
     mix-blend-mode: screen; transform: translateX(-120%); pointer-events: none;
   }
+
+  .hero__cue {
+    position: absolute; right: var(--gutter); bottom: 2rem; z-index: var(--z-content);
+    display: flex; align-items: center; gap: 0.75rem; opacity: 0;
+    font-size: var(--text-xs); letter-spacing: var(--track-eyebrow); text-transform: uppercase; color: var(--fg-dim);
+  }
+  .hero__cue i { width: 1px; height: 2.5rem; background: linear-gradient(var(--fg), transparent); animation: cue 2.4s var(--ease-in-out) infinite; transform-origin: top; }
+  @keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+  @media (max-width: 640px) { .hero__cue { display: none; } }
 </style>
 
 <script>

@@ -5,7 +5,7 @@ import Section from '@/components/Section/Section.astro';
 import { host } from '@/content/organisers';
 import { resolveImage } from '@/lib/images';
 ---
-<Section id="venue" heading={host.heading} eyebrow={host.eyebrow} class="venue">
+<Section id="venue" heading={host.heading} eyebrow={host.eyebrow} station="venue" align="center" class="venue">
   <div class="venue__grid" data-venue>
     <figure class="venue__media" data-venue-media>
       <Image src={resolveImage(host.image.src)} alt={host.image.alt} widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 60vw" loading="lazy" decoding="async" />

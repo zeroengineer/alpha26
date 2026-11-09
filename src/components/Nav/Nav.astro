@@ -61,7 +61,8 @@ const items = buildNav(features);
     opacity: 0; transition: background var(--dur-fast), border-color var(--dur-fast);
     border-bottom: 1px solid transparent;
   }
-  :global(html[data-revealed='true']) .nav { opacity: 1; transition: opacity 1s var(--ease-out) 0.2s, background var(--dur-fast), border-color var(--dur-fast); }
+  
+  :global(html[data-ready='true']) .nav { opacity: 1; transition: opacity 1s var(--ease-out) 0.2s, background var(--dur-fast), border-color var(--dur-fast); }
   .nav.is-scrolled { background: rgba(0, 0, 0, 0.72); border-color: var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 
   .nav__brand img { height: clamp(1.5rem, 2.6vw, 2.4rem); width: auto; }

@@ -1,15 +1,15 @@
 import { gsap, reducedMotion } from '@/lib/motion/core';
-import { scrambleIn } from '@/lib/motion/reveal';
+import { softBlock } from '@/lib/motion/reveal';
 
 export default function contact(section: HTMLElement): void {
-  const links = Array.from(section.querySelectorAll<HTMLElement>('[data-contact-link]'));
+  const grid = section.querySelector<HTMLElement>('[data-contact]');
   const statement = section.querySelector<HTMLElement>('.contact__statement');
-  if (reducedMotion()) {
-    gsap.set([links, statement], { opacity: 1 });
-    return;
-  }
-  gsap.fromTo(links, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: links[0], start: 'top 88%', once: true } });
-  if (statement) {
-    gsap.timeline({ scrollTrigger: { trigger: statement, start: 'top 90%', once: true } }).add(scrambleIn(statement, { duration: 1.8 }));
-  }
+  if (grid) softBlock(grid);
+  if (!statement) return;
+  if (reducedMotion()) { gsap.set(statement, { opacity: 1 }); return; }
+  // the sign-off settles from wide tracking as it scrolls in
+  gsap.fromTo(statement, { opacity: 0, letterSpacing: '1.4em', filter: 'blur(12px)' }, {
+    opacity: 1, letterSpacing: '0.6em', filter: 'blur(0px)', ease: 'none',
+    scrollTrigger: { trigger: statement, start: 'top 95%', end: 'top 50%', scrub: 0.8 },
+  });
 }

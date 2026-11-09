@@ -1,21 +1,51 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('motion safety', () => {
+test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
-  test('reduced motion skips the preloader and the pinned hero', async ({ page }) => {
+  test('shows the poster and copy immediately and keeps the α stage static', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('[data-preloader]')).toHaveCount(0);
+    await expect(page.locator('#hero [data-caption]')).toBeVisible();
+    await expect(page.locator('#hero [data-title]')).toHaveText('Coming Soon');
+    await page.waitForTimeout(1500);
+    await expect(page.locator('[data-stage]')).not.toHaveClass(/is-webgl/);
+    await expect(page.locator('.stage__fallback')).toBeVisible();
+    // no scroll-pinning anywhere
     await expect(page.locator('.pin-spacer')).toHaveCount(0);
-    await expect(page.locator('#hero [data-title] .wipe__text')).toBeVisible();
-    await expect(page.locator('#hero [data-caption]')).toHaveText(/BUILT TO BECOME/);
   });
 });
 
-test('preloader reveals the hero copy', async ({ page }) => {
-  await page.goto('/?pre=1');
-  await expect(page.locator('[data-preloader]')).toBeVisible();
-  await page.waitForFunction(() => document.documentElement.dataset.revealed === 'true', null, { timeout: 15_000 });
-  await expect(page.locator('[data-preloader]')).toHaveCount(0, { timeout: 5_000 });
-  await expect(page.locator('#hero [data-caption]')).toHaveText('IEEE MSS ALPHA’26 - BUILT TO BECOME', { timeout: 5_000 });
+test('software WebGL keeps the static α fallback', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop only');
+  await page.goto('/');
+  await page.mouse.move(400, 400);
+  await page.waitForTimeout(2500);
+  await expect(page.locator('[data-stage]')).not.toHaveClass(/is-webgl/);
+  await expect(page.locator('.stage__fallback')).toBeVisible();
+});
+
+test('there is no preloader; the page signals ready on its own', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('[data-preloader]')).toHaveCount(0);
+  await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 10_000 });
+});
+
+test('the α stage mounts WebGL and visits every station in order', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'headless mobile emulation has no reliable WebGL');
+  // headless Chromium renders with SwiftShader, which the stage skips by default; ?gl=1 forces it
+  await page.goto('/?gl=1');
+  await page.mouse.move(400, 400);
+  await expect(page.locator('[data-stage]')).toHaveClass(/is-webgl/, { timeout: 15_000 });
+  const stations = await page.locator('[data-station]').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.station));
+  expect(stations).toEqual(['hero', 'intro', 'about', 'pillars', 'statement', 'team', 'frames', 'contact']);
+});
+
+test('the hero poster stays centred on an ultra-wide screen', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop only');
+  await page.setViewportSize({ width: 2560, height: 1200 });
+  await page.goto('/');
+  await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 10_000 });
+  await page.waitForTimeout(2500);
+  const centre = await page.locator('.layer--base').evaluate((el) => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; });
+  expect(Math.abs(centre - 1280)).toBeLessThan(40);
 });

@@ -11,7 +11,7 @@ import mss from '@/assets/brand/ieee-mss-lockup.png';
 import ieee from '@/assets/brand/ieee.png';
 const year = new Date().getFullYear();
 ---
-<Section id="contact" heading="Stay in the Loop" eyebrow="Contact" class="contact">
+<Section id="contact" heading="Stay in the Loop" eyebrow="Contact" station="contact" align="center" class="contact">
   <div class="contact__grid" data-contact>
     <p class="contact__lede">
       Dates, speakers and registration are announced first on Instagram. Follow along — or write to the
@@ -44,7 +44,7 @@ const year = new Date().getFullYear();
     </ul>
   </div>
 
-  <p class="contact__statement display metal-text" aria-hidden="true">Built to Become</p>
+  <p class="contact__statement display metal-text" data-soft aria-hidden="true">Built to Become</p>
 </Section>
 
 <footer class="footer">
@@ -61,14 +61,13 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .contact__grid { display: grid; gap: var(--space-8); }
+  .contact__grid { display: grid; gap: var(--space-8); max-width: 64rem; margin-inline: auto; padding: clamp(1.5rem, 3vw, 2.5rem); border: 1px solid var(--line); background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   @media (min-width: 900px) { .contact__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; } }
   .contact__lede { max-width: 28rem; font-weight: 300; color: var(--fg-dim); font-size: var(--text-lg); }
   .contact__links { border-top: 1px solid var(--line); }
   .contact__link {
     display: grid; grid-template-columns: 7rem minmax(0, 1fr) auto; align-items: center; gap: var(--space-4);
     padding-block: var(--space-6); border-bottom: 1px solid var(--line); transition: padding-left var(--dur-fast) var(--ease-out);
-    opacity: 0;
   }
   .contact__link:hover { padding-left: var(--space-3); }
   .contact__value { display: inline-flex; align-items: center; gap: 0.5em; font-size: var(--text-lg); font-weight: 300; min-width: 0; overflow-wrap: anywhere; }
@@ -84,10 +83,9 @@ const year = new Date().getFullYear();
   .contact__statement {
     margin-top: clamp(5rem, 12vw, 10rem); text-align: center;
     font-size: clamp(1.4rem, 0.5rem + 4vw, 4.5rem); letter-spacing: 0.6em; text-indent: 0.6em; text-wrap: balance;
-    opacity: 0;
   }
 
-  .footer { border-top: 1px solid var(--line); padding-block: var(--space-8); }
+  .footer { position: relative; background: var(--bg); border-top: 1px solid var(--line); padding-block: var(--space-8); }
   .footer__inner { display: grid; gap: var(--space-6); align-items: center; }
   @media (min-width: 900px) { .footer__inner { grid-template-columns: auto minmax(0, 1fr) auto; } }
   .footer__brand { display: flex; align-items: center; gap: var(--space-8); }

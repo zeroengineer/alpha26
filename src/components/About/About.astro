@@ -1,99 +1,106 @@
 ---
 /**
- * 01 — The Programme. The brief's three paragraphs with line reveals, a facts strip,
- * the four pillars, and the closing statement set as a display line.
+ * The Programme — three chapters toured by the α stage:
+ *   about     the brief, as three blocks at different columns and depths (each drifts at its own speed)
+ *   pillars   four "figure" annotations around the α, drawing-board style, leader lines pointing in
+ *   statement the closing line, set huge; the camera flies through the α's bowl behind it
  */
 import Section from '@/components/Section/Section.astro';
 import { site } from '@/content/site';
 const { about } = site;
+const statementWords = about.closing.split(' ');
+const wordSpeeds = [0.96, 1.06, 0.98, 1.08, 0.95, 1.04, 1, 1.07, 0.97, 1.05, 0.98, 1.06, 0.96, 1.03, 1.07, 0.97, 1.04, 0.99];
+const paraLayout = [
+  { cls: 'prog__p--a', speed: 0.92 },
+  { cls: 'prog__p--b', speed: 1.14 },
+  { cls: 'prog__p--c', speed: 0.97 },
+];
+const corners = ['tl', 'tr', 'bl', 'br'] as const;
+const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
 ---
-<Section id="about" heading={about.heading} eyebrow={about.eyebrow} class="about">
-  <div class="about__grid" data-about>
-    <div class="about__copy">
-      {about.paragraphs.map((p, i) => (
-        <p class:list={['about__p', { 'about__p--lede': i === 0 }]} data-reveal>{p}</p>
-      ))}
-    </div>
-
-    <aside class="about__facts" aria-label="At a glance">
-      <ul>
-        {about.facts.map((f) => (
-          <li data-fact>
-            <span class="about__fact-value metal-text">{f.value}</span>
-            <span class="about__fact-label eyebrow">{f.label}</span>
-          </li>
-        ))}
-      </ul>
-    </aside>
+<Section id="about" heading={about.heading} eyebrow={about.eyebrow} station="about" class="about">
+  <div class="prog" data-about>
+    {about.paragraphs.map((p, i) => (
+      <p class:list={['prog__p', paraLayout[i].cls]} data-reveal data-speed={paraLayout[i].speed}>{p}</p>
+    ))}
   </div>
 
-  <ol class="pillars" aria-label="What the programme is built from">
-    {about.pillars.map((pillar, i) => (
-      <li class="pillar" data-pillar>
-        <span class="pillar__no">{String(i + 1).padStart(2, '0')}</span>
-        <h3 class="pillar__title">{pillar.title}</h3>
-        <p class="pillar__text">{pillar.text}</p>
-      </li>
-    ))}
-  </ol>
+  <div class="pillars" data-station="pillars" aria-label="What the programme is built from">
+    <p class="pillars__caption section-no" data-soft data-pillar-caption>Fig. 01 — What it's built from</p>
+    <ol class="pillars__list">
+      {about.pillars.map((pillar, i) => (
+        <li class:list={['pillar', `pillar--${corners[i]}`]} data-pillar data-soft data-speed={pillarSpeeds[i]}>
+          <span class="pillar__leader" aria-hidden="true"></span>
+          <span class="pillar__no">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="pillar__title">{pillar.title}</h3>
+          <p class="pillar__text">{pillar.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
 
-  <p class="about__closing display metal-text wipe" data-closing>
-    <span class="wipe__text">{about.closing}</span>
-    <i class="wipe__block" aria-hidden="true"></i>
-  </p>
+  <div class="statement" data-station="statement">
+    <p class="statement__text display">
+      <span class="sr-only">{about.closing}</span>
+      {statementWords.map((w, i) => (
+        <span class="statement__word metal-text" data-speed={wordSpeeds[i % wordSpeeds.length]} data-soft data-word aria-hidden="true">{w}</span>
+      ))}
+    </p>
+  </div>
 </Section>
 
 <style>
-  .about__grid {
-    display: grid; gap: clamp(2.5rem, 6vw, 6rem);
-    grid-template-columns: minmax(0, 1fr);
-  }
-  @media (min-width: 900px) {
-    .about__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); align-items: start; }
-    .about__facts { position: sticky; top: calc(var(--nav-h) + var(--space-8)); }
+  /* ---- the brief: three blocks, three columns, three depths ---- */
+  .prog { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); row-gap: clamp(6rem, 22vh, 14rem); }
+  .prog__p { font-weight: 300; color: var(--fg-dim); text-shadow: 0 0 28px #000, 0 0 8px #000; opacity: 0; }
+  .prog__p--a { grid-column: 1 / span 6; font-size: var(--text-lg); color: var(--fg); }
+  .prog__p--b { grid-column: 4 / span 5; }
+  .prog__p--c { grid-column: 2 / span 5; }
+  @media (max-width: 900px) {
+    .prog__p--a, .prog__p--b, .prog__p--c { grid-column: 1 / -1; }
+    .prog__p--b { padding-left: 12%; }
   }
 
-  .about__copy { display: grid; gap: var(--space-6); max-width: 44rem; }
-  .about__p { font-weight: 300; color: var(--fg-dim); font-size: var(--text-base); opacity: 0; }
-  .about__p--lede { font-size: var(--text-lg); color: var(--fg); }
-
-  .about__facts ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
-  .about__facts li {
-    display: grid; gap: var(--space-2); padding: var(--space-6) var(--space-4) var(--space-6) 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .about__facts li:nth-child(odd) { border-right: 1px solid var(--line); }
-  .about__facts li:nth-child(even) { padding-left: var(--space-4); }
-  .about__fact-value { font-size: var(--text-xl); font-weight: 200; letter-spacing: -0.02em; line-height: 1; }
-
-  .pillars {
-    display: grid; gap: 0; margin-top: clamp(4rem, 8vw, 7rem);
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    border-top: 1px solid var(--line);
-  }
+  /* ---- pillars: annotations around the α ---- */
+  .pillars { position: relative; min-height: 190vh; margin-top: clamp(8rem, 24vh, 16rem); }
+  .pillars__caption { position: absolute; left: 50%; top: 0; translate: -50% 0; white-space: nowrap; }
+  .pillars__list { position: relative; min-height: 170vh; }
   .pillar {
-    display: grid; align-content: start; gap: var(--space-3);
-    padding: var(--space-8) var(--space-6) var(--space-8) 0;
-    border-bottom: 1px solid var(--line);
+    position: absolute; width: min(22rem, 40vw); display: grid; gap: var(--space-2);
+    padding: var(--space-4) 0; text-shadow: 0 0 24px #000;
   }
-  @media (min-width: 900px) {
-    .pillar + .pillar { padding-left: var(--space-6); border-left: 1px solid var(--line); }
-  }
+  .pillar--tl { left: 0; top: 14vh; }
+  .pillar--tr { right: 0; top: 48vh; text-align: right; }
+  .pillar--bl { left: 6%; top: 92vh; }
+  .pillar--br { right: 4%; top: 128vh; text-align: right; }
+  .pillar__leader { position: absolute; top: 1.9rem; width: clamp(3rem, 12vw, 12rem); height: 1px; background: linear-gradient(90deg, var(--line-strong), transparent); }
+  .pillar--tl .pillar__leader, .pillar--bl .pillar__leader { left: 100%; margin-left: 1rem; }
+  .pillar--tr .pillar__leader, .pillar--br .pillar__leader { right: 100%; margin-right: 1rem; background: linear-gradient(270deg, var(--line-strong), transparent); }
+  .pillar__leader::after { content: ''; position: absolute; top: -2px; width: 5px; height: 5px; border: 1px solid var(--fg-dim); border-radius: 50%; }
+  .pillar--tl .pillar__leader::after, .pillar--bl .pillar__leader::after { right: -6px; }
+  .pillar--tr .pillar__leader::after, .pillar--br .pillar__leader::after { left: -6px; }
   .pillar__no { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-dim); }
-  .pillar__title { font-size: var(--text-lg); font-weight: 500; letter-spacing: -0.01em; }
+  .pillar__title { font-size: var(--text-xl); font-weight: 300; text-transform: uppercase; letter-spacing: 0.04em; }
   .pillar__text { font-size: var(--text-sm); font-weight: 300; color: var(--fg-dim); }
-
-  .about__closing {
-    position: relative; margin-top: clamp(4rem, 9vw, 8rem);
-    font-size: clamp(1rem, 0.5rem + 1.6vw, 1.9rem); letter-spacing: 0.32em; text-indent: 0;
-    line-height: 1.6; text-transform: uppercase; text-wrap: balance;
-    --ghost: 0; --ghost-a: 0;
+  @media (max-width: 760px) {
+    .pillars, .pillars__list { min-height: 0; }
+    .pillars__caption { position: static; translate: none; margin-bottom: var(--space-8); }
+    .pillar { position: relative; inset: auto; width: auto; margin-bottom: 18vh; text-align: left !important; }
+    .pillar:nth-child(even) { margin-left: 18%; }
+    .pillar__leader { display: none; }
   }
-  .about__closing .wipe__text { opacity: 0; }
-  .about__closing .wipe__block { position: absolute; inset: 0; background: var(--fg); transform: scaleX(0); transform-origin: left center; }
+
+  /* ---- statement: words at different depths over the fly-through ---- */
+  .statement { min-height: 160vh; display: grid; align-content: center; margin-top: clamp(6rem, 20vh, 12rem); }
+  .statement__text {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.25em 0.55em; text-align: center;
+    font-size: clamp(1.6rem, 0.6rem + 4.2vw, 5.4rem); letter-spacing: 0.12em; text-indent: 0; line-height: 1.25;
+    filter: drop-shadow(0 0 18px #000);
+  }
+  .statement__word { display: inline-block; }
 </style>
 
 <script>
   import { defineIsland } from '@/lib/island';
-  defineIsland('[data-about]', () => import('./island'));
+  defineIsland('#about', () => import('./island'));
 </script>
