@@ -9,6 +9,7 @@ import mss from '@/assets/brand/ieee-mss-lockup.png';
 import ieee from '@/assets/brand/ieee.png';
 import { features, site } from '@/content/site';
 import { buildNav, sectionNumber } from '@/lib/nav';
+import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
 
 const items = buildNav(features);
 ---
@@ -51,6 +52,14 @@ const items = buildNav(features);
     </ul>
   </nav>
   <p class="menu__foot eyebrow">{site.name} · {site.tagline}</p>
+  <!-- transit: shown while a tapped link carries the visitor to its section -->
+  <div class="menu__transit" data-menu-transit aria-hidden="true">
+    <svg class="menu__transit-alpha" viewBox={`0 0 ${ALPHA_VIEWBOX.w} ${ALPHA_VIEWBOX.h}`}>
+      <path d={ALPHA_PATH} pathLength="1" data-transit-stroke />
+    </svg>
+    <p class="menu__transit-label"><span class="menu__transit-no" data-transit-no>01</span><span data-transit-label>About</span></p>
+    <span class="menu__transit-bar"><i data-transit-bar></i></span>
+  </div>
 </div>
 
 <style>
@@ -105,6 +114,16 @@ const items = buildNav(features);
   .menu__label { font-size: clamp(2rem, 9vw, 3.5rem); font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
   .menu__link.is-active .menu__label { font-weight: 500; }
   .menu__foot { letter-spacing: var(--track-wide); }
+  .menu__transit {
+    position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--space-6);
+    pointer-events: none; visibility: hidden;
+  }
+  .menu__transit-alpha { width: min(46vw, 13rem); height: auto; overflow: visible; }
+  .menu__transit-alpha path { fill: none; stroke: var(--fg); stroke-width: 1.2; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .menu__transit-label { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--text-xl); font-weight: 300; text-transform: uppercase; letter-spacing: 0.08em; }
+  .menu__transit-no { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-dim); }
+  .menu__transit-bar { width: min(50vw, 12rem); height: 1px; background: var(--line); overflow: hidden; }
+  .menu__transit-bar i { display: block; height: 100%; background: var(--fg); transform: scaleX(0); transform-origin: left; }
 
   @media (max-width: 860px) {
     .nav { grid-template-columns: 1fr auto auto; }

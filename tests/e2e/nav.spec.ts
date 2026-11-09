@@ -43,3 +43,18 @@ test.describe('navigation', () => {
     await expect(page.locator('#menu')).toBeHidden();
   });
 });
+
+test('mobile menu link plays the transit and lands on the section', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile only');
+  await page.goto('/');
+  await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 15_000 });
+  await page.waitForSelector('header[data-island-ready]', { state: 'attached' });
+  await page.locator('header [data-nav-toggle]').click();
+  await page.locator('#menu [data-nav-link="organisers"]').click();
+  await expect(page.locator('[data-menu-transit]')).toBeVisible();
+  await expect(page.locator('[data-transit-label]')).toHaveText('Organisers');
+  await expect(page.locator('#menu')).toBeHidden({ timeout: 6_000 });
+  const top = await page.evaluate(() => Math.round(document.getElementById('organisers')!.getBoundingClientRect().top));
+  expect(top).toBeLessThan(140);
+  await expect(page.locator('header [data-nav-toggle]')).toHaveAttribute('aria-expanded', 'false');
+});
