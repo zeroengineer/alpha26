@@ -8,7 +8,6 @@ export default function hero(section: HTMLElement): () => void {
   const copy = section.querySelector<HTMLElement>('[data-hero-copy]')!;
   const caption = section.querySelector<HTMLElement>('[data-caption]')!;
   const title = section.querySelector<HTMLElement>('[data-title]')!;
-  const handle = section.querySelector<HTMLElement>('[data-handle]')!;
   const extras = Array.from(section.querySelectorAll<HTMLElement>('[data-dates], [data-cta]'));
   const cue = section.querySelector<HTMLElement>('[data-cue]')!;
   const rm = reducedMotion();
@@ -19,7 +18,7 @@ export default function hero(section: HTMLElement): () => void {
   // ---- Entrance: the α resolves in place (under the loader's outline), type settles from wide tracking ----
   onReady(() => {
     if (rm) {
-      gsap.set([scene, caption, title, handle, cue, ...extras], { opacity: 1 });
+      gsap.set([scene, caption, title, cue, ...extras], { opacity: 1 });
       return;
     }
     const tl = gsap.timeline();
@@ -28,7 +27,6 @@ export default function hero(section: HTMLElement): () => void {
       // settle to whatever tracking the CSS sets for this viewport (tighter on phones)
       .add(settleTracking(caption, `${parseFloat(capTrack) * 2.6}px`, capTrack), 0.9)
       .add(settleTracking(title, `${parseFloat(titleTrack) * 1.8}px`, titleTrack), 1.2)
-      .fromTo(handle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2 }, 1.9)
       .to(cue, { opacity: 1, duration: 1 }, 2.3);
     if (extras.length) tl.fromTo(extras, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.1 }, 1.5);
   });
@@ -38,11 +36,9 @@ export default function hero(section: HTMLElement): () => void {
   // ---- Scroll: the type disperses letter by letter while the hero holds still (sticky) ----
   //   caption       letters lift and blur away, from the centre outwards
   //   COMING SOON   letters scatter outward along their own line, blurring — never crossing the α
-  //   handle        drops and fades first
   // The split happens after the entrance has settled, so the two never fight over the same props.
   const scrollTl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.7 } });
   scrollTl.to(cue, { opacity: 0, ease: 'none', duration: 0.12 }, 0)
-    .to(handle, { y: 36, opacity: 0, ...soft(6), ease: 'power1.in', duration: 0.3 }, 0)
     .to(copy, { opacity: 1, duration: 1 }, 0); // spans the whole sticky stretch
   onReady(() => {
     setTimeout(() => {

@@ -1,7 +1,6 @@
 ---
-/** Poster copy shared by every hero variant: caption, COMING SOON, Instagram handle (+ dates/CTA when flagged). */
+/** Poster copy: caption and COMING SOON (+ dates/CTA when flagged). The Instagram handle lives in Contact. */
 import { site, features } from '@/content/site';
-import Instagram from '@/assets/icons/instagram.svg';
 ---
 <div class="hero__copy" data-hero-copy>
   <p class="hero__caption metal-text" data-caption>IEEE MSS ALPHA’26 - BUILT TO BECOME</p>
@@ -12,10 +11,6 @@ import Instagram from '@/assets/icons/instagram.svg';
     {features.registration && (
       <a class="hero__cta" href={site.registrationUrl} data-cta>Register</a>
     )}
-    <a class="hero__handle" href={site.socials.instagram.url} target="_blank" rel="noreferrer" data-handle>
-      <Instagram width={17} height={17} aria-hidden="true" />
-      <span>{site.socials.instagram.handle}</span>
-    </a>
   </div>
 </div>
 
@@ -31,6 +26,7 @@ import Instagram from '@/assets/icons/instagram.svg';
   /* per-letter exit: each char keeps the metallic gradient */
   .hero__caption :global(.char), .hero__title :global(.char) {
     display: inline-block; background: inherit; -webkit-background-clip: text; background-clip: text; will-change: transform, opacity, filter;
+    text-indent: 0; /* inline-blocks inherit the line's text-indent — without this each letter gets it and the line jumps wider */
   }
 
   .hero__caption {
@@ -60,13 +56,6 @@ import Instagram from '@/assets/icons/instagram.svg';
     transition: background var(--dur-fast), border-color var(--dur-fast);
   }
   .hero__cta:hover { background: var(--surface-hover); border-color: var(--fg); }
-
-  .hero__handle {
-    display: inline-flex; align-items: center; gap: 0.5em;
-    font-size: clamp(0.8rem, calc(var(--copy-w) * 0.0175), 1.25rem); font-weight: 400; color: var(--fg);
-    opacity: 0;
-  }
-  .hero__handle svg { width: 1em; height: 1em; }
   /* narrow screens: tighter tracking so both lines fit inside the viewport */
   @media (max-width: 640px) {
     .hero__caption { --cap-track: 0.28em; font-size: 0.56rem; }
