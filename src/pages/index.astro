@@ -1,18 +1,38 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import Preloader from '@/components/Preloader/Preloader.astro';
+import Nav from '@/components/Nav/Nav.astro';
+import Hero from '@/components/Hero/Hero.astro';
+import Section from '@/components/Section/Section.astro';
 import { site } from '@/content/site';
+import { organisers } from '@/content/organisers';
 ---
 <Layout>
+  <Preloader />
+  <Nav />
   <main id="main">
-    <section id="hero" class="placeholder" aria-labelledby="hero-title">
-      <p class="eyebrow metal-text">IEEE MSS {site.name} · {site.tagline}</p>
-      <h1 id="hero-title" class="display metal-text">Coming Soon</h1>
-    </section>
+    <Hero />
+
+    {/* Phase 3 fills this with the full programme block */}
+    <Section id="about" heading={site.about.heading} eyebrow={site.about.eyebrow}>
+      <p class="lede">{site.about.paragraphs[0]}</p>
+    </Section>
+
+    {/* Phase 4 fills this with the team, track record slider and gallery */}
+    <Section id="organisers" heading={organisers.heading} eyebrow={organisers.eyebrow}>
+      <p class="lede">{organisers.org.description}</p>
+    </Section>
+
+    {/* Phase 6 turns this into the footer */}
+    <Section id="contact" heading="Stay in the Loop" eyebrow="Contact">
+      <p class="lede">
+        Follow <a href={site.socials.instagram.url} target="_blank" rel="noreferrer">@{site.socials.instagram.handle}</a> for announcements.
+      </p>
+    </Section>
   </main>
 </Layout>
 
 <style>
-  .placeholder { min-height: 100svh; display: grid; place-content: center; gap: var(--space-8); text-align: center; }
-  .eyebrow.metal-text { letter-spacing: var(--track-wide); }
-  h1 { font-size: var(--text-display); }
+  .lede { max-width: 42rem; font-size: var(--text-lg); font-weight: 300; color: var(--fg-dim); }
+  .lede a { color: var(--fg); text-decoration: underline; text-underline-offset: 0.3em; }
 </style>

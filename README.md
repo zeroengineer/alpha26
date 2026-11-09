@@ -7,7 +7,6 @@ Industry Relations Committee of IEEE Malabar Subsection.
 - [Astro 5](https://astro.build) — static output, zero JS by default
 - Vanilla-TS **islands** (`src/lib/island.ts`) — each section's behaviour is lazy-loaded when it nears the viewport
 - [GSAP 3](https://gsap.com) (ScrollTrigger, SplitText, ScrambleText, Observer) + [Lenis](https://lenis.darkroom.engineering) for motion
-- [three.js](https://threejs.org) — hero scene only, dynamically imported
 - Vitest (unit) · Playwright (e2e) · Sharp via `astro:assets` (AVIF/WebP)
 - Hosted on **Cloudflare Pages** — build `npm run build`, output `dist`
 

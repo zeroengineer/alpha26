@@ -1,0 +1,52 @@
+---
+/**
+ * Numbered section shell used by every block below the hero:
+ *   01 ——— EYEBROW
+ *   Heading
+ *   <slot />
+ * Heading and label reveal on scroll via the section island.
+ */
+import { features } from '@/content/site';
+import { sectionNumber } from '@/lib/nav';
+
+interface Props {
+  id: string;
+  heading: string;
+  eyebrow: string;
+  /** Optional extra classes on the <section>. */
+  class?: string;
+  /** Use a wider head (e.g. heading spans full width). */
+  wide?: boolean;
+}
+const { id, heading, eyebrow, class: className = '', wide = false } = Astro.props;
+const number = sectionNumber(id, features);
+---
+<section id={id} class:list={['section', className]} data-section aria-labelledby={`${id}-title`}>
+  <div class="container">
+    <header class:list={['section__head', { 'section__head--wide': wide }]}>
+      <p class="section-no" data-section-no><span>{number}</span><span class="section__eyebrow">{eyebrow}</span></p>
+      <h2 class="section__title" id={`${id}-title`} data-section-title>{heading}</h2>
+    </header>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section { position: relative; padding-block: var(--section-y); scroll-margin-top: var(--nav-h); }
+  .section__head { display: grid; gap: var(--space-6); margin-bottom: clamp(2.5rem, 6vw, 5rem); max-width: 48rem; }
+  .section__head--wide { max-width: none; }
+  .section-no { opacity: 0; }
+  .section__eyebrow { margin-left: var(--space-2); }
+  .section__title {
+    font-size: var(--text-2xl); font-weight: 300; letter-spacing: -0.02em; line-height: 1.02;
+    background: var(--metal); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+    opacity: 0;
+  }
+  /* SplitText line masks need visible overflow on the wrapper and clipping on the line parents */
+  .section__title :global(.line) { background: inherit; -webkit-background-clip: text; background-clip: text; }
+</style>
+
+<script>
+  import { defineIsland } from '@/lib/island';
+  defineIsland('[data-section]', () => import('./island'));
+</script>

@@ -30,6 +30,7 @@ export function initLenis(): Lenis | null {
 
 /** Scroll to an element or selector, respecting Lenis when active. */
 export function scrollToTarget(target: string | HTMLElement, offset = 0): void {
+  // Note: both Lenis and scrollIntoView honour the element's scroll-margin-top, so pass offset only for extra nudges.
   if (instance) {
     instance.scrollTo(target, { offset, duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4) });
     return;
