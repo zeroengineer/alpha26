@@ -1,4 +1,4 @@
-import { gsap, reducedMotion } from '@/lib/motion/core';
+import { gsap, reducedMotion, soft } from '@/lib/motion/core';
 import { getLenis } from '@/lib/motion/lenis';
 import { softBlock, softLines } from '@/lib/motion/reveal';
 
@@ -30,7 +30,7 @@ export default function organisers(section: HTMLElement): void {
     img.alt = btn.dataset.alt ?? '';
     cap.textContent = btn.dataset.alt ?? '';
     count.textContent = `${String(current + 1).padStart(2, '0')} / ${String(openers.length).padStart(2, '0')}`;
-    if (!rm) gsap.fromTo(img, { opacity: 0, filter: 'blur(10px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.6 });
+    if (!rm) gsap.fromTo(img, { opacity: 0, ...soft(10) }, { opacity: 1, ...soft(0), duration: 0.6 });
   };
   const open = (i: number, opener: HTMLElement) => {
     lastOpener = opener;

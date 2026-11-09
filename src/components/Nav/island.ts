@@ -127,14 +127,14 @@ export default function nav(bar: HTMLElement): void {
       },
     })
       // 1) the other items fall away, the chosen one lifts and fades
-      .to(others, { y: 24, opacity: 0, duration: 0.35, stagger: 0.04, ease: 'power2.in' })
-      .to(chosen, { x: 16, opacity: 0, duration: 0.4, ease: 'power2.in' }, '-=0.15')
+      .to(others, { y: 24, opacity: 0, duration: 0.25, stagger: 0.03, ease: 'power2.in' })
+      .to(chosen, { x: 16, opacity: 0, duration: 0.3, ease: 'power2.in' }, '-=0.12')
       .to(menuChrome.filter((c) => c.classList.contains('menu__foot')), { opacity: 0, duration: 0.3 }, '<')
       // 2) the α draws itself with the destination's name, a thin bar fills
       .set(transit, { autoAlpha: 1 })
-      .fromTo(transit.querySelector('.menu__transit-label'), { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' })
-      .to(transitStroke, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut' }, '<')
-      .to(transitBar, { scaleX: 1, duration: 0.9, ease: 'power2.inOut' }, '<')
+      .fromTo(transit.querySelector('.menu__transit-label'), { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out' })
+      .to(transitStroke, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut' }, '<')
+      .to(transitBar, { scaleX: 1, duration: 0.6, ease: 'power2.inOut' }, '<')
       // 3) behind the overlay, jump to the section (no long scroll through everything in between)
       .call(() => {
         document.documentElement.style.overflow = '';
@@ -145,8 +145,8 @@ export default function nav(bar: HTMLElement): void {
         ScrollTrigger.update();
       })
       // 4) the overlay wipes up, revealing the section
-      .to(transit, { opacity: 0, y: -20, duration: 0.35, ease: 'power2.in' }, '+=0.1')
-      .to(menu, { clipPath: 'inset(0 0 100% 0)', duration: 0.75, ease: 'power4.inOut' }, '-=0.1');
+      .to(transit, { opacity: 0, y: -20, duration: 0.25, ease: 'power2.in' }, '+=0.05')
+      .to(menu, { clipPath: 'inset(0 0 100% 0)', duration: 0.55, ease: 'power4.inOut' }, '-=0.1');
   };
 
   toggle.addEventListener('click', () => { if (!travelling) (menuOpen ? closeMenu() : openMenu()); });

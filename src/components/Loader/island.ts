@@ -1,4 +1,4 @@
-import { gsap, markReady } from '@/lib/motion/core';
+import { gsap, markReady, soft } from '@/lib/motion/core';
 
 const KEY = 'alpha26:loaded';
 
@@ -28,20 +28,20 @@ export default function loader(el: HTMLElement): void {
     document.documentElement.style.overflow = '';
     el.style.pointerEvents = 'none';
     gsap.timeline({ onComplete: () => el.remove() })
-      .to(fill, { scaleY: 1, duration: 0.6, ease: 'power3.inOut' })
-      .to(label, { opacity: 0, y: 8, duration: 0.4 }, '<')
-      .to(el, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.9, ease: 'power2.inOut' })
-      .call(markReady, undefined, '<0.1')
-      .to(fill, { opacity: 0, duration: 1.1, ease: 'power2.inOut' }, '<0.3')
-      .to(stroke, { opacity: 0, duration: 1.4, ease: 'power2.inOut' }, '<0.5')
-      .to(svg, { filter: 'blur(6px)', duration: 1.4, ease: 'power2.in' }, '<');
+      .to(fill, { scaleY: 1, duration: 0.45, ease: 'power3.inOut' })
+      .to(label, { opacity: 0, y: 8, duration: 0.3 }, '<')
+      .to(el, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.7, ease: 'power2.inOut' })
+      .call(markReady, undefined, '<0.05')
+      .to(fill, { opacity: 0, duration: 0.8, ease: 'power2.inOut' }, '<0.2')
+      .to(stroke, { opacity: 0, duration: 1, ease: 'power2.inOut' }, '<0.35')
+      .to(svg, { ...soft(6), duration: 1, ease: 'power2.in' }, '<');
   };
 
   // 1) the outline draws itself, 2) metal rises inside it while assets arrive, 3) hand over
   const intro = gsap.timeline();
-  intro.to(label, { opacity: 1, duration: 0.8 }, 0)
-    .to(stroke, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut' }, 0.1)
-    .to(fill, { scaleY: 0.4, duration: 1.3, ease: 'power2.out' }, 0.9);
+  intro.to(label, { opacity: 1, duration: 0.6 }, 0)
+    .to(stroke, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' }, 0.05)
+    .to(fill, { scaleY: 0.4, duration: 0.8, ease: 'power2.out' }, 0.6);
 
   Promise.all([assetsReady(), new Promise((r) => intro.eventCallback('onComplete', r))]).then(handOver);
   // never trap the visitor

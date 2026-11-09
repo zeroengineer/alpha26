@@ -15,6 +15,15 @@ export const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-
 export const isTouch = (): boolean => window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
 /**
+ * Phones and small screens: animated CSS blur is an offscreen GPU pass per element per frame, which
+ * phones can't afford while a WebGL canvas is also drawing. There the same motion runs without blur.
+ */
+export const lite = (): boolean => isTouch() || window.matchMedia('(max-width: 900px)').matches;
+
+/** `{ filter: 'blur(Npx)' }` on capable devices, `{}` on lite ones — spread into tween vars. */
+export const soft = (px: number): { filter?: string } => (lite() ? {} : { filter: `blur(${px}px)` });
+
+/**
  * Fires once the first paint has settled (fonts ready, or immediately if already done).
  * Replaces the old preloader handshake: the page simply fades in.
  */

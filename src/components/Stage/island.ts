@@ -57,8 +57,9 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   await yieldToMain();
   const small = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.5 : 1.75));
+  // phones: no MSAA and ≤1.25× pixel density (fill rate is the bottleneck there), fewer points
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !small, alpha: false, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.75));
   renderer.setClearColor(0x000000, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -189,7 +190,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const bowlX = (0.42 - POSTER.alphaCx) * posterW;
 
   // ---- swirling points in the bowl (the crowd, abstracted, for the tour) ----
-  const N = small ? 2600 : 6500;
+  const N = small ? 1400 : 6500;
   const pos = new Float32Array(N * 3);
   const rnd = new Float32Array(N);
   for (let i = 0; i < N; i++) {
@@ -292,8 +293,18 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const onVis = () => { hidden = document.hidden; };
   document.addEventListener('visibilitychange', onVis);
 
+  // phones: while the page is still, draw every other frame (the scene only drifts slowly then);
+  // while scrolling, draw every frame so the camera move stays smooth
+  let frame = 0;
+  let lastScroll = -1;
+  let stillFrames = 0;
   const tick = (t: number, dt: number) => {
     if (hidden) return;
+    frame++;
+    const sy = window.scrollY;
+    stillFrames = sy === lastScroll ? stillFrames + 1 : 0;
+    lastScroll = sy;
+    if (small && stillFrames > 10 && frame % 2) return;
     const p = poseAt(stops, window.scrollY);
     // Portrait screens: the tour poses were composed for wide frames. Pull the camera back from the
     // α, keep the α nearer the centre and dim it behind body copy — everywhere except the exact
@@ -351,7 +362,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     crowd.visible = p.crowd > 0.01;
     gridMat.opacity = p.stage * 0.06 * (1 - p.lens);
 
-    const sec = dt / 1000;
+    const sec = (small && stillFrames > 10 ? 2 : 1) * dt / 1000; // keep animation speed when skipping frames
     crowdU.uTime.value += sec;
     if (composer) composer.render();
     else renderer.render(scene, camera);

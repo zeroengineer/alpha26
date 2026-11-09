@@ -99,6 +99,15 @@ h1, h2, h3, h4 { font-weight: 600; line-height: var(--leading-tight); overflow-w
 /* Hide content that will be focused in by the reveal islands — only once JS has said it's running */
 html.js [data-soft] { opacity: 0; }
 
+/* ---------- Phones: no backdrop/filter blur (re-blurred every frame over the live canvas) ---------- */
+@media (hover: none), (pointer: coarse), (max-width: 900px) {
+  *, *::before, *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .vignette { filter: none; }
+  /* panels that relied on backdrop blur get a more solid ground instead */
+  .nav.is-scrolled { background: rgba(0, 0, 0, 0.92); }
+  .team__card, .contact__grid { background: rgba(0, 0, 0, 0.82); }
+}
+
 /* ---------- Motion safety ---------- */
 @media (prefers-reduced-motion: reduce) {
   html.js [data-soft] { opacity: 1; }
