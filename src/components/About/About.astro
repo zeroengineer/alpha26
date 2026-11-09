@@ -3,13 +3,12 @@
  * The Programme — three chapters toured by the α stage:
  *   about     the brief, as three blocks at different columns and depths (each drifts at its own speed)
  *   pillars   four "figure" annotations around the α, drawing-board style, leader lines pointing in
- *   statement the closing line, set huge; the camera flies through the α's bowl behind it
+ *   statement the closing line, set huge on one baseline; the camera flies through the α's bowl behind it
  */
 import Section from '@/components/Section/Section.astro';
 import { site } from '@/content/site';
 const { about } = site;
 const statementWords = about.closing.split(' ');
-const wordSpeeds = [0.96, 1.06, 0.98, 1.08, 0.95, 1.04, 1, 1.07, 0.97, 1.05, 0.98, 1.06, 0.96, 1.03, 1.07, 0.97, 1.04, 0.99];
 const paraLayout = [
   { cls: 'prog__p--a', speed: 0.92 },
   { cls: 'prog__p--b', speed: 1.14 },
@@ -40,10 +39,10 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
   </div>
 
   <div class="statement" data-station="statement">
-    <p class="statement__text display">
+    <p class="statement__text display" data-speed="0.92">
       <span class="sr-only">{about.closing}</span>
-      {statementWords.map((w, i) => (
-        <span class="statement__word metal-text" data-speed={wordSpeeds[i % wordSpeeds.length]} data-soft data-word aria-hidden="true">{w}</span>
+      {statementWords.map((w) => (
+        <span class="statement__word metal-text" data-soft data-word aria-hidden="true">{w}</span>
       ))}
     </p>
   </div>
