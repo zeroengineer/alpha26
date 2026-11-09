@@ -1,0 +1,75 @@
+/* ALPHA '26 design tokens — derived from the Figma poster (file Gs5L3nGORbec6ayQffbFqB, frame 1:23).
+   Strictly monochrome: black ground, near-white ink, chrome highlights. */
+:root {
+  /* Colour */
+  --bg: #000000;
+  --fg: #fefefe;
+  --fg-dim: #989898;
+  --fg-mute: #5c5c5c;
+  --line: rgba(254, 254, 254, 0.12);
+  --line-strong: rgba(254, 254, 254, 0.28);
+  --surface: rgba(254, 254, 254, 0.04);
+  --surface-hover: rgba(254, 254, 254, 0.08);
+
+  /* Metallic text gradient used on every display line in the poster */
+  --metal: linear-gradient(180deg, #fefefe 1%, #989898 136%);
+  --metal-strong: linear-gradient(180deg, #ffffff 0%, #c9c9c9 55%, #6f6f6f 140%);
+  --vignette: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 76%);
+
+  /* Type */
+  --font-sans: 'Sora', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Switella', 'Sora', ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --track-wide: 0.5em;      /* caption "IEEE MSS ALPHA'26 - BUILT TO BECOME" */
+  --track-display: 1em;     /* "COMING SOON" */
+  --track-eyebrow: 0.3em;
+  --track-nav: 0.18em;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  --text-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.75rem);
+  --text-display: clamp(2rem, 1rem + 4.2vw, 4.5rem);
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-body: 1.7;
+
+  /* Layout */
+  --container: 1280px;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --section-y: clamp(5rem, 12vw, 10rem);
+  --nav-h: 5.5rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  --radius-sm: 2px;
+  --radius: 4px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 0.25s;
+  --dur: 0.8s;
+  --dur-slow: 1.4s;
+
+  /* Stacking */
+  --z-hero-scene: 0;
+  --z-content: 1;
+  --z-nav: 50;
+  --z-menu: 60;
+  --z-lightbox: 80;
+  --z-preloader: 100;
+}

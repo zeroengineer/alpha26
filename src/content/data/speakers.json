@@ -1,0 +1,6 @@
+[
+  { "id": "speaker-1", "name": "Speaker Name", "role": "Head of AI Platforms", "org": "Placeholder Labs", "photo": { "src": "pexels-2833037.jpg", "alt": "Portrait placeholder" }, "links": { "linkedin": "https://www.linkedin.com/" } },
+  { "id": "speaker-2", "name": "Speaker Name", "role": "Engineering Manager", "org": "Placeholder Systems", "photo": { "src": "pexels-1181406.jpg", "alt": "Portrait placeholder" } },
+  { "id": "speaker-3", "name": "Speaker Name", "role": "Founder", "org": "Placeholder Ventures", "photo": { "src": "pexels-3184291.jpg", "alt": "Portrait placeholder" } },
+  { "id": "speaker-4", "name": "Speaker Name", "role": "Talent Partner", "org": "Placeholder Group", "photo": { "src": "pexels-3184465.jpg", "alt": "Portrait placeholder" } }
+]

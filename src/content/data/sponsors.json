@@ -1,0 +1,8 @@
+[
+  { "id": "sp-title", "name": "Title Sponsor", "tier": "title", "logo": { "src": "placeholder-logo.svg", "alt": "Title sponsor logo" }, "url": "https://example.com" },
+  { "id": "sp-gold-1", "name": "Gold Sponsor", "tier": "gold", "logo": { "src": "placeholder-logo.svg", "alt": "Gold sponsor logo" } },
+  { "id": "sp-gold-2", "name": "Gold Sponsor", "tier": "gold", "logo": { "src": "placeholder-logo.svg", "alt": "Gold sponsor logo" } },
+  { "id": "sp-silver-1", "name": "Silver Sponsor", "tier": "silver", "logo": { "src": "placeholder-logo.svg", "alt": "Silver sponsor logo" } },
+  { "id": "sp-silver-2", "name": "Silver Sponsor", "tier": "silver", "logo": { "src": "placeholder-logo.svg", "alt": "Silver sponsor logo" } },
+  { "id": "sp-silver-3", "name": "Silver Sponsor", "tier": "silver", "logo": { "src": "placeholder-logo.svg", "alt": "Silver sponsor logo" } }
+]

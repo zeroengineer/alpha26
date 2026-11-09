@@ -1,0 +1,12 @@
+[
+  { "id": "g1", "image": { "src": "pexels-2774556.jpg", "alt": "Audience at a conference session" }, "eventId": "evt-1", "span": "2" },
+  { "id": "g2", "image": { "src": "pexels-1181406.jpg", "alt": "Participants collaborating" }, "eventId": "evt-1" },
+  { "id": "g3", "image": { "src": "pexels-3184418.jpg", "alt": "Workshop in progress" }, "eventId": "evt-2" },
+  { "id": "g4", "image": { "src": "pexels-1190298.jpg", "alt": "Crowd at an evening event" }, "eventId": "evt-2", "span": "2" },
+  { "id": "g5", "image": { "src": "pexels-7688336.jpg", "alt": "Panel discussion" }, "eventId": "evt-3" },
+  { "id": "g6", "image": { "src": "pexels-3182812.jpg", "alt": "Team photo" }, "eventId": "evt-3" },
+  { "id": "g7", "image": { "src": "pexels-1763075.jpg", "alt": "Audience listening" }, "eventId": "evt-4" },
+  { "id": "g8", "image": { "src": "pexels-2608517.jpg", "alt": "Large crowd" }, "eventId": "evt-4", "span": "2" },
+  { "id": "g9", "image": { "src": "pexels-3184292.jpg", "alt": "Networking session" }, "eventId": "evt-1" },
+  { "id": "g10", "image": { "src": "pexels-7688460.jpg", "alt": "Speaker on stage" }, "eventId": "evt-2" }
+]

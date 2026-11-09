@@ -1,0 +1,7 @@
+[
+  { "id": "s1", "title": "Engineering in the Age of AI", "kind": "keynote", "day": 1, "time": "09:30", "speakerIds": ["speaker-1"], "summary": "How roles are being redrawn and what the next graduate cohort needs to carry into the room." },
+  { "id": "s2", "title": "Hands-on: Shipping with LLMs", "kind": "workshop", "day": 1, "time": "11:30", "speakerIds": ["speaker-2"], "summary": "Build, evaluate and deploy a small AI-powered feature end to end." },
+  { "id": "s3", "title": "What Hiring Panels Actually Look For", "kind": "panel", "day": 1, "time": "16:00", "speakerIds": ["speaker-3", "speaker-4"], "summary": "Recruiters and engineering leads on portfolios, interviews and the signals that matter." },
+  { "id": "s4", "title": "Career Pathways Beyond the Obvious", "kind": "talk", "day": 2, "time": "10:00", "speakerIds": ["speaker-3"], "summary": "Product, research, founding, consulting — mapping where an engineering degree can go." },
+  { "id": "s5", "title": "Industry Mixer", "kind": "networking", "day": 2, "time": "17:00", "speakerIds": [], "summary": "Open-floor conversations with every professional on site." }
+]

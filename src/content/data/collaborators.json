@@ -1,0 +1,7 @@
+[
+  { "id": "c1", "name": "Collaborator One", "logo": { "src": "placeholder-logo.svg", "alt": "Collaborator logo" } },
+  { "id": "c2", "name": "Collaborator Two", "logo": { "src": "placeholder-logo.svg", "alt": "Collaborator logo" } },
+  { "id": "c3", "name": "Collaborator Three", "logo": { "src": "placeholder-logo.svg", "alt": "Collaborator logo" } },
+  { "id": "c4", "name": "Collaborator Four", "logo": { "src": "placeholder-logo.svg", "alt": "Collaborator logo" } },
+  { "id": "c5", "name": "Collaborator Five", "logo": { "src": "placeholder-logo.svg", "alt": "Collaborator logo" } }
+]
