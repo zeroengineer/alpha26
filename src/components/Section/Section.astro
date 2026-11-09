@@ -27,7 +27,8 @@ const { id, heading, eyebrow, class: className = '', align = 'left', station } =
 
 <style>
   .section { position: relative; padding-block: clamp(6rem, 16vh, 12rem); scroll-margin-top: var(--nav-h); }
-  .section__head { display: grid; gap: var(--space-6); max-width: 60rem; margin-bottom: clamp(4rem, 14vh, 9rem); }
+  .section__head { display: grid; gap: var(--space-6); max-width: 60rem; margin-bottom: clamp(3rem, 14vh, 9rem); }
+  @media (max-width: 760px) { .section { padding-block: 5rem; } }
   .section--right .section__head { margin-left: auto; text-align: right; justify-items: end; }
   .section--center .section__head { margin-inline: auto; text-align: center; justify-items: center; }
   .section__title {

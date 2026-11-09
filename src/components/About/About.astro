@@ -97,6 +97,13 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
     filter: drop-shadow(0 0 18px #000);
   }
   .statement__word { display: inline-block; }
+  @media (max-width: 760px) {
+    .prog { row-gap: 5rem; }
+    .pillars { margin-top: 6rem; }
+    .pillar { margin-bottom: 10vh; }
+    .statement { min-height: 110vh; margin-top: 4rem; }
+    .statement__text { letter-spacing: 0.08em; }
+  }
 </style>
 
 <script>

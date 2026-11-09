@@ -20,7 +20,12 @@ import { site } from '@/content/site';
   .prelude__b { position: absolute; right: var(--gutter); top: 92vh; display: grid; justify-items: end; text-align: right; }
   .prelude__big { font-size: clamp(2.6rem, 1rem + 6.5vw, 8rem); font-weight: 200; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.95; }
   .prelude__c { position: absolute; left: var(--gutter); top: 128vh; max-width: 26rem; font-weight: 300; color: var(--fg-dim); text-shadow: 0 0 24px #000; }
-  @media (max-width: 760px) { .prelude__b { top: 80vh; } .prelude__c { top: 132vh; right: var(--gutter); } }
+  @media (max-width: 760px) {
+    .prelude { min-height: 130vh; }
+    .prelude__a { top: 22vh; }
+    .prelude__b { top: 58vh; }
+    .prelude__c { top: 98vh; right: var(--gutter); }
+  }
 </style>
 
 <script>

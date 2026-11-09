@@ -33,10 +33,16 @@ npm run build      # production build to dist/
   blueprint view for the pillars, through the bowl for the statement, behind for the team, plan view under the photo
   collage, back to the poster frame for contact. Static poster / α outline for reduced motion, missing WebGL2 or
   software-only GPUs (`?gl=1` forces WebGL).
-- **Hero**: caption, COMING SOON and handle placed as in the poster over the live scene; the copy lifts away on scroll.
+- **Opening loader → hero** (`src/components/Loader/`): the α outline draws itself exactly where the hero α sits, metal
+  rises inside it, the black clears and the chrome α resolves inside the outline as the poster type settles — one
+  sequence. Once per session; never for reduced motion.
+- **Hero**: caption, COMING SOON and handle placed as in the poster; on scroll each leaves on its own path — the caption
+  rises and opens its tracking, COMING SOON sinks and spreads, the handle drops — while the camera dollies in.
+- **Mobile**: on portrait screens the tour camera pulls back and keeps the α centred and dimmed behind copy; spacing
+  tightens; the stage is built on first touch.
 - **Layout**: no tidy column — blocks hold different columns and corners, and every `data-speed` element drifts at
   its own speed (`src/lib/motion/parallax.ts`). Text focuses in out of a blur line by line and blurs away as it
-  leaves (`src/lib/motion/reveal.ts`). A drawing-board scale ruler (bottom-right) tracks progress.
+  leaves (`src/lib/motion/reveal.ts`).
 
 ## Project layout
 ```

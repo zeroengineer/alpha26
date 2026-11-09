@@ -295,6 +295,18 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const tick = (t: number, dt: number) => {
     if (hidden) return;
     const p = poseAt(stops, window.scrollY);
+    // Portrait screens: the tour poses were composed for wide frames. Pull the camera back from the
+    // α, keep the α nearer the centre and dim it behind body copy — everywhere except the exact
+    // poster frame (weighted by 1 − lens so the hero fit is untouched).
+    if (camera.aspect < 0.9) {
+      const k = 1 - p.lens;
+      const pull = 1 + 0.8 * k;
+      const ax = p.alphaPos[0] * (1 - 0.7 * k);
+      p.alphaPos = [ax, p.alphaPos[1], p.alphaPos[2]];
+      p.cam = [ax + (p.cam[0] - ax) * pull, p.cam[1] * (1 + 0.3 * k), p.cam[2] * pull];
+      p.target = [p.target[0] * (1 - 0.6 * k), p.target[1], p.target[2]];
+      p.chrome *= 1 - 0.45 * k;
+    }
     const lerp = first ? 1 : 0.085;
     first = false;
     camPos.lerp(goal.set(...p.cam), lerp);
