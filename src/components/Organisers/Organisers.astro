@@ -126,7 +126,7 @@ const gallery = await Promise.all(
   /* ---- Team ---- */
   .team { display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   .team__card {
-    display: grid; align-content: start; gap: var(--space-4);
+    position: relative; display: grid; align-content: start; gap: var(--space-4);
     padding: clamp(1.5rem, 3vw, 2.5rem); border: 1px solid var(--line); background: var(--surface);
     opacity: 0;
   }

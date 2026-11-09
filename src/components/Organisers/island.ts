@@ -1,6 +1,7 @@
 import { gsap, reducedMotion } from '@/lib/motion/core';
 import { getLenis } from '@/lib/motion/lenis';
 import { createSlider } from '@/lib/slider';
+import { wipeBlock } from '@/lib/motion/reveal';
 
 export default function organisers(section: HTMLElement): () => void {
   const team = section.querySelector<HTMLElement>('[data-organisers]')!;
@@ -13,7 +14,7 @@ export default function organisers(section: HTMLElement): () => void {
   if (rm) {
     gsap.set([cards, galleryItems], { opacity: 1 });
   } else {
-    gsap.fromTo(cards, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power3.out', scrollTrigger: { trigger: team, start: 'top 85%', once: true } });
+    gsap.timeline({ scrollTrigger: { trigger: team, start: 'top 85%', once: true } }).add(cards.map((c, i) => wipeBlock(c, { delay: i * 0.15 })));
     gsap.fromTo(galleryItems, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9, stagger: { each: 0.06, grid: 'auto', from: 'start' }, ease: 'power3.out', scrollTrigger: { trigger: galleryItems[0], start: 'top 88%', once: true } });
   }
 

@@ -4,7 +4,8 @@
  */
 import { defineIsland } from './island';
 import { initLenis } from './motion/lenis';
-import { markRevealed } from './motion/core';
+import { markRevealed, onReveal } from './motion/core';
+import { initStacking } from './motion/stack';
 
 initLenis();
 
@@ -14,3 +15,6 @@ if (preloader) {
 } else {
   markRevealed();
 }
+
+// Scenes stack once the page is revealed (pins are measured after fonts/images have settled).
+onReveal(() => requestAnimationFrame(() => initStacking()));
