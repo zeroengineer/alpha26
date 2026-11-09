@@ -28,11 +28,16 @@ import Instagram from '@/assets/icons/instagram.svg';
     text-align: center; pointer-events: none;
   }
   .hero__copy a { pointer-events: auto; }
+  /* per-letter exit: each char keeps the metallic gradient */
+  .hero__caption :global(.char), .hero__title :global(.char) {
+    display: inline-block; background: inherit; -webkit-background-clip: text; background-clip: text; will-change: transform, opacity, filter;
+  }
 
   .hero__caption {
+    --cap-track: var(--track-wide);
     font-weight: 600; text-transform: uppercase; white-space: nowrap;
     font-size: clamp(0.56rem, calc(var(--copy-w) * 0.0184), 1.4rem);
-    letter-spacing: var(--track-wide); text-indent: var(--track-wide);
+    letter-spacing: var(--cap-track); text-indent: var(--cap-track);
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
     opacity: 0;
   }
@@ -41,8 +46,10 @@ import Instagram from '@/assets/icons/instagram.svg';
   .hero__dates { letter-spacing: var(--track-wide); }
 
   .hero__title {
+    --title-track: var(--track-display);
     position: relative; white-space: nowrap;
     font-size: clamp(1.1rem, calc(var(--copy-w) * 0.044), 3.4rem);
+    letter-spacing: var(--title-track); text-indent: var(--title-track);
     filter: drop-shadow(0 0 4px #000);
     opacity: 0;
   }
@@ -60,4 +67,9 @@ import Instagram from '@/assets/icons/instagram.svg';
     opacity: 0;
   }
   .hero__handle svg { width: 1em; height: 1em; }
+  /* narrow screens: tighter tracking so both lines fit inside the viewport */
+  @media (max-width: 640px) {
+    .hero__caption { --cap-track: 0.28em; font-size: 0.56rem; }
+    .hero__title { --title-track: 0.55em; font-size: 1.15rem; }
+  }
 </style>

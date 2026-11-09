@@ -1,4 +1,4 @@
-import { gsap, onReady, reducedMotion, isTouch } from '@/lib/motion/core';
+import { gsap, onReady, reducedMotion, isTouch, SplitText } from '@/lib/motion/core';
 import { settleTracking } from '@/lib/motion/reveal';
 
 export default function hero(section: HTMLElement): () => void {
@@ -13,6 +13,9 @@ export default function hero(section: HTMLElement): () => void {
   const cue = section.querySelector<HTMLElement>('[data-cue]')!;
   const rm = reducedMotion();
 
+  const capTrack = getComputedStyle(caption).letterSpacing;
+  const titleTrack = getComputedStyle(title).letterSpacing;
+
   // ---- Entrance: the α resolves in place (under the loader's outline), type settles from wide tracking ----
   onReady(() => {
     if (rm) {
@@ -22,8 +25,9 @@ export default function hero(section: HTMLElement): () => void {
     const tl = gsap.timeline();
     // the chrome α resolves inside the loader's outline, then the poster's type settles around it
     tl.fromTo(scene, { opacity: 0, filter: 'blur(10px) brightness(1.6)' }, { opacity: 1, filter: 'blur(0px) brightness(1)', duration: 1.5, ease: 'power2.out' }, 0)
-      .add(settleTracking(caption, '1.4em', '0.5em'), 0.9)
-      .add(settleTracking(title.querySelector('.wipe__text') ?? title, '1.8em', '1em'), 1.2)
+      // settle to whatever tracking the CSS sets for this viewport (tighter on phones)
+      .add(settleTracking(caption, `${parseFloat(capTrack) * 2.6}px`, capTrack), 0.9)
+      .add(settleTracking(title, `${parseFloat(titleTrack) * 1.8}px`, titleTrack), 1.2)
       .fromTo(handle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2 }, 1.9)
       .to(cue, { opacity: 1, duration: 1 }, 2.3);
     if (extras.length) tl.fromTo(extras, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.1 }, 1.5);
@@ -31,17 +35,41 @@ export default function hero(section: HTMLElement): () => void {
 
   if (rm) return () => {};
 
-  // ---- Scroll: each line leaves on its own path and speed, as the camera dollies in behind them ----
-  //   caption   rises fast and opens its tracking as it blurs away (it was the top of the poster)
-  //   title     sinks slower and spreads its letters wide — it feels nearer, passing the camera
-  //   handle    drops and fades first
-  const titleText = title.querySelector<HTMLElement>('.wipe__text') ?? title;
-  gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: 0.6 } })
-    .fromTo(caption, { y: 0, letterSpacing: '0.5em', filter: 'blur(0px)', opacity: 1 }, { y: () => -window.innerHeight * 0.22, letterSpacing: '1.1em', filter: 'blur(10px)', opacity: 0, ease: 'power1.in', duration: 0.7, immediateRender: false }, 0)
-    .fromTo(titleText, { y: 0, letterSpacing: '1em', scale: 1, filter: 'blur(0px)', opacity: 1 }, { y: () => window.innerHeight * 0.12, letterSpacing: '1.6em', scale: 1.12, filter: 'blur(12px)', opacity: 0, ease: 'power1.in', duration: 0.85, immediateRender: false }, 0.05)
-    .fromTo(handle, { y: 0, opacity: 1 }, { y: 40, opacity: 0, ease: 'power1.in', duration: 0.35, immediateRender: false }, 0)
-    .to(cue, { opacity: 0, ease: 'none', duration: 0.15 }, 0)
-    .to(copy, { opacity: 1, duration: 1 }, 0); // keeps the timeline's length = the hero's height
+  // ---- Scroll: the type disperses letter by letter while the hero holds still (sticky) ----
+  //   caption       letters lift and blur away, from the centre outwards
+  //   COMING SOON   letters scatter outward along their own line, blurring — never crossing the α
+  //   handle        drops and fades first
+  // The split happens after the entrance has settled, so the two never fight over the same props.
+  const scrollTl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.7 } });
+  scrollTl.to(cue, { opacity: 0, ease: 'none', duration: 0.12 }, 0)
+    .to(handle, { y: 36, opacity: 0, filter: 'blur(6px)', ease: 'power1.in', duration: 0.3 }, 0)
+    .to(copy, { opacity: 1, duration: 1 }, 0); // spans the whole sticky stretch
+  onReady(() => {
+    setTimeout(() => {
+      const capSplit = SplitText.create(caption, { type: 'chars', charsClass: 'char' });
+      const titleSplit = SplitText.create(title, { type: 'chars', charsClass: 'char' });
+      const centre = (chars: Element[]) => {
+        const rects = chars.map((c) => c.getBoundingClientRect());
+        const mid = (Math.min(...rects.map((r) => r.left)) + Math.max(...rects.map((r) => r.right))) / 2;
+        return rects.map((r) => (r.left + r.width / 2 - mid));
+      };
+      const capOff = centre(capSplit.chars);
+      const titleOff = centre(titleSplit.chars);
+      scrollTl.to(capSplit.chars, {
+        y: () => -window.innerHeight * 0.14,
+        x: (i: number) => capOff[i] * 0.18,
+        opacity: 0, filter: 'blur(8px)', ease: 'power2.in', duration: 0.55,
+        stagger: { each: 0.012, from: 'center' },
+      }, 0.02)
+        .to(titleSplit.chars, {
+          x: (i: number) => titleOff[i] * 0.55,
+          y: (i: number) => (i % 2 ? 1 : -1) * 6,
+          opacity: 0, filter: 'blur(10px)', ease: 'power2.in', duration: 0.7,
+          stagger: { each: 0.02, from: 'edges' },
+        }, 0.12);
+      scrollTl.scrollTrigger?.refresh();
+    }, 2600); // after the entrance's tracking settle
+  });
 
   // Fallback until (or unless) the live scene exists: the raster poster recedes as before.
   const recede = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: true } })

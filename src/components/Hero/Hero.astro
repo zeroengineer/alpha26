@@ -1,7 +1,7 @@
 ---
 /**
- * Hero — the poster, centred. As the visitor scrolls it recedes (scales down, softens, fades) and
- * hands over to the 3D α on the stage behind it, which sits in the same place.
+ * Hero — the poster, centred. The section is taller than the screen and its contents are sticky, so
+ * the image and type hold still (aligned with the fixed 3D stage) while the type disperses on scroll.
  * First paint: a still rendered from the live α stage (scripts/capture-hero.mjs) — α, glass slats and
  * crosshairs, no crowd — so the hand-off to the live scene is pixel-identical.
  */
@@ -10,6 +10,7 @@ import poster from '@/assets/figma/alpha-render.png';
 import HeroText from './HeroText.astro';
 ---
 <section id="hero" class="hero" data-hero data-station="hero" data-station-at="top" aria-label="ALPHA '26 — coming soon">
+  <div class="hero__sticky" data-hero-sticky>
   <div class="hero__frame" data-hero-frame>
     <div class="hero__scene" data-scene aria-hidden="true">
       <div class="layer layer--base" data-depth="0.35">
@@ -30,11 +31,13 @@ import HeroText from './HeroText.astro';
   </div>
   <HeroText />
   <p class="hero__cue" data-cue aria-hidden="true"><span>Scroll</span><i></i></p>
+  </div>
 </section>
 
 <style>
   .hero {
-    position: relative; height: 100svh; overflow: hidden; background: transparent;
+    /* 100svh of poster + a short sticky stretch in which the type disperses */
+    position: relative; height: 165svh; background: transparent;
     /* Landscape: poster is 115% of the viewport height, centred. Portrait: covers the width. */
     --poster-h: 115svh;
     --poster-w: calc(var(--poster-h) * 0.75);
@@ -43,7 +46,9 @@ import HeroText from './HeroText.astro';
   @media (orientation: portrait) {
     .hero { --poster-h: max(100svh, calc(100vw / 0.75)); }
   }
+  .hero__sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; }
   .hero__frame { position: absolute; inset: 0; will-change: transform, opacity, filter; }
+  @media (prefers-reduced-motion: reduce) { .hero { height: 100svh; } }
   .hero__scene { position: absolute; inset: 0; z-index: var(--z-hero-scene); opacity: 0; }
   /* Centred with margins, not `translate`: GSAP resets the individual translate/rotate/scale
      properties on elements it animates, which would un-centre the poster. */
