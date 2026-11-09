@@ -1,0 +1,17 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { site } from '@/content/site';
+---
+<Layout title={`Not found — ${site.name}`}>
+  <main class="nf container">
+    <p class="section-no"><span>404</span><span class="nf__eyebrow">Off the map</span></p>
+    <h1 class="nf__title metal-text">This page hasn't become anything yet.</h1>
+    <a class="nf__link" href="/">Back to {site.name} →</a>
+  </main>
+</Layout>
+<style>
+  .nf { min-height: 100svh; display: grid; align-content: center; gap: var(--space-6); }
+  .nf__eyebrow { margin-left: var(--space-2); }
+  .nf__title { font-size: var(--text-2xl); font-weight: 300; max-width: 28ch; }
+  .nf__link { font-size: var(--text-sm); letter-spacing: var(--track-nav); text-transform: uppercase; }
+</style>

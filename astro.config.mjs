@@ -1,10 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // Static output for Cloudflare Pages (build: `npm run build`, output dir: `dist`).
 export default defineConfig({
   site: 'https://alpha26.pages.dev',
   output: 'static',
+  integrations: [sitemap()],
   trailingSlash: 'never',
   compressHTML: true,
   build: {

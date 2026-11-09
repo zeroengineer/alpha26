@@ -61,6 +61,19 @@ npm run e2e:launched               # Playwright suite for the launched layout
 | `dates` | dates in hero + schedule | `site.dates` |
 | `registration` | register CTA in hero + footer | `site.registrationUrl` |
 
+## Deployment (Cloudflare Pages)
+- Framework preset: **Astro** · build command `npm run build` · output directory `dist` · Node 22 (`.nvmrc`).
+- `public/_headers` sets security headers and immutable caching for `/_astro/*` and `/fonts/*`.
+- Update `site.url` in `src/content/site.ts` and `site` in `astro.config.mjs` once the final domain is known
+  (canonical URL, Open Graph image, sitemap and JSON-LD all derive from it).
+- `public/og.jpg` is generated from the poster with `node scripts/og-image.mjs`.
+
+## Performance
+Lighthouse (mobile, production build, 2026-11-09): Performance 94 · Accessibility 100 · Best Practices 100 ·
+SEO 100 — LCP 2.4 s, TBT 20 ms, CLS 0. Speed Index is held back only by the intentional preloader.
+Techniques: zero-JS-by-default Astro, lazy vanilla-TS islands, dynamic-imported GSAP plugins, AVIF/WebP via
+`astro:assets`, subset woff2 fonts with preload, and full reduced-motion paths.
+
 ## Design system
 Taken from the Figma poster (`Gs5L3nGORbec6ayQffbFqB`): black ground, `#fefefe` ink, `#989898` dim, metallic
 text gradient `linear-gradient(180deg, #fefefe 1%, #989898 136%)`, blurred black vignettes, **Sora** for UI/body

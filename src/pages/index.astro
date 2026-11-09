@@ -3,15 +3,17 @@ import Layout from '@/layouts/Layout.astro';
 import Preloader from '@/components/Preloader/Preloader.astro';
 import Nav from '@/components/Nav/Nav.astro';
 import Hero from '@/components/Hero/Hero.astro';
-import Section from '@/components/Section/Section.astro';
 import About from '@/components/About/About.astro';
 import Organisers from '@/components/Organisers/Organisers.astro';
 import Speakers from '@/components/Speakers/Speakers.astro';
 import Venue from '@/components/Venue/Venue.astro';
 import Partners from '@/components/Partners/Partners.astro';
-import { site, features } from '@/content/site';
+import Footer from '@/components/Footer/Footer.astro';
+import JsonLd from '@/components/Seo/JsonLd.astro';
+import { features } from '@/content/site';
 ---
 <Layout>
+  <JsonLd slot="head" />
   <Preloader />
   <Nav />
   <main id="main">
@@ -26,16 +28,6 @@ import { site, features } from '@/content/site';
 
     <Organisers />
 
-    {/* Phase 6 turns this into the footer */}
-    <Section id="contact" heading="Stay in the Loop" eyebrow="Contact">
-      <p class="lede">
-        Follow <a href={site.socials.instagram.url} target="_blank" rel="noreferrer">@{site.socials.instagram.handle}</a> for announcements.
-      </p>
-    </Section>
+    <Footer />
   </main>
 </Layout>
-
-<style>
-  .lede { max-width: 42rem; font-size: var(--text-lg); font-weight: 300; color: var(--fg-dim); }
-  .lede a { color: var(--fg); text-decoration: underline; text-underline-offset: 0.3em; }
-</style>

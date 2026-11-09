@@ -1,0 +1,36 @@
+---
+/**
+ * Schema.org Event. Dates, location and offers are added only when their flags are on so search
+ * engines never index placeholder values.
+ */
+import { site, features } from '@/content/site';
+import { host } from '@/content/organisers';
+
+const event: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: `${site.name} — ${site.tagline}`,
+  description: site.description,
+  url: site.url,
+  image: [`${site.url}/og.jpg`],
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  organizer: {
+    '@type': 'Organization',
+    name: `${site.organiser} — ${site.committee}`,
+    url: site.url,
+    sameAs: [site.socials.instagram.url],
+  },
+};
+if (features.dates) {
+  event.startDate = site.dates.start;
+  event.endDate = site.dates.end;
+}
+if (features.host) {
+  event.location = { '@type': 'Place', name: host.name, address: host.city };
+}
+if (features.registration) {
+  event.offers = { '@type': 'Offer', url: new URL(site.registrationUrl, site.url).href, availability: 'https://schema.org/InStock' };
+}
+---
+<script type="application/ld+json" set:html={JSON.stringify(event)} />
