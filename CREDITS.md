@@ -26,6 +26,7 @@ so they can be replaced). Files live in `src/assets/placeholders/` and are named
 | `pexels-7688460.jpg` | https://www.pexels.com/photo/7688460/ |
 
 ## Fonts
+- **GFS Didot** — SIL Open Font License 1.1 (`src/assets/alpha/OFL-GFSDidot.txt`). Only the α outline is used, as 3D geometry for the background stage.
 - **Sora** — SIL Open Font License 1.1 (`src/assets/fonts/sora/OFL.txt`).
 - **Switella DEMO** — demo build, licensed for personal use (`src/assets/fonts/switella/LICENSE.txt`).
   The organisers have chosen to use it as-is for the poster match; obtain the full licence from

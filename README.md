@@ -6,7 +6,8 @@ Industry Relations Committee of IEEE Malabar Subsection.
 ## Stack
 - [Astro 5](https://astro.build) — static output, zero JS by default
 - Vanilla-TS **islands** (`src/lib/island.ts`) — each section's behaviour is lazy-loaded when it nears the viewport
-- [GSAP 3](https://gsap.com) (ScrollTrigger, SplitText, ScrambleText, Observer) + [Lenis](https://lenis.darkroom.engineering) for motion
+- [GSAP 3](https://gsap.com) (ScrollTrigger, SplitText) + [Lenis](https://lenis.darkroom.engineering) for motion
+- [three.js](https://threejs.org) — the persistent α stage only (built on the visitor's first interaction)
 - Vitest (unit) · Playwright (e2e) · Sharp via `astro:assets` (AVIF/WebP)
 - Hosted on **Cloudflare Pages** — build `npm run build`, output `dist`
 
@@ -20,6 +21,19 @@ npm run check      # astro check (types + templates)
 npm run e2e        # Playwright (desktop + mobile) against a fresh production build
 npm run build      # production build to dist/
 ```
+
+## Experience
+- **α stage** (`src/components/Stage/`): a fixed three.js scene behind the whole page — a chrome + wireframe α
+  extruded from the GFS Didot glyph (`src/assets/alpha/`), the poster's six glass slats as wire planes, a swirling
+  point "crowd" in the bowl and a faint floor grid. Content blocks carry `data-station="…"`; as the visitor scrolls
+  between them the camera flies from pose to pose (`stations.ts`, unit-tested): front-on α → turned aside for the
+  programme → low blueprint view for the pillars → through the bowl for the statement → behind for the team →
+  plan view under the photo collage → pulled back for contact. Edges draw themselves in on first build.
+  Static α outline for reduced motion, missing WebGL2, or software-only GPUs (`?gl=1` forces WebGL).
+- **Hero**: the poster, centred; on scroll it recedes (scale, blur, fade) and hands over to the 3D α behind it.
+- **Layout**: no tidy column — blocks hold different columns and corners, and every `data-speed` element drifts at
+  its own speed (`src/lib/motion/parallax.ts`). Text focuses in out of a blur line by line and blurs away as it
+  leaves (`src/lib/motion/reveal.ts`). A drawing-board scale ruler (bottom-right) tracks progress.
 
 ## Project layout
 ```
@@ -69,8 +83,8 @@ npm run e2e:launched               # Playwright suite for the launched layout
 - `public/og.jpg` is generated from the poster with `node scripts/og-image.mjs`.
 
 ## Performance
-Lighthouse (mobile, production build, 2026-11-09): Performance 94 · Accessibility 100 · Best Practices 100 ·
-SEO 100 — LCP 2.4 s, TBT 20 ms, CLS 0. Speed Index is held back only by the intentional preloader.
+Lighthouse (mobile, production build, 2026-11-09): Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100 —
+LCP 2.5 s, TBT 70 ms, CLS 0.02. The 3D stage is invisible under the poster, so it is built on first interaction.
 Techniques: zero-JS-by-default Astro, lazy vanilla-TS islands, dynamic-imported GSAP plugins, AVIF/WebP via
 `astro:assets`, subset woff2 fonts with preload, and full reduced-motion paths.
 
@@ -81,6 +95,7 @@ text gradient `linear-gradient(180deg, #fefefe 1%, #989898 136%)`, blurred black
 
 ## Fonts & licences
 - Sora — SIL OFL 1.1.
+- GFS Didot (α outline for the 3D stage) — SIL OFL 1.1 (`src/assets/alpha/OFL-GFSDidot.txt`).
 - Switella DEMO — personal-use demo licence; used as-is on the organisers' decision. Obtain the full licence
   from https://typeclassheroes.com before commercial use.
 - Placeholder photos — Pexels, see `CREDITS.md`.
