@@ -19,10 +19,10 @@
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }
-html { color-scheme: dark; -webkit-text-size-adjust: 100%; scroll-behavior: auto; }
+html { color-scheme: dark; -webkit-text-size-adjust: 100%; scroll-behavior: auto; background: var(--bg); }
 html, body { height: 100%; }
 body {
-  background: var(--bg);
+  background: transparent; /* the fixed Background layer paints the ground */
   color: var(--fg);
   font-family: var(--font-sans);
   font-size: var(--text-base);

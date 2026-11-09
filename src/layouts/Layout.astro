@@ -1,6 +1,7 @@
 ---
 import '@/styles/global.css';
 import { site } from '@/content/site';
+import Background from '@/components/Background/Background.astro';
 
 interface Props {
   title?: string;
@@ -33,6 +34,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <slot name="head" />
   </head>
   <body>
+    <Background />
     <slot />
     <script>
       import '@/lib/app';

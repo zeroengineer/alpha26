@@ -21,5 +21,9 @@ export default defineConfig({
     build: {
       cssMinify: 'lightningcss',
     },
+    // Pre-bundle the lazily imported libraries so the dev server never 504s on first discovery.
+    optimizeDeps: {
+      include: ['three', 'gsap', 'gsap/ScrollTrigger', 'gsap/SplitText', 'gsap/ScrambleTextPlugin', 'gsap/Observer', 'lenis'],
+    },
   },
 });
