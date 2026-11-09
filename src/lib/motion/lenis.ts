@@ -23,6 +23,8 @@ export function initLenis(): Lenis | null {
   });
 
   instance.on('scroll', ScrollTrigger.update);
+  // dev only: lets visual checks jump precisely (window.scrollTo would fight Lenis' own target)
+  if (import.meta.env.DEV) (window as Window & { __lenis?: Lenis }).__lenis = instance;
   gsap.ticker.add((time) => instance?.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
   return instance;

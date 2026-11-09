@@ -1,12 +1,15 @@
 import type { BufferGeometry, Material } from 'three';
 import { gsap, ScrollTrigger, isTouch } from '@/lib/motion/core';
 import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
-import { poseAt, type Stop } from './stations';
+import { poseAt, STATIONS, type Stop } from './stations';
+import { POSTER, fitFov, parsePath, slatLayout } from './poster-fit';
+import { BACKDROP_FRAG, BACKDROP_VERT } from './backdrop';
+import backdropUrl from '@/assets/stage/backdrop.webp?url';
 
 /**
  * True when WebGL2 is available on real graphics hardware. Software rasterisers (SwiftShader,
  * llvmpipe — CPU-only machines, VMs, headless browsers) would starve the main thread, so those
- * visitors keep the static α. `?gl=1` forces WebGL for debugging and tests.
+ * visitors keep the static poster / α. `?gl=1` forces WebGL for debugging and tests.
  */
 function hardwareWebGL2(): boolean {
   try {
@@ -39,86 +42,173 @@ const CROWD_FRAG = /* glsl */ `
 varying float vAlpha;
 void main(){ float d = length(gl_PointCoord - 0.5); gl_FragColor = vec4(vec3(0.9), smoothstep(0.5, 0.1, d) * vAlpha); }`;
 
+const ALPHA_H = 3.1;     // world height of the α
+/** Let the browser breathe between heavy build steps (keeps every task short). */
+const yieldToMain = () => new Promise<void>((r) => setTimeout(r, 0));
+const HERO_DIST = STATIONS.hero.cam[2];
+/** the tour's normal lens is fitted as if the camera were here (stations were authored for it) */
+const TOUR_DIST = 7.2;
+/** the α's front face (half the extrusion depth + bevel) — the plane the poster α lives on */
+const FRONT = (75 + 30) * (ALPHA_H / 1000);
+
 export default async function stage(root: HTMLElement): Promise<() => void> {
   const canvas = root.querySelector<HTMLCanvasElement>('[data-stage-canvas]')!;
   if (!hardwareWebGL2()) return () => {};
 
   const THREE = await import('three');
-  const { SVGLoader } = await import('three/examples/jsm/loaders/SVGLoader.js');
-  const small = window.matchMedia('(max-width: 768px)').matches;
+  await yieldToMain();
+  const small = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !small, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.6));
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.5 : 1.75));
   renderer.setClearColor(0x000000, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.05;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x000000, 7, 20);
+  scene.fog = new THREE.Fog(0x000000, 9, 24);
   const camera = new THREE.PerspectiveCamera(38, 1, 0.05, 60);
 
-  // ---- Studio environment: black room + thin strip lights → chrome α like the poster ----
+  // ---- Studio for the chrome: black room, a big soft key top-left, thin rim strips ----
   const env = new THREE.Scene();
   env.background = new THREE.Color(0x000000);
-  const strip = (w: number, h: number, pos: [number, number, number], ry: number, k: number) => {
+  const panel = (w: number, h: number, pos: [number, number, number], rot: [number, number, number], k: number) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color().setScalar(k), side: THREE.DoubleSide }));
-    m.position.set(...pos); m.rotation.y = ry; env.add(m);
+    m.position.set(...pos); m.rotation.set(...rot); env.add(m);
   };
-  strip(0.5, 8, [-4, 1, 3], Math.PI / 3, 4);
-  strip(0.3, 8, [4.5, 0, 2], -Math.PI / 3, 3);
-  strip(8, 0.25, [0, 4.5, 0], 0, 2);
-  strip(6, 0.2, [0, -3.5, 3], 0, 1.2);
-  // soft front/top fill so the face of the α catches light in the front-on views (like the poster)
-  strip(9, 0.9, [0, 3.2, 7], -0.35, 1.6);
-  strip(0.6, 6, [-2.5, 0, 7], 0.2, 1.1);
+  panel(5, 2, [-3.5, 3.5, 4], [-0.6, -0.6, 0], 3.8);      // key: top-left, front
+  panel(0.35, 9, [-5, 0, 1.5], [0, Math.PI / 2.4, 0], 5); // left rim strip
+  panel(0.25, 9, [5, 0.5, 1], [0, -Math.PI / 2.4, 0], 3); // right rim strip
+  panel(9, 0.3, [0, 5, -1], [Math.PI / 2.2, 0, 0], 2);    // overhead line
+  panel(7, 0.25, [0, -4, 3], [-Math.PI / 3, 0, 0], 0.45); // floor bounce
+  panel(1.2, 6, [2, 0, 6], [0, 0, 0], 0.9);               // soft front fill
+  panel(10, 3, [0, 3.5, 9], [0.4, Math.PI, 0], 0.32);       // upper front wash → graded silver faces
+  panel(0.35, 7, [-1.6, 0, 7.5], [0, Math.PI, 0], 2.2);     // vertical highlight down the bowl's left side
+  panel(0.25, 7, [1.9, 0, 7.5], [0, Math.PI, 0], 1.2);      // thinner one on the stroke
+  panel(0.7, 12, [-3, 0, 9], [0, Math.PI, 0.55], 3.2);      // diagonal sweeps → the poster's streaked faces
+  panel(0.35, 12, [3.2, 0, 9], [0, Math.PI, -0.45], 2);
+  // soft side and back boxes so the chrome stays luminous when the tour turns it
+  panel(5, 7, [-8, 0, 0], [0, Math.PI / 2, 0], 0.7);
+  panel(5, 7, [8, 0, -1], [0, -Math.PI / 2, 0], 0.55);
+  panel(8, 4, [0, 1, -9], [0, 0, 0], 0.45);
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const envTex = pmrem.fromScene(env, 0.03).texture;
+  const envTex = pmrem.fromScene(env, 0.02).texture;
   pmrem.dispose();
+  scene.environment = envTex;
+  await yieldToMain();
 
   // ---- α geometry from the GFS Didot outline ----
-  const svg = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${ALPHA_PATH}"/></svg>`);
-  const shapes = svg.paths.flatMap((p) => p.toShapes());
-  const geo = new THREE.ExtrudeGeometry(shapes, {
-    depth: 150, bevelEnabled: true, bevelThickness: 26, bevelSize: 14, bevelSegments: small ? 3 : 6, curveSegments: small ? 14 : 28,
+  const sp = new THREE.ShapePath();
+  let cx = 0, cy = 0;
+  for (const { c, v } of parsePath(ALPHA_PATH)) {
+    if (c === 'M') { sp.moveTo(v[0], v[1]); [cx, cy] = [v[0], v[1]]; }
+    else if (c === 'L') { for (let i = 0; i < v.length; i += 2) { sp.lineTo(v[i], v[i + 1]); [cx, cy] = [v[i], v[i + 1]]; } }
+    else if (c === 'H') { for (const x of v) { sp.lineTo(x, cy); cx = x; } }
+    else if (c === 'V') { for (const y of v) { sp.lineTo(cx, y); cy = y; } }
+    else if (c === 'Q') { for (let i = 0; i < v.length; i += 4) { sp.quadraticCurveTo(v[i], v[i + 1], v[i + 2], v[i + 3]); [cx, cy] = [v[i + 2], v[i + 3]]; } }
+    else if (c === 'C') { for (let i = 0; i < v.length; i += 6) { sp.bezierCurveTo(v[i], v[i + 1], v[i + 2], v[i + 3], v[i + 4], v[i + 5]); [cx, cy] = [v[i + 4], v[i + 5]]; } }
+  }
+  const geo = new THREE.ExtrudeGeometry(sp.toShapes(), {
+    depth: 150, bevelEnabled: true, bevelThickness: 30, bevelSize: 16, bevelSegments: small ? 3 : 5, curveSegments: small ? 10 : 18,
   });
-  const H = 3.1; // world height of the α
-  const s = H / ALPHA_VIEWBOX.h;
+  const s = ALPHA_H / ALPHA_VIEWBOX.h;
   geo.translate(-ALPHA_VIEWBOX.w / 2, -ALPHA_VIEWBOX.h / 2, -75);
-  geo.scale(s, -s, s); // SVG y-down → world y-up
+  geo.scale(s, -s, s);
   geo.computeVertexNormals();
 
-  const chromeMat = new THREE.MeshStandardMaterial({
-    color: 0xdedede, metalness: 1, roughness: 0.2, envMap: envTex, envMapIntensity: 1.25,
-    side: THREE.DoubleSide, transparent: true,
+  const chromeMat = new THREE.MeshPhysicalMaterial({
+    color: 0xeaeaea, metalness: 1, roughness: 0.14, clearcoat: 1, clearcoatRoughness: 0.06,
+    envMapIntensity: 1.5, side: THREE.DoubleSide, transparent: false,
   });
+  // Pillow the flat faces: tilt front/back normals outward from the glyph's centre so reflections
+  // sweep across them — the rounded, tubular chrome of the poster instead of flat grey plates.
+  chromeMat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <beginnormal_vertex>',
+      `#include <beginnormal_vertex>
+      float faceZ = step(0.6, abs(objectNormal.z));
+      objectNormal = normalize(objectNormal + faceZ * vec3(position.x * 0.22, position.y * 0.2, 0.0) + faceZ * vec3(sin(position.y * 3.1) * 0.08, 0.0, 0.0));`,
+    );
+  };
   const alphaMesh = new THREE.Mesh(geo, chromeMat);
   const edges = new THREE.EdgesGeometry(geo, 24);
-  const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 });
+  const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
   const alphaWire = new THREE.LineSegments(edges, wireMat);
-  const edgeCount = edges.attributes.position.count;
-  edges.setDrawRange(0, 0);
-
+  await yieldToMain();
   const alpha = new THREE.Group();
   alpha.add(alphaMesh, alphaWire);
   scene.add(alpha);
 
-  // ---- six glass slats (poster) as wire planes with a faint fill ----
+  // poster measurements → world units
+  const posterH = ALPHA_H / POSTER.alphaH;
+  const posterW = posterH * POSTER.aspect;
+  const atDepth = (z: number) => (HERO_DIST - z) / (HERO_DIST - FRONT); // keep on-screen size equal to the poster's at z
+
+  // ---- six glass slats, exactly where the poster has them ----
   const slats = new THREE.Group();
-  const slatGeo = new THREE.PlaneGeometry(0.42, 3.5);
-  const slatEdges = new THREE.EdgesGeometry(slatGeo);
-  const slatLineMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 });
-  const slatFillMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.025, side: THREE.DoubleSide, depthWrite: false });
-  for (let i = 0; i < 6; i++) {
-    const g = new THREE.Group();
-    g.add(new THREE.Mesh(slatGeo, slatFillMat), new THREE.LineSegments(slatEdges, slatLineMat));
-    g.position.set(-1.45 + i * 0.58, 0.05, 0.55);
-    g.rotation.set(0, -0.12, 0.035);
-    slats.add(g);
+  const slatZ = 0.75;
+  const k = atDepth(slatZ);
+  const slatGlass = small
+    ? new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, depthWrite: false, side: THREE.DoubleSide })
+    : new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0, transmission: 1, thickness: 0.55, ior: 1.3, specularIntensity: 0.6, transparent: true, side: THREE.DoubleSide, envMapIntensity: 0.35, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+  const slatLineMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45 });
+  const slatGeos: BufferGeometry[] = [];
+  const glassMeshes: import('three').Mesh[] = [];
+  let glassVisible = true;
+  for (const L of slatLayout(ALPHA_H)) {
+    const g = new THREE.PlaneGeometry(L.w * k, L.h * k); // planes: no side walls to go dark at an angle
+    const e = new THREE.EdgesGeometry(g);
+    slatGeos.push(g, e);
+    const group = new THREE.Group();
+    const outline = new THREE.LineSegments(e, slatLineMat);
+    outline.position.z = 0.004; // nudge the outline off the glass (no z-fighting)
+    const pane = new THREE.Mesh(g, slatGlass);
+    glassMeshes.push(pane);
+    group.add(pane, outline);
+    group.position.set(L.x * k, L.y * k, slatZ);
+    group.rotation.set(0, -0.16, 0.03); // turned, so each panel refracts — the poster's sliced α
+    slats.add(group);
   }
   alpha.add(slats);
 
-  // ---- crowd: swirling points inside the bowl (the poster's overhead crowd) ----
+  // ---- crosshair ticks from the poster ----
+  const tickMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 });
+  const tickPts: number[] = [];
+  const tz = 0.8;
+  const tk = atDepth(tz);
+  for (const [fx, fy] of [[0.14, 0.46], [0.78, 0.17], [0.6, 0.82]]) {
+    const x = (fx - POSTER.alphaCx) * posterW * tk;
+    const y = -(fy - POSTER.alphaCy) * posterH * tk;
+    const d = 0.06;
+    tickPts.push(x - d, y, tz, x + d, y, tz, x, y - d, tz, x, y + d, tz);
+  }
+  const tickGeo = new THREE.BufferGeometry();
+  tickGeo.setAttribute('position', new THREE.Float32BufferAttribute(tickPts, 3));
+  const ticks = new THREE.LineSegments(tickGeo, tickMat);
+  alpha.add(ticks);
+
+  // ---- crowd backdrop: the poster's own background, α removed, placed to coincide with the poster ----
+  const bz = -1.4;
+  const bk = (HERO_DIST - bz) / (HERO_DIST - FRONT);
+  const backTex = await new THREE.TextureLoader().loadAsync(backdropUrl);
+  backTex.colorSpace = THREE.NoColorSpace;
+  backTex.minFilter = THREE.LinearMipmapLinearFilter;
+  backTex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+  const bowlX = (0.42 - POSTER.alphaCx) * posterW;
+  const backU = {
+    uMap: { value: backTex }, uTime: { value: 0 }, uOpacity: { value: 0 },
+    uBowl: { value: new THREE.Vector2(0.42, 1 - 0.49) }, uAspect: { value: POSTER.aspect },
+  };
+  const backGeo = new THREE.PlaneGeometry(posterW * bk, posterH * bk);
+  const backMat = new THREE.ShaderMaterial({ uniforms: backU, vertexShader: BACKDROP_VERT, fragmentShader: BACKDROP_FRAG, depthWrite: false });
+  const backdrop = new THREE.Mesh(backGeo, backMat);
+  // poster centre relative to the α centre, pushed back in depth
+  backdrop.position.set((0.5 - POSTER.alphaCx) * posterW * bk, -(0.5 - POSTER.alphaCy) * posterH * bk, bz);
+  backdrop.renderOrder = -1;
+  alpha.add(backdrop);
+
+  // ---- swirling points in the bowl (the crowd, abstracted, for the tour) ----
   const N = small ? 2600 : 6500;
   const pos = new Float32Array(N * 3);
   const rnd = new Float32Array(N);
@@ -136,17 +226,38 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const crowdU = { uTime: { value: 0 }, uPixelRatio: { value: renderer.getPixelRatio() }, uOpacity: { value: 0 } };
   const crowdMat = new THREE.ShaderMaterial({ uniforms: crowdU, vertexShader: CROWD_VERT, fragmentShader: CROWD_FRAG, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
   const crowd = new THREE.Points(crowdGeo, crowdMat);
-  crowd.position.set(-0.36, 0.02, -0.25); // centre of the α's bowl
+  crowd.position.set(bowlX, 0.02, -0.25);
   alpha.add(crowd);
 
-  // ---- floor grid (drawing-board feel) ----
+  // ---- floor grid ----
   const grid = new THREE.GridHelper(40, 60, 0xffffff, 0xffffff);
   const gridMat = grid.material as Material;
   gridMat.transparent = true;
-  gridMat.opacity = 0.05;
+  gridMat.opacity = 0;
   gridMat.depthWrite = false;
   grid.position.y = -2.1;
   scene.add(grid);
+
+  // ---- post: a soft bloom on the chrome highlights (desktop) ----
+  let composer: { render(): void; setSize(w: number, h: number): void; setPixelRatio(r: number): void; dispose(): void } | null = null;
+  if (!small) {
+    const [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }] = await Promise.all([
+      import('three/examples/jsm/postprocessing/EffectComposer.js'),
+      import('three/examples/jsm/postprocessing/RenderPass.js'),
+      import('three/examples/jsm/postprocessing/UnrealBloomPass.js'),
+      import('three/examples/jsm/postprocessing/OutputPass.js'),
+    ]);
+    const c = new EffectComposer(renderer);
+    c.addPass(new RenderPass(scene, camera));
+    c.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.2, 0.4, 0.92));
+    c.addPass(new OutputPass());
+    composer = c;
+  }
+
+  // compile every shader off the critical path (parallel compile where supported) before the first frame
+  await yieldToMain();
+  await renderer.compileAsync(scene, camera);
+  await yieldToMain();
 
   // ---- stations ----
   let stops: Stop[] = [];
@@ -164,13 +275,20 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   measure();
   ScrollTrigger.addEventListener('refresh', measure);
 
+  let fovHero = 30;
+  let fovTour = 38;
   const resize = () => {
     const w = window.innerWidth;
     const h = window.innerHeight;
     renderer.setSize(w, h, false);
+    composer?.setPixelRatio(renderer.getPixelRatio());
+    composer?.setSize(w, h);
     camera.aspect = w / h;
-    // keep the α the same apparent size on portrait screens
-    camera.fov = w < h ? 52 : 38;
+    // two lenses: a long one that reproduces the poster from the hero position, and the tour's normal
+    // one; the loop blends between them by the backdrop weight (a dolly-zoom as the camera moves in)
+    fovHero = fitFov(w, h, ALPHA_H, HERO_DIST - FRONT);
+    fovTour = fitFov(w, h, ALPHA_H, TOUR_DIST - FRONT);
+    camera.fov = fovHero;
     camera.updateProjectionMatrix();
   };
   resize();
@@ -187,56 +305,77 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   // ---- loop ----
   const camPos = new THREE.Vector3();
   const camTarget = new THREE.Vector3();
-  const goalPos = new THREE.Vector3();
-  const goalTarget = new THREE.Vector3();
-  const look = new THREE.Vector3();
+  const goal = new THREE.Vector3();
+  const tmp = new THREE.Vector3();
   let first = true;
   let hidden = document.hidden;
   const onVis = () => { hidden = document.hidden; };
   document.addEventListener('visibilitychange', onVis);
-  const intro = { draw: 0, bloom: 0 };
 
-  const tick = (_t: number, dt: number) => {
+  const tick = (t: number, dt: number) => {
     if (hidden) return;
     const p = poseAt(stops, window.scrollY);
-    goalPos.set(...p.cam);
-    goalTarget.set(...p.target);
-    const k = first ? 1 : 0.08;
+    const lerp = first ? 1 : 0.085;
     first = false;
-    camPos.lerp(goalPos, k);
-    camTarget.lerp(goalTarget, k);
+    camPos.lerp(goal.set(...p.cam), lerp);
+    camTarget.lerp(tmp.set(...p.target), lerp);
     pointer.x += (pointer.tx - pointer.x) * 0.05;
     pointer.y += (pointer.ty - pointer.y) * 0.05;
-    camera.position.set(camPos.x + pointer.x * 0.25, camPos.y - pointer.y * 0.15, camPos.z);
-    look.copy(camTarget);
-    camera.lookAt(look);
+    // less sway in the poster view so it reads as the poster
+    const sway = 0.06 + 0.2 * (1 - p.backdrop);
+    camera.position.set(camPos.x + pointer.x * sway, camPos.y - pointer.y * sway * 0.6, camPos.z);
+    camera.lookAt(camTarget);
+    const fov = fovTour + (fovHero - fovTour) * p.lens;
+    if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
 
-    alpha.position.lerp(look.set(...p.alphaPos), k);
-    alpha.rotation.y += (p.alphaRotY + Math.sin(_t * 0.25) * 0.04 - alpha.rotation.y) * k;
-    alpha.rotation.x = Math.sin(_t * 0.2) * 0.02;
+    alpha.position.lerp(tmp.set(...p.alphaPos), lerp);
+    alpha.rotation.y += (p.alphaRotY + pointer.x * 0.03 - alpha.rotation.y) * lerp;
 
-    const st = p.stage;
-    chromeMat.opacity = st * p.chrome * intro.bloom;
-    chromeMat.visible = chromeMat.opacity > 0.01;
-    wireMat.opacity = st * (0.12 + 0.6 * p.wire);
-    slatLineMat.opacity = st * 0.35 * p.slats * intro.bloom;
-    slatFillMat.opacity = st * 0.03 * p.slats * intro.bloom;
-    crowdU.uOpacity.value = st * p.crowd * intro.bloom;
-    gridMat.opacity = st * 0.06;
-    crowdU.uTime.value += dt / 1000;
-    edges.setDrawRange(0, Math.floor(edgeCount * intro.draw));
+    // the chrome stays opaque (so it occludes the wireframe and the glass can always refract it);
+    // "fading" it dims its colour and reflections instead — a dark α under bright lines in blueprint views
+    const ch = p.stage * p.chrome;
+    chromeMat.color.setScalar(0.92 * (0.08 + 0.92 * ch));
+    chromeMat.envMapIntensity = 1.5 * (0.15 + 0.85 * ch);
+    chromeMat.clearcoat = ch;
+    wireMat.opacity = p.stage * 0.72 * p.wire;
+    alphaWire.visible = wireMat.opacity > 0.01;
+    slatLineMat.opacity = p.stage * 0.45 * p.slats;
+    if (small) {
+      slatGlass.opacity = p.stage * 0.05 * p.slats;
+    } else {
+      // wind the refraction down physically (thickness → 0, ior → 1) so the glass becomes optically
+      // invisible, then drop it — opacity alone doesn't fade a transmissive material
+      const glass = slatGlass as import('three').MeshPhysicalMaterial;
+      const w = Math.min(1, p.slats);
+      glass.thickness = 0.55 * w;
+      glass.ior = 1 + 0.3 * w;
+      glass.specularIntensity = 0.6 * w;
+      glassVisible = w > 0.06;
+    }
+    slats.visible = p.slats > 0.02;
+    for (const m of glassMeshes) m.visible = small || glassVisible;
+    tickMat.opacity = 0.55 * p.backdrop;
+    backU.uOpacity.value = p.stage * p.backdrop;
+    backdrop.visible = p.backdrop > 0.01;
+    crowdU.uOpacity.value = p.stage * p.crowd;
+    crowd.visible = p.crowd > 0.01;
+    gridMat.opacity = p.stage * 0.06 * (1 - p.backdrop);
 
-    renderer.render(scene, camera);
+    const sec = dt / 1000;
+    backU.uTime.value += sec;
+    crowdU.uTime.value += sec;
+    if (composer) composer.render();
+    else renderer.render(scene, camera);
   };
   gsap.ticker.add(tick);
 
-  // draw the α's edges on, then let the chrome and crowd bloom in (doyourdesign line draw)
-  gsap.timeline({ delay: 0.2 })
-    .to(intro, { draw: 1, duration: 2.6, ease: 'power2.inOut' })
-    .to(intro, { bloom: 1, duration: 1.8, ease: 'power2.out' }, 1.4);
   root.classList.add('is-webgl');
-  requestAnimationFrame(() => canvas.classList.add('is-on'));
-  root.dataset.stageReady = '';
+  // tell the hero once real frames are on screen, so it can hand the poster over to the live scene
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    canvas.classList.add('is-on');
+    root.dataset.stageReady = '';
+    window.dispatchEvent(new CustomEvent('alpha:stage-live'));
+  }));
 
   return () => {
     gsap.ticker.remove(tick);
@@ -244,9 +383,11 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     window.removeEventListener('resize', resize);
     window.removeEventListener('pointermove', onMove);
     document.removeEventListener('visibilitychange', onVis);
-    [geo, edges, slatGeo, slatEdges, crowdGeo, grid.geometry as BufferGeometry].forEach((g) => g.dispose());
-    [chromeMat, wireMat, slatLineMat, slatFillMat, crowdMat, gridMat].forEach((m) => m.dispose());
+    [geo, edges, tickGeo, backGeo, crowdGeo, grid.geometry as BufferGeometry, ...slatGeos].forEach((g) => g.dispose());
+    [chromeMat, wireMat, slatGlass, slatLineMat, tickMat, backMat, crowdMat, gridMat].forEach((m) => m.dispose());
+    composer?.dispose();
     envTex.dispose();
+    backTex.dispose();
     renderer.dispose();
   };
 }

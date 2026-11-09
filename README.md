@@ -23,14 +23,17 @@ npm run build      # production build to dist/
 ```
 
 ## Experience
-- **α stage** (`src/components/Stage/`): a fixed three.js scene behind the whole page — a chrome + wireframe α
-  extruded from the GFS Didot glyph (`src/assets/alpha/`), the poster's six glass slats as wire planes, a swirling
-  point "crowd" in the bowl and a faint floor grid. Content blocks carry `data-station="…"`; as the visitor scrolls
-  between them the camera flies from pose to pose (`stations.ts`, unit-tested): front-on α → turned aside for the
-  programme → low blueprint view for the pillars → through the bowl for the statement → behind for the team →
-  plan view under the photo collage → pulled back for contact. Edges draw themselves in on first build.
-  Static α outline for reduced motion, missing WebGL2, or software-only GPUs (`?gl=1` forces WebGL).
-- **Hero**: the poster, centred; on scroll it recedes (scale, blur, fade) and hands over to the 3D α behind it.
+- **α stage** (`src/components/Stage/`): a fixed three.js scene behind the whole page that **opens as the poster**.
+  At the hero station it reproduces the Figma composition exactly — the α (GFS Didot outline, extruded chrome with
+  pillowed faces), the six refracting glass slats and the crosshair ticks at their measured poster positions
+  (`poster-fit.ts`), over the poster's own crowd backdrop (`scripts/make-backdrop.mjs` removes the α from the raster).
+  The raster poster is only the instant first paint; once the live scene is built (first interaction, or after 6 s)
+  it dissolves into it in place, so scrolling is one continuous camera move on the same object: a dolly-zoom from the
+  long "poster" lens into the tour, then stations (`stations.ts`, unit-tested) — turned aside for the programme, low
+  blueprint view for the pillars, through the bowl for the statement, behind for the team, plan view under the photo
+  collage, back to the poster frame for contact. Static poster / α outline for reduced motion, missing WebGL2 or
+  software-only GPUs (`?gl=1` forces WebGL).
+- **Hero**: caption, COMING SOON and handle placed as in the poster over the live scene; the copy lifts away on scroll.
 - **Layout**: no tidy column — blocks hold different columns and corners, and every `data-speed` element drifts at
   its own speed (`src/lib/motion/parallax.ts`). Text focuses in out of a blur line by line and blurs away as it
   leaves (`src/lib/motion/reveal.ts`). A drawing-board scale ruler (bottom-right) tracks progress.
@@ -81,10 +84,12 @@ npm run e2e:launched               # Playwright suite for the launched layout
 - Update `site.url` in `src/content/site.ts` and `site` in `astro.config.mjs` once the final domain is known
   (canonical URL, Open Graph image, sitemap and JSON-LD all derive from it).
 - `public/og.jpg` is generated from the poster with `node scripts/og-image.mjs`.
+- If the Figma poster changes: re-export `src/assets/figma/alpha-crowd.png`, update the measurements in
+  `src/components/Stage/poster-fit.ts` if the α or slats moved, and run `node scripts/make-backdrop.mjs`.
 
 ## Performance
-Lighthouse (mobile, production build, 2026-11-09): Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100 —
-LCP 2.5 s, TBT 70 ms, CLS 0.02. The 3D stage is invisible under the poster, so it is built on first interaction.
+Lighthouse (production build, 2026-11-09): mobile 97 · 100 · 100 · 100 (LCP 2.5 s, TBT 40 ms); desktop 100 · 100 · 100 · 100.
+The live scene is built on first interaction in short, yielding steps with async shader compilation.
 Techniques: zero-JS-by-default Astro, lazy vanilla-TS islands, dynamic-imported GSAP plugins, AVIF/WebP via
 `astro:assets`, subset woff2 fonts with preload, and full reduced-motion paths.
 

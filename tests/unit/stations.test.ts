@@ -20,9 +20,12 @@ describe('stage stations', () => {
     expect(mid.alphaPos[0]).toBeLessThan(STATIONS.about.alphaPos[0]);
   });
 
-  it('hero hides the stage, intro reveals it', () => {
-    expect(poseAt(stops, 0).stage).toBe(0);
-    expect(poseAt(stops, 1000).stage).toBe(1);
+  it('hero is the poster view: crowd backdrop on, wireframe off, front-on camera', () => {
+    const hero = poseAt(stops, 0);
+    expect(hero.backdrop).toBe(1);
+    expect(hero.wire).toBe(0);
+    expect(hero.cam).toEqual([0, 0, 12]);
+    expect(poseAt(stops, 2000).backdrop).toBe(0);
   });
 
   it('smoothstep is clamped and symmetric', () => {

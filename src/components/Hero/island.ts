@@ -35,11 +35,24 @@ export default function hero(section: HTMLElement): () => void {
 
   if (rm) return () => {};
 
-  // ---- Scroll: the poster recedes and hands over to the 3D α behind it (no pin) ----
+  // ---- Scroll: the copy lifts away; the camera move on the live stage is the transition ----
   gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: true } })
-    .to(frame, { scale: 0.82, opacity: 0, filter: 'blur(6px)', ease: 'none' }, 0)
     .to(copy, { yPercent: -18, opacity: 0, ease: 'none' }, 0)
     .to(cue, { opacity: 0, ease: 'none', duration: 0.2 }, 0);
+
+  // Fallback until (or unless) the live scene exists: the raster poster recedes as before.
+  const recede = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: true } })
+    .to(frame, { scale: 0.82, opacity: 0, filter: 'blur(6px)', ease: 'none' }, 0);
+
+  // Hand-over: the live scene opens in exactly the poster's composition, so the raster simply
+  // dissolves into it in place; from then on scrolling moves the camera, not a picture.
+  const handOver = () => {
+    recede.scrollTrigger?.kill();
+    recede.kill();
+    gsap.to(frame, { opacity: 0, scale: 1, filter: 'blur(0px)', duration: 1.4, ease: 'power2.inOut', onComplete: () => { frame.style.visibility = 'hidden'; } });
+  };
+  if (document.querySelector('[data-stage][data-stage-ready]')) handOver();
+  else window.addEventListener('alpha:stage-live', handOver, { once: true });
 
   // ---- Cursor parallax on the poster layers ----
   if (isTouch()) return () => {};
