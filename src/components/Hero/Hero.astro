@@ -51,9 +51,11 @@ const slats = [0, 1, 2, 3, 4, 5];
     .hero { --poster-h: max(100svh, calc(100vw / 0.75)); }
   }
   .hero__scene { position: absolute; inset: 0; z-index: var(--z-hero-scene); opacity: 0; transform: scale(1.1); will-change: transform, filter; }
+  /* Centred with margins, not `translate`: GSAP 3.13+ resets individual transform properties
+     (translate/rotate/scale) on elements it animates, which would un-centre the layers. */
   .layer {
     position: absolute; left: 50%; top: 50%; width: var(--poster-w); height: var(--poster-h);
-    translate: -50% -50%; will-change: transform;
+    margin-left: calc(var(--poster-w) / -2); margin-top: calc(var(--poster-h) / -2); will-change: transform;
   }
   .layer--base :global(img) { width: 100%; height: 100%; object-fit: cover; }
 
