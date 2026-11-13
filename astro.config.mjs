@@ -10,7 +10,8 @@ export default defineConfig({
   trailingSlash: 'never',
   compressHTML: true,
   build: {
-    inlineStylesheets: 'auto',
+    // all the CSS is small: inlining it removes the render-blocking stylesheet requests
+    inlineStylesheets: 'always',
     assets: '_astro',
   },
   image: {

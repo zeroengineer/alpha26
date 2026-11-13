@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { POSTER, fitFov, parsePath, posterHeightPx, slatLayout } from '@/components/Stage/poster-fit';
+import { POSTER, fitFov, parsePath, posterHeightPx } from '@/components/Stage/poster-fit';
 import { ALPHA_PATH } from '@/assets/alpha/alpha-path';
 
 describe('poster fit', () => {
@@ -13,14 +13,6 @@ describe('poster fit', () => {
     const fov = fitFov(1440, 900, 3.1, 7.2);
     const visible = 2 * 7.2 * Math.tan(((fov / 2) * Math.PI) / 180);
     expect(3.1 / visible).toBeCloseTo((POSTER.alphaH * 1035) / 900, 3);
-  });
-
-  it('lays out six evenly stepped slats around the α', () => {
-    const s = slatLayout(3.1);
-    expect(s).toHaveLength(6);
-    expect(s[1].x - s[0].x).toBeCloseTo(s[5].x - s[4].x);
-    expect(s[0].x).toBeLessThan(0);
-    expect(s[5].x).toBeGreaterThan(0);
   });
 
   it('parses the glyph path into absolute commands', () => {

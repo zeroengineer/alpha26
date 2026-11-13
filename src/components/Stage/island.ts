@@ -2,7 +2,7 @@ import type { BufferGeometry, Material } from 'three';
 import { gsap, ScrollTrigger, isTouch } from '@/lib/motion/core';
 import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
 import { poseAt, STATIONS, type Stop } from './stations';
-import { POSTER, fitFov, parsePath, slatLayout } from './poster-fit';
+import { POSTER, fitFov, parsePath } from './poster-fit';
 
 /**
  * True when WebGL2 is available on real graphics hardware. Software rasterisers (SwiftShader,
@@ -53,13 +53,17 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const canvas = root.querySelector<HTMLCanvasElement>('[data-stage-canvas]')!;
   if (!hardwareWebGL2()) return () => {};
 
-  const THREE = await import('three');
+  const THREE = await import('./three-lite');
   await yieldToMain();
   const small = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
 
-  // phones: no MSAA and ≤1.25× pixel density (fill rate is the bottleneck there), fewer points
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !small, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.25 : 1.75));
+  // No canvas MSAA anywhere: phones can't afford it (fill rate is the bottleneck there), and on
+  // desktop the scene is drawn into the bloom composer's own targets, so canvas MSAA only cost memory.
+  // Phones also get ≤1.25× pixel density and fewer points.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
+  let pixelRatio = Math.min(window.devicePixelRatio, small ? 1.25 : 1.75);
+  const minPixelRatio = Math.min(pixelRatio, small ? 1 : 1.25);
+  renderer.setPixelRatio(pixelRatio);
   renderer.setClearColor(0x000000, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -143,33 +147,6 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const posterH = ALPHA_H / POSTER.alphaH;
   const posterW = posterH * POSTER.aspect;
   const atDepth = (z: number) => (HERO_DIST - z) / (HERO_DIST - FRONT); // keep on-screen size equal to the poster's at z
-
-  // ---- six glass slats, exactly where the poster has them ----
-  const slats = new THREE.Group();
-  const slatZ = 0.75;
-  const k = atDepth(slatZ);
-  const slatGlass = small
-    ? new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, depthWrite: false, side: THREE.DoubleSide })
-    : new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0, transmission: 1, thickness: 0.55, ior: 1.3, specularIntensity: 0.6, transparent: true, side: THREE.DoubleSide, envMapIntensity: 0.35, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
-  const slatLineMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45 });
-  const slatGeos: BufferGeometry[] = [];
-  const glassMeshes: import('three').Mesh[] = [];
-  let glassVisible = true;
-  for (const L of slatLayout(ALPHA_H)) {
-    const g = new THREE.PlaneGeometry(L.w * k, L.h * k); // planes: no side walls to go dark at an angle
-    const e = new THREE.EdgesGeometry(g);
-    slatGeos.push(g, e);
-    const group = new THREE.Group();
-    const outline = new THREE.LineSegments(e, slatLineMat);
-    outline.position.z = 0.004; // nudge the outline off the glass (no z-fighting)
-    const pane = new THREE.Mesh(g, slatGlass);
-    glassMeshes.push(pane);
-    group.add(pane, outline);
-    group.position.set(L.x * k, L.y * k, slatZ);
-    group.rotation.set(0, -0.16, 0.03); // turned, so each panel refracts — the poster's sliced α
-    slats.add(group);
-  }
-  alpha.add(slats);
 
   // ---- crosshair ticks from the poster ----
   const tickMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 });
@@ -256,6 +233,8 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   measure();
   ScrollTrigger.addEventListener('refresh', measure);
 
+  /** frames drawn since the scene last changed — once it has settled, drawing stops (see the loop) */
+  let settle = 0;
   let fovHero = 30;
   let fovTour = 38;
   const resize = () => {
@@ -271,6 +250,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     fovTour = fitFov(w, h, ALPHA_H, TOUR_DIST - FRONT);
     camera.fov = fovHero;
     camera.updateProjectionMatrix();
+    settle = 0;
   };
   resize();
   window.addEventListener('resize', resize);
@@ -298,6 +278,10 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   let frame = 0;
   let lastScroll = -1;
   let stillFrames = 0;
+  // adaptive resolution: if frames run long while the camera is moving, shed pixels (never the motion)
+  let slowMs = 0;
+  let slowN = 0;
+  const EPS = 1e-8;
   const tick = (t: number, dt: number) => {
     if (hidden) return;
     frame++;
@@ -321,7 +305,10 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     const lerp = first ? 1 : 0.085;
     first = false;
     camPos.lerp(goal.set(...p.cam), lerp);
+    let moving = stillFrames === 0 || camPos.distanceToSquared(goal) > EPS;
     camTarget.lerp(tmp.set(...p.target), lerp);
+    moving ||= camTarget.distanceToSquared(tmp) > EPS;
+    moving ||= Math.abs(pointer.tx - pointer.x) + Math.abs(pointer.ty - pointer.y) > 1e-3;
     pointer.x += (pointer.tx - pointer.x) * 0.05;
     pointer.y += (pointer.ty - pointer.y) * 0.05;
     // less sway in the poster view so it reads as the poster
@@ -332,9 +319,12 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
 
     alpha.position.lerp(tmp.set(...p.alphaPos), lerp);
-    alpha.rotation.y += (p.alphaRotY + pointer.x * 0.03 - alpha.rotation.y) * lerp;
+    moving ||= alpha.position.distanceToSquared(tmp) > EPS;
+    const turn = p.alphaRotY + pointer.x * 0.03 - alpha.rotation.y;
+    alpha.rotation.y += turn * lerp;
+    moving ||= Math.abs(turn) > 1e-4;
 
-    // the chrome stays opaque (so it occludes the wireframe and the glass can always refract it);
+    // the chrome stays opaque (so it occludes the wireframe);
     // "fading" it dims its colour and reflections instead — a dark α under bright lines in blueprint views
     const ch = p.stage * p.chrome;
     chromeMat.color.setScalar(0.92 * (0.08 + 0.92 * ch));
@@ -342,21 +332,6 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     chromeMat.clearcoat = ch;
     wireMat.opacity = p.stage * 0.72 * p.wire;
     alphaWire.visible = wireMat.opacity > 0.01;
-    slatLineMat.opacity = p.stage * 0.45 * p.slats;
-    if (small) {
-      slatGlass.opacity = p.stage * 0.05 * p.slats;
-    } else {
-      // wind the refraction down physically (thickness → 0, ior → 1) so the glass becomes optically
-      // invisible, then drop it — opacity alone doesn't fade a transmissive material
-      const glass = slatGlass as import('three').MeshPhysicalMaterial;
-      const w = Math.min(1, p.slats);
-      glass.thickness = 0.55 * w;
-      glass.ior = 1 + 0.3 * w;
-      glass.specularIntensity = 0.6 * w;
-      glassVisible = w > 0.06;
-    }
-    slats.visible = p.slats > 0.02;
-    for (const m of glassMeshes) m.visible = small || glassVisible;
     tickMat.opacity = 0.55 * p.lens;
     crowdU.uOpacity.value = p.stage * p.crowd;
     crowd.visible = p.crowd > 0.01;
@@ -364,8 +339,29 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
 
     const sec = (small && stillFrames > 10 ? 2 : 1) * dt / 1000; // keep animation speed when skipping frames
     crowdU.uTime.value += sec;
+
+    // Nothing on screen changes once the camera has settled and no points are swirling (the hero
+    // poster view, mostly) — stop drawing until something moves again instead of repainting an
+    // identical frame 60 times a second.
+    settle = moving || crowd.visible ? 0 : settle + 1;
+    if (settle > 3) return;
     if (composer) composer.render();
     else renderer.render(scene, camera);
+
+    // sample frame time only while scrolling at full rate; after 45 slow-ish frames drop a step
+    if (stillFrames < 10 && dt < 250 && pixelRatio > minPixelRatio) {
+      slowMs += dt;
+      if (++slowN >= 45) {
+        if (slowMs / slowN > 22) {
+          pixelRatio = Math.max(minPixelRatio, pixelRatio * 0.85);
+          renderer.setPixelRatio(pixelRatio);
+          crowdU.uPixelRatio.value = pixelRatio;
+          resize();
+        }
+        slowMs = 0;
+        slowN = 0;
+      }
+    }
   };
   gsap.ticker.add(tick);
 
@@ -383,8 +379,8 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     window.removeEventListener('resize', resize);
     window.removeEventListener('pointermove', onMove);
     document.removeEventListener('visibilitychange', onVis);
-    [geo, edges, tickGeo, crowdGeo, grid.geometry as BufferGeometry, ...slatGeos].forEach((g) => g.dispose());
-    [chromeMat, wireMat, slatGlass, slatLineMat, tickMat, crowdMat, gridMat].forEach((m) => m.dispose());
+    [geo, edges, tickGeo, crowdGeo, grid.geometry as BufferGeometry].forEach((g) => g.dispose());
+    [chromeMat, wireMat, tickMat, crowdMat, gridMat].forEach((m) => m.dispose());
     composer?.dispose();
     envTex.dispose();
     renderer.dispose();

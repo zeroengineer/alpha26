@@ -16,38 +16,37 @@ export interface Pose {
   chrome: number;
   wire: number;
   crowd: number;
-  slats: number;
   /** 1 = the long "poster" lens, 0 = the tour lens (blended → dolly-zoom) */
   lens: number;
 }
 
 const base: Pose = {
   cam: [0, 0, 7.2], target: [0, 0, 0], alphaPos: [0, 0, 0], alphaRotY: 0,
-  stage: 1, chrome: 1, wire: 0.25, crowd: 1, slats: 0.3, lens: 0,
+  stage: 1, chrome: 1, wire: 0.25, crowd: 1, lens: 0,
 };
 const pose = (p: Partial<Pose>): Pose => ({ ...base, ...p });
 
 export const STATIONS: Record<string, Pose> = {
-  // the poster, rendered live: front-on α and slats exactly where the Figma poster has them
+  // the poster, rendered live: front-on α exactly where the Figma poster has it
   // (camera further back with a long lens → nearly flat like the poster; see the dolly-zoom in island.ts)
-  hero: pose({ cam: [0, 0, 12], wire: 0, crowd: 0, slats: 1, lens: 1 }),
+  hero: pose({ cam: [0, 0, 12], wire: 0, crowd: 0, lens: 1 }),
   // first scroll: the camera eases in (dolly-zoom) and points begin to swirl in the bowl
-  intro: pose({ cam: [0.15, 0.1, 7.6], wire: 0.1, crowd: 0.8, slats: 0.12 }),
+  intro: pose({ cam: [0.15, 0.1, 7.6], wire: 0.1, crowd: 0.8 }),
   // programme copy on the left: α steps right and turns to show its depth
-  about: pose({ cam: [0.6, 0.6, 6.6], target: [1.4, 0, 0], alphaPos: [2.8, 0, 0], alphaRotY: -0.62, chrome: 0.85, wire: 0.45, slats: 0 }),
+  about: pose({ cam: [0.6, 0.6, 6.6], target: [1.4, 0, 0], alphaPos: [2.8, 0, 0], alphaRotY: -0.62, chrome: 0.85, wire: 0.45 }),
   // pillars: low camera, blueprint mode (wireframe up, chrome down) — the "drawing board"
-  pillars: pose({ cam: [-3.6, -1.4, 4.8], target: [0, 0.4, 0], alphaRotY: 0.55, chrome: 0.18, wire: 1, slats: 0.6 }),
+  pillars: pose({ cam: [-3.6, -1.4, 4.8], target: [0, 0.4, 0], alphaRotY: 0.55, chrome: 0.18, wire: 1 }),
   // statement: fly through the bowl of the α
-  statement: pose({ cam: [-0.35, 0.05, 0.9], target: [-0.35, 0.05, -6], chrome: 0.9, wire: 0.6, crowd: 1, slats: 0 }),
+  statement: pose({ cam: [-0.35, 0.05, 0.9], target: [-0.35, 0.05, -6], chrome: 0.9, wire: 0.6, crowd: 1 }),
   speakers: pose({ cam: [-2.2, 0.8, 6.2], target: [-1, 0, 0], alphaPos: [-2.2, 0, 0], alphaRotY: 0.7, wire: 0.5 }),
   venue: pose({ cam: [0, 4.6, 5.2], target: [0, -0.4, 0], alphaRotY: -0.3, chrome: 0.5, wire: 0.8 }),
   partners: pose({ cam: [2.8, -0.6, 6], target: [0.6, 0, 0], alphaPos: [1.8, 0, 0], alphaRotY: -1.1, wire: 0.5 }),
   // team: seen from behind, off to the left
-  team: pose({ cam: [1.6, 0.9, -6.4], target: [-0.8, 0, 0], alphaPos: [-1.4, 0, 0], alphaRotY: 0.25, chrome: 0.75, wire: 0.5, slats: 0.15 }),
+  team: pose({ cam: [1.6, 0.9, -6.4], target: [-0.8, 0, 0], alphaPos: [-1.4, 0, 0], alphaRotY: 0.25, chrome: 0.75, wire: 0.5 }),
   // frames: top-down plan view, wireframe — photos float above it
-  frames: pose({ cam: [0, 8.5, 0.6], target: [0, 0, 0], alphaRotY: 0.0, chrome: 0.12, wire: 0.85, crowd: 0.6, slats: 0.3 }),
+  frames: pose({ cam: [0, 8.5, 0.6], target: [0, 0, 0], alphaRotY: 0.0, chrome: 0.12, wire: 0.85, crowd: 0.6 }),
   // contact: pull back to a quiet front view
-  contact: pose({ cam: [0, 0.2, 9.5], target: [0, 0, 0], chrome: 1, wire: 0.2, slats: 0.8 }),
+  contact: pose({ cam: [0, 0.2, 9.5], target: [0, 0, 0], chrome: 1, wire: 0.2 }),
 };
 
 export const smoothstep = (t: number): number => {
@@ -69,7 +68,6 @@ export function blend(a: Pose, b: Pose, t: number): Pose {
     chrome: mix(a.chrome, b.chrome, k),
     wire: mix(a.wire, b.wire, k),
     crowd: mix(a.crowd, b.crowd, k),
-    slats: mix(a.slats, b.slats, k),
     lens: mix(a.lens, b.lens, k),
   };
 }

@@ -9,12 +9,6 @@ export const POSTER = {
   alphaH: 0.54,
   alphaCx: 0.508,
   alphaCy: 0.491,
-  /** six glass slats: left edge = slatX0 + i * slatStep, width slatW, vertical span slatY0..slatY1 */
-  slatX0: 0.116,
-  slatStep: 0.126,
-  slatW: 0.114,
-  slatY0: 0.08,
-  slatY1: 0.905,
 } as const;
 
 /** Poster box height in px for a viewport — mirrors the hero CSS (115svh landscape, cover on portrait). */
@@ -30,22 +24,6 @@ export function fitFov(vw: number, vh: number, alphaWorldH: number, distance: nu
   const fraction = (POSTER.alphaH * posterHeightPx(vw, vh)) / vh;
   const visibleH = alphaWorldH / fraction;
   return (2 * Math.atan(visibleH / (2 * distance)) * 180) / Math.PI;
-}
-
-/** Slat centres / sizes in world units (α centred at the origin, height alphaWorldH). */
-export function slatLayout(alphaWorldH: number) {
-  const H = alphaWorldH / POSTER.alphaH; // poster height in world units
-  const W = H * POSTER.aspect;
-  return Array.from({ length: 6 }, (_, i) => {
-    const cx = POSTER.slatX0 + i * POSTER.slatStep + POSTER.slatW / 2;
-    const cy = (POSTER.slatY0 + POSTER.slatY1) / 2;
-    return {
-      x: (cx - POSTER.alphaCx) * W,
-      y: -(cy - POSTER.alphaCy) * H,
-      w: POSTER.slatW * W,
-      h: (POSTER.slatY1 - POSTER.slatY0) * H,
-    };
-  });
 }
 
 /** Parse the glyph path (M/L/H/V/Q/C/Z, absolute) into drawing commands. */

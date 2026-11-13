@@ -1,8 +1,7 @@
 ---
 /**
  * The α stage — a persistent background behind the whole page.
- * WebGL: a chrome + wireframe α (GFS Didot outline, extruded), the poster's six glass slats as wire
- * planes, a swirling point "crowd" in the bowl and a faint floor grid. The camera flies between
+ * WebGL: a chrome + wireframe α (GFS Didot outline, extruded), a swirling point "crowd" in the bowl and a faint floor grid. The camera flies between
  * stations as the visitor scrolls (see stations.ts).
  * Fallback (reduced motion / no WebGL2): a large, faint α outline.
  */
@@ -38,28 +37,25 @@ import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
   import { defineIsland } from '@/lib/island';
   import { onReady, reducedMotion } from '@/lib/motion/core';
   // The first-paint still and the live scene are composed identically, so the live scene can take
-  // over whenever it is ready. It is built after the first interaction (a mouse move counts on
-  // desktop — including one made while the loader plays) or after a few seconds, and never before
-  // the page is ready, so it stays off the initial load.
+  // over whenever it is ready. It is never built before the page is ready (so it stays off the
+  // initial load), and normally it is built in idle time just after the hero's entrance has played
+  // — while the visitor is still looking at the hero — so the work doesn't land on top of their first
+  // scroll. Scrolling earlier than that starts it at once.
   if (!reducedMotion()) {
-    let wanted = false;
     let mounted = false;
-    const events = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'pointermove', 'keydown'] as const;
+    const events = ['scroll', 'wheel', 'touchstart', 'keydown'] as const;
     const mount = () => {
       if (mounted) return;
       mounted = true;
+      events.forEach((e) => window.removeEventListener(e, early));
       defineIsland('[data-stage]', () => import('./island'), { strategy: 'load' });
     };
-    const want = () => {
-      if (wanted) return;
-      wanted = true;
-      events.forEach((e) => window.removeEventListener(e, want));
-      onReady(mount);
-    };
-    events.forEach((e) => window.addEventListener(e, want, { passive: true }));
+    const early = () => onReady(mount);
+    events.forEach((e) => window.addEventListener(e, early, { passive: true }));
     onReady(() => {
-      if (window.scrollY > 0) want();
-      setTimeout(want, 6000);
+      if (window.scrollY > 0) return mount();
+      const idle = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+      setTimeout(() => (idle ? idle(mount, { timeout: 1500 }) : mount()), 2800);
     });
   }
 </script>
