@@ -1,6 +1,24 @@
 [
-  { "id": "evt-1", "name": "Previous Event One", "year": "2025", "tagline": "Placeholder tagline", "summary": "A short description of the event, who it was for and what happened. Replace with the real write-up from IEEE MSS.", "cover": { "src": "pexels-2774556.jpg", "alt": "Audience at a conference session" }, "stats": [{ "value": "300+", "label": "Participants" }, { "value": "12", "label": "Sessions" }] },
-  { "id": "evt-2", "name": "Previous Event Two", "year": "2024", "tagline": "Placeholder tagline", "summary": "A short description of the event, who it was for and what happened. Replace with the real write-up from IEEE MSS.", "cover": { "src": "pexels-1190298.jpg", "alt": "Crowd at an evening event" }, "stats": [{ "value": "200+", "label": "Participants" }, { "value": "8", "label": "Sessions" }] },
-  { "id": "evt-3", "name": "Previous Event Three", "year": "2024", "tagline": "Placeholder tagline", "summary": "A short description of the event, who it was for and what happened. Replace with the real write-up from IEEE MSS.", "cover": { "src": "pexels-3183197.jpg", "alt": "Team working together at a table" }, "stats": [{ "value": "150", "label": "Participants" }, { "value": "2", "label": "Days" }] },
-  { "id": "evt-4", "name": "Previous Event Four", "year": "2023", "tagline": "Placeholder tagline", "summary": "A short description of the event, who it was for and what happened. Replace with the real write-up from IEEE MSS.", "cover": { "src": "pexels-1595385.jpg", "alt": "Speaker addressing an audience" }, "stats": [{ "value": "120", "label": "Participants" }, { "value": "6", "label": "Speakers" }] }
+  {
+    "id": "roadmap-2026",
+    "name": "Road Map to Success in Engineering",
+    "year": "2026",
+    "tagline": "With IEEE SB EKCTC",
+    "summary": "A full-day programme for higher secondary students of PMSA HSS, Elankur: technical workshops and interactive talks on Artificial Intelligence, emerging technologies, career guidance and business, opening a first view of the pathways ahead in engineering. Organised by IEEE Student Branch EKCTC in collaboration with IEEE Malabar Subsection.",
+    "cover": {
+      "src": "roadmap-group.jpg",
+      "alt": "Students of PMSA HSS Elankur with the organisers of Road Map to Success in Engineering"
+    }
+  },
+  {
+    "id": "reise-2026",
+    "name": "REISE '26",
+    "year": "2026",
+    "tagline": "Roadmap to Success",
+    "summary": "A series of sessions and hands-on lab visits for high school students at Government Engineering College Palakkad, from coding with AI to circuits, chips and machines. Presented by IEEE SIGHT AG GEC Palakkad in association with IEEE SB GEC Palakkad and IEEE Malabar Subsection.",
+    "cover": {
+      "src": "reise26-group.jpg",
+      "alt": "School students and volunteers in front of Government Engineering College Palakkad during REISE '26"
+    }
+  }
 ]

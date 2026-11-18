@@ -2,87 +2,39 @@
   {
     "id": "g1",
     "image": {
-      "src": "pexels-2774556.jpg",
-      "alt": "Audience at a conference session"
+      "src": "roadmap-group.jpg",
+      "alt": "Students and organisers at Road Map to Success in Engineering, PMSA HSS Elankur",
+      "credit": "IEEE SB EKCTC"
     },
-    "eventId": "evt-1",
+    "eventId": "roadmap-2026",
     "span": "2"
   },
   {
     "id": "g2",
     "image": {
-      "src": "pexels-1181406.jpg",
-      "alt": "Participants collaborating"
+      "src": "reise26-workshop.jpg",
+      "alt": "A workshop instructor demonstrating to school students during REISE '26",
+      "credit": "IEEE SB GEC Palakkad"
     },
-    "eventId": "evt-1"
+    "eventId": "reise-2026"
   },
   {
     "id": "g3",
     "image": {
-      "src": "pexels-3184418.jpg",
-      "alt": "Workshop in progress"
+      "src": "roadmap-talk.jpg",
+      "alt": "A speaker addressing students at Road Map to Success in Engineering",
+      "credit": "IEEE SB EKCTC"
     },
-    "eventId": "evt-2",
-    "span": "2"
+    "eventId": "roadmap-2026"
   },
   {
     "id": "g4",
     "image": {
-      "src": "pexels-1190298.jpg",
-      "alt": "Crowd at an evening event"
+      "src": "reise26-group.jpg",
+      "alt": "Participants of REISE '26 at Government Engineering College Palakkad",
+      "credit": "IEEE SB GEC Palakkad"
     },
-    "eventId": "evt-2",
-    "span": "2"
-  },
-  {
-    "id": "g5",
-    "image": {
-      "src": "pexels-7688336.jpg",
-      "alt": "Panel discussion"
-    },
-    "eventId": "evt-3"
-  },
-  {
-    "id": "g6",
-    "image": {
-      "src": "pexels-3182812.jpg",
-      "alt": "Team photo"
-    },
-    "eventId": "evt-3"
-  },
-  {
-    "id": "g7",
-    "image": {
-      "src": "pexels-1763075.jpg",
-      "alt": "Audience listening"
-    },
-    "eventId": "evt-4",
-    "span": "2"
-  },
-  {
-    "id": "g8",
-    "image": {
-      "src": "pexels-2608517.jpg",
-      "alt": "Large crowd"
-    },
-    "eventId": "evt-4",
-    "span": "2"
-  },
-  {
-    "id": "g9",
-    "image": {
-      "src": "pexels-3184292.jpg",
-      "alt": "Networking session"
-    },
-    "eventId": "evt-1"
-  },
-  {
-    "id": "g10",
-    "image": {
-      "src": "pexels-7688460.jpg",
-      "alt": "Speaker on stage"
-    },
-    "eventId": "evt-2",
+    "eventId": "reise-2026",
     "span": "2"
   }
 ]

@@ -34,3 +34,13 @@ so they can be replaced). Files live in `src/assets/placeholders/` and are named
 
 ## Artwork
 - Poster artwork ("Metallic Alpha Overhead Crowd"), IEEE and IEEE Malabar Subsection lockups — supplied by the organisers via Figma.
+
+## Event photos
+
+The Track Record and In Frames photos in `src/assets/gallery/` are from public Instagram posts of the organising
+student branches, used for the IEEE Malabar Subsection site:
+
+| File | Source |
+| --- | --- |
+| `roadmap-group.jpg`, `roadmap-talk.jpg` | IEEE SB EKCTC — https://www.instagram.com/ieeesbekctc/p/DfNHyqHE97y/ |
+| `reise26-group.jpg`, `reise26-workshop.jpg` | IEEE SB GEC Palakkad — https://www.instagram.com/ieeesbgecpkd/p/DeFLWGUGaoy/ (cropped from the post graphics) |
