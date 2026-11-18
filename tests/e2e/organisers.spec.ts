@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('organisers', () => {
   test('track record lists the previous events without a slider', async ({ page }) => {
     await page.goto('/#track-record');
-    await expect(page.locator('#track-record [data-event]')).toHaveCount(2);
+    await expect(page.locator('#track-record [data-event]')).toHaveCount(5);
     await expect(page.locator('[data-slider]')).toHaveCount(0);
   });
 

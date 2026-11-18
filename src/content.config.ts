@@ -49,7 +49,7 @@ const pastEvents = defineCollection({
   schema: z.object({
     id: z.string(),
     name: z.string(),
-    year: z.string(),
+    year: z.string().optional(),
     tagline: z.string(),
     summary: z.string(),
     cover: image,

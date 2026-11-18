@@ -2,6 +2,54 @@
   {
     "id": "g1",
     "image": {
+      "src": "reccap-group.jpg",
+      "alt": "Delegates of RECCAP 2026 in the auditorium at IIT Palakkad",
+      "credit": "IEEE Kerala Section"
+    },
+    "eventId": "reccap-2026",
+    "span": "2"
+  },
+  {
+    "id": "g2",
+    "image": {
+      "src": "athena-group.jpg",
+      "alt": "Participants of ATHENA 2026 at GEC Kozhikode",
+      "credit": "IEEE Malabar Subsection"
+    },
+    "eventId": "athena-2026"
+  },
+  {
+    "id": "g3",
+    "image": {
+      "src": "reccap-release.jpg",
+      "alt": "Dignitaries releasing the proceedings on stage at RECCAP 2026",
+      "credit": "IEEE Kerala Section"
+    },
+    "eventId": "reccap-2026",
+    "span": "2"
+  },
+  {
+    "id": "g4",
+    "image": {
+      "src": "bgb-group.jpg",
+      "alt": "Participants and organisers of BGB '26 at GEC Palakkad",
+      "credit": "IEEE Malabar Subsection"
+    },
+    "eventId": "bgb-2026",
+    "span": "2"
+  },
+  {
+    "id": "g5",
+    "image": {
+      "src": "reccap-keynote.jpg",
+      "alt": "A keynote speaker at the RECCAP 2026 podium",
+      "credit": "IEEE Kerala Section"
+    },
+    "eventId": "reccap-2026"
+  },
+  {
+    "id": "g6",
+    "image": {
       "src": "roadmap-group.jpg",
       "alt": "Students and organisers at Road Map to Success in Engineering, PMSA HSS Elankur",
       "credit": "IEEE SB EKCTC"
@@ -10,7 +58,16 @@
     "span": "2"
   },
   {
-    "id": "g2",
+    "id": "g7",
+    "image": {
+      "src": "reccap-panel.jpg",
+      "alt": "Speakers seated on stage during a RECCAP 2026 session",
+      "credit": "IEEE Kerala Section"
+    },
+    "eventId": "reccap-2026"
+  },
+  {
+    "id": "g8",
     "image": {
       "src": "reise26-workshop.jpg",
       "alt": "A workshop instructor demonstrating to school students during REISE '26",
@@ -19,22 +76,22 @@
     "eventId": "reise-2026"
   },
   {
-    "id": "g3",
+    "id": "g9",
+    "image": {
+      "src": "reccap-team.jpg",
+      "alt": "Organisers and volunteers of RECCAP 2026 at IIT Palakkad",
+      "credit": "IEEE Kerala Section"
+    },
+    "eventId": "reccap-2026",
+    "span": "2"
+  },
+  {
+    "id": "g10",
     "image": {
       "src": "roadmap-talk.jpg",
       "alt": "A speaker addressing students at Road Map to Success in Engineering",
       "credit": "IEEE SB EKCTC"
     },
     "eventId": "roadmap-2026"
-  },
-  {
-    "id": "g4",
-    "image": {
-      "src": "reise26-group.jpg",
-      "alt": "Participants of REISE '26 at Government Engineering College Palakkad",
-      "credit": "IEEE SB GEC Palakkad"
-    },
-    "eventId": "reise-2026",
-    "span": "2"
   }
 ]

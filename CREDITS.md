@@ -44,3 +44,6 @@ student branches, used for the IEEE Malabar Subsection site:
 | --- | --- |
 | `roadmap-group.jpg`, `roadmap-talk.jpg` | IEEE SB EKCTC — https://www.instagram.com/ieeesbekctc/p/DfNHyqHE97y/ |
 | `reise26-group.jpg`, `reise26-workshop.jpg` | IEEE SB GEC Palakkad — https://www.instagram.com/ieeesbgecpkd/p/DeFLWGUGaoy/ (cropped from the post graphics) |
+| `reccap-*.jpg` | IEEE Kerala Section — https://www.instagram.com/ieeekerala/p/DY6DjVeD4L3/ |
+| `athena-group.jpg` | IEEE Malabar Subsection — https://www.instagram.com/ieeemalabarsubsection/p/Dbhe-UKznIN/ (cropped from the post graphic) |
+| `bgb-group.jpg` | IEEE Malabar Subsection — https://www.instagram.com/ieeemalabarsubsection/p/Dd8hBbFTDCs/ (cropped from the post graphic) |

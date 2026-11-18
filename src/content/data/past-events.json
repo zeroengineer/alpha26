@@ -1,8 +1,37 @@
 [
   {
+    "id": "reccap-2026",
+    "name": "RECCAP",
+    "tagline": "International conference · IIT Palakkad",
+    "summary": "The IEEE International Conference on Recent Advances in Electronics, Communication, Computing, Automation and Power: three days of keynotes, technical sessions and paper presentations at IIT Palakkad, bringing together researchers, academicians, industry experts and students. Organised jointly by IEEE Malabar Subsection and IEEE Kerala Section.",
+    "cover": {
+      "src": "reccap-group.jpg",
+      "alt": "Delegates of RECCAP 2026 in the auditorium at IIT Palakkad"
+    }
+  },
+  {
+    "id": "athena-2026",
+    "name": "ATHENA",
+    "tagline": "Rise. Lead. Inspire.",
+    "summary": "The first SHE Camp hosted by WIE IEEE Malabar Subsection: two days of keynote sessions, technical talks, interactive workshops, creative experiences and cultural celebrations at Government Engineering College Kozhikode, built for women who dare to dream, lead and innovate.",
+    "cover": {
+      "src": "athena-group.jpg",
+      "alt": "Participants of ATHENA 2026 holding letters that spell ATHENA"
+    }
+  },
+  {
+    "id": "bgb-2026",
+    "name": "BGB",
+    "tagline": "Beyond Glass Barriers",
+    "summary": "A flagship day of thought leadership, interdisciplinary dialogue and hands-on experiences at GEC Palakkad. Organised by IEEE WIE Malabar Subsection in association with WIE AG IEEE SB GEC Palakkad.",
+    "cover": {
+      "src": "bgb-group.jpg",
+      "alt": "Participants and organisers of BGB '26 at GEC Palakkad"
+    }
+  },
+  {
     "id": "roadmap-2026",
     "name": "Road Map to Success in Engineering",
-    "year": "2026",
     "tagline": "With IEEE SB EKCTC",
     "summary": "A full-day programme for higher secondary students of PMSA HSS, Elankur: technical workshops and interactive talks on Artificial Intelligence, emerging technologies, career guidance and business, opening a first view of the pathways ahead in engineering. Organised by IEEE Student Branch EKCTC in collaboration with IEEE Malabar Subsection.",
     "cover": {
@@ -12,8 +41,7 @@
   },
   {
     "id": "reise-2026",
-    "name": "REISE '26",
-    "year": "2026",
+    "name": "REISE",
     "tagline": "Roadmap to Success",
     "summary": "A series of sessions and hands-on lab visits for high school students at Government Engineering College Palakkad, from coding with AI to circuits, chips and machines. Presented by IEEE SIGHT AG GEC Palakkad in association with IEEE SB GEC Palakkad and IEEE Malabar Subsection.",
     "cover": {
