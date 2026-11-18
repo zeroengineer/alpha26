@@ -51,7 +51,12 @@ const FRONT = (75 + 30) * (ALPHA_H / 1000);
 
 export default async function stage(root: HTMLElement): Promise<() => void> {
   const canvas = root.querySelector<HTMLCanvasElement>('[data-stage-canvas]')!;
-  if (!hardwareWebGL2()) return () => {};
+  if (!hardwareWebGL2()) {
+    // no live scene on this device — tell the loader not to wait for one
+    root.dataset.stageSkip = '';
+    window.dispatchEvent(new CustomEvent('alpha:stage-skip'));
+    return () => {};
+  }
 
   const THREE = await import('./three-lite');
   await yieldToMain();

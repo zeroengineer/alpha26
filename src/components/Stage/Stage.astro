@@ -47,29 +47,14 @@ import { ALPHA_PATH, ALPHA_VIEWBOX } from '@/assets/alpha/alpha-path';
 <script>
   import { defineIsland } from '@/lib/island';
   import { onReady, reducedMotion, lite } from '@/lib/motion/core';
-  // The first-paint still and the live scene are composed identically, so the live scene can take
-  // over whenever it is ready. It is never built before the page is ready (so it stays off the
-  // initial load), and normally it is built in idle time just after the hero's entrance has played
-  // — while the visitor is still looking at the hero — so the work doesn't land on top of their first
-  // scroll. Scrolling earlier than that starts it at once.
-  // Phones and small screens never load the 3D scene (or three.js): they get the light outline animation.
+  // The live scene is built straight away, while the opening loader is still on screen (the loader
+  // waits for it — see Loader/island.ts), so the page opens with the 3D already running instead of a
+  // still that is swapped out a few seconds later, and none of the build lands on the first scroll.
+  // The build yields between its heavy steps, so the loader's own animation keeps moving.
+  // Phones and small screens never load the 3D scene (or three.js): they get the light wireframe.
   if (!reducedMotion() && lite()) {
     onReady(() => defineIsland('[data-stage]', () => import('./lite'), { strategy: 'load' }));
   } else if (!reducedMotion()) {
-    let mounted = false;
-    const events = ['scroll', 'wheel', 'touchstart', 'keydown'] as const;
-    const mount = () => {
-      if (mounted) return;
-      mounted = true;
-      events.forEach((e) => window.removeEventListener(e, early));
-      defineIsland('[data-stage]', () => import('./island'), { strategy: 'load' });
-    };
-    const early = () => onReady(mount);
-    events.forEach((e) => window.addEventListener(e, early, { passive: true }));
-    onReady(() => {
-      if (window.scrollY > 0) return mount();
-      const idle = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-      setTimeout(() => (idle ? idle(mount, { timeout: 1500 }) : mount()), 2800);
-    });
+    defineIsland('[data-stage]', () => import('./island'), { strategy: 'load' });
   }
 </script>

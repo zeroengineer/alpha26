@@ -1,4 +1,4 @@
-import { gsap, markReady, soft } from '@/lib/motion/core';
+import { gsap, markReady, soft, lite } from '@/lib/motion/core';
 
 const KEY = 'alpha26:loaded';
 
@@ -8,6 +8,21 @@ function assetsReady(ceiling = 4000): Promise<void> {
   const waits: Promise<unknown>[] = [document.fonts?.ready ?? Promise.resolve()];
   if (img) waits.push(img.complete ? Promise.resolve() : new Promise((r) => img.addEventListener('load', r, { once: true })));
   return Promise.race([Promise.all(waits).then(() => undefined), new Promise<void>((r) => setTimeout(r, ceiling))]);
+}
+
+/**
+ * Desktop: resolves once the 3D stage is drawing (or has bowed out: no hardware WebGL), so the page
+ * opens with the live scene instead of swapping a still for it later. Phones have no 3D to wait for.
+ */
+function stageReady(ceiling = 6000): Promise<void> {
+  const stage = document.querySelector<HTMLElement>('[data-stage]');
+  if (!stage || lite() || 'stageReady' in stage.dataset || 'stageSkip' in stage.dataset) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => resolve();
+    window.addEventListener('alpha:stage-live', done, { once: true });
+    window.addEventListener('alpha:stage-skip', done, { once: true });
+    setTimeout(done, ceiling);
+  });
 }
 
 export default function loader(el: HTMLElement): void {
@@ -37,13 +52,16 @@ export default function loader(el: HTMLElement): void {
       .to(svg, { ...soft(6), duration: 1, ease: 'power2.in' }, '<');
   };
 
-  // 1) the outline draws itself, 2) metal rises inside it while assets arrive, 3) hand over
+  // 1) the outline draws itself, 2) metal rises inside it while assets and the 3D stage arrive, 3) hand over
   const intro = gsap.timeline();
   intro.to(label, { opacity: 1, duration: 0.6 }, 0)
     .to(stroke, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' }, 0.05)
-    .to(fill, { scaleY: 0.4, duration: 0.8, ease: 'power2.out' }, 0.6);
+    .to(fill, { scaleY: 0.4, duration: 0.8, ease: 'power2.out' }, 0.6)
+    // keeps creeping up while the stage builds, so the wait never looks frozen
+    .to(fill, { scaleY: 0.85, duration: 6, ease: 'power1.out' });
 
-  Promise.all([assetsReady(), new Promise((r) => intro.eventCallback('onComplete', r))]).then(handOver);
+  const drawn = new Promise((r) => gsap.delayedCall(1.4, r));
+  Promise.all([assetsReady(), stageReady(), drawn]).then(() => { intro.kill(); handOver(); });
   // never trap the visitor
-  setTimeout(handOver, 7000);
+  setTimeout(handOver, 8000);
 }
