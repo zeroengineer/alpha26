@@ -75,7 +75,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .pillars__list { position: relative; min-height: 210vh; }
   .tour-hud { display: none; }
   .pillar {
-    position: absolute; width: min(22rem, 40vw); display: grid; gap: var(--space-2);
+    position: absolute; width: min(28rem, 42vw); display: grid; gap: var(--space-2);
     padding: var(--space-4) 0; text-shadow: 0 0 24px #000;
   }
   .pillar--tl { left: 0; top: 14vh; }
@@ -90,7 +90,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .pillar--tl .pillar__leader::after, .pillar--bl .pillar__leader::after, .pillar--bc .pillar__leader::after { right: -6px; }
   .pillar--tr .pillar__leader::after, .pillar--br .pillar__leader::after { left: -6px; }
   .pillar__no { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-dim); }
-  .pillar__title { font-size: var(--text-xl); font-weight: 300; text-transform: uppercase; letter-spacing: 0.04em; }
+  .pillar__title { font-size: var(--text-xl); font-weight: 300; text-transform: uppercase; letter-spacing: 0.04em; overflow-wrap: normal; word-break: normal; }
   .pillar__text { font-size: var(--text-sm); font-weight: 300; color: var(--fg-dim); }
   @media (max-width: 760px) {
     .pillars, .pillars__list { min-height: 0; }
