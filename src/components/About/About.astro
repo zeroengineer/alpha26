@@ -2,7 +2,9 @@
 /**
  * The Programme — three chapters toured by the α stage:
  *   about     the brief, as three blocks at different columns and depths (each drifts at its own speed)
- *   pillars   four "figure" annotations around the α, drawing-board style, leader lines pointing in
+ *   pillars   five "figure" annotations around the α, drawing-board style, leader lines pointing in.
+ *             On phones this block is a pinned tour instead (doyourdesign studio-tour pattern): a HUD with
+ *             a counter, one chapter at a time blur-fading in at the bottom while the α takes a new pose.
  *   statement the closing line, set huge on one baseline; the camera flies through the α's bowl behind it
  */
 import Section from '@/components/Section/Section.astro';
@@ -14,8 +16,9 @@ const paraLayout = [
   { cls: 'prog__p--b', speed: 1.14 },
   { cls: 'prog__p--c', speed: 0.97 },
 ];
-const corners = ['tl', 'tr', 'bl', 'br'] as const;
-const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
+const corners = ['tl', 'tr', 'bl', 'br', 'bc'] as const;
+const pillarSpeeds = [0.88, 1.16, 1.08, 0.9, 1.04];
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 <Section id="about" heading={about.heading} eyebrow={about.eyebrow} station="about" class="about">
   <div class="prog" data-about>
@@ -24,18 +27,24 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
     ))}
   </div>
 
-  <div class="pillars" data-station="pillars" aria-label="What the programme is built from">
-    <p class="pillars__caption section-no" data-soft data-pillar-caption>Fig. 01 — What it's built from</p>
-    <ol class="pillars__list">
-      {about.pillars.map((pillar, i) => (
-        <li class:list={['pillar', `pillar--${corners[i]}`]} data-pillar data-soft data-speed={pillarSpeeds[i]}>
-          <span class="pillar__leader" aria-hidden="true"></span>
-          <span class="pillar__no">{String(i + 1).padStart(2, '0')}</span>
-          <h3 class="pillar__title">{pillar.title}</h3>
-          <p class="pillar__text">{pillar.text}</p>
-        </li>
-      ))}
-    </ol>
+  <div class="pillars" data-station="pillars" data-tour aria-label="What the programme is built from">
+    <div class="pillars__pin">
+      <p class="tour-hud" aria-hidden="true">
+        <span class="tour-hud__kicker">{about.heading}</span>
+        <span class="tour-hud__count"><span data-tour-count>01</span><i></i><span>{pad(about.pillars.length)}</span></span>
+      </p>
+      <p class="pillars__caption section-no" data-soft data-pillar-caption>Fig. 01 — What it's built from</p>
+      <ol class="pillars__list">
+        {about.pillars.map((pillar, i) => (
+          <li class:list={['pillar', `pillar--${corners[i]}`]} data-pillar data-soft data-speed={pillarSpeeds[i]}>
+            <span class="pillar__leader" aria-hidden="true"></span>
+            <span class="pillar__no">{pad(i + 1)}</span>
+            <h3 class="pillar__title">{pillar.title}</h3>
+            <p class="pillar__text">{pillar.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
   </div>
 
   <div class="statement" data-station="statement">
@@ -61,9 +70,10 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
   }
 
   /* ---- pillars: annotations around the α ---- */
-  .pillars { position: relative; min-height: 190vh; margin-top: clamp(8rem, 24vh, 16rem); }
+  .pillars { position: relative; min-height: 230vh; margin-top: clamp(8rem, 24vh, 16rem); }
   .pillars__caption { position: absolute; left: 50%; top: 0; translate: -50% 0; white-space: nowrap; }
-  .pillars__list { position: relative; min-height: 170vh; }
+  .pillars__list { position: relative; min-height: 210vh; }
+  .tour-hud { display: none; }
   .pillar {
     position: absolute; width: min(22rem, 40vw); display: grid; gap: var(--space-2);
     padding: var(--space-4) 0; text-shadow: 0 0 24px #000;
@@ -72,11 +82,12 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
   .pillar--tr { right: 0; top: 48vh; text-align: right; }
   .pillar--bl { left: 6%; top: 92vh; }
   .pillar--br { right: 4%; top: 128vh; text-align: right; }
+  .pillar--bc { left: 2%; top: 168vh; }
   .pillar__leader { position: absolute; top: 1.9rem; width: clamp(3rem, 12vw, 12rem); height: 1px; background: linear-gradient(90deg, var(--line-strong), transparent); }
-  .pillar--tl .pillar__leader, .pillar--bl .pillar__leader { left: 100%; margin-left: 1rem; }
+  .pillar--tl .pillar__leader, .pillar--bl .pillar__leader, .pillar--bc .pillar__leader { left: 100%; margin-left: 1rem; }
   .pillar--tr .pillar__leader, .pillar--br .pillar__leader { right: 100%; margin-right: 1rem; background: linear-gradient(270deg, var(--line-strong), transparent); }
   .pillar__leader::after { content: ''; position: absolute; top: -2px; width: 5px; height: 5px; border: 1px solid var(--fg-dim); border-radius: 50%; }
-  .pillar--tl .pillar__leader::after, .pillar--bl .pillar__leader::after { right: -6px; }
+  .pillar--tl .pillar__leader::after, .pillar--bl .pillar__leader::after, .pillar--bc .pillar__leader::after { right: -6px; }
   .pillar--tr .pillar__leader::after, .pillar--br .pillar__leader::after { left: -6px; }
   .pillar__no { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; color: var(--fg-dim); }
   .pillar__title { font-size: var(--text-xl); font-weight: 300; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -87,6 +98,26 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
     .pillar { position: relative; inset: auto; width: auto; margin-bottom: 18vh; text-align: left !important; }
     .pillar:nth-child(even) { margin-left: 18%; }
     .pillar__leader { display: none; }
+  }
+  /* ---- phones: the pinned programme tour (island.ts drives the chapters, Stage/lite.ts the α) ---- */
+  @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+    .pillars { height: 520svh; }
+    .pillars__pin { position: sticky; top: 0; height: 100svh; }
+    .pillars__caption { display: none; }
+    .tour-hud {
+      position: absolute; top: calc(var(--nav-h) + 1.25rem); left: 0; right: 0; display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg);
+    }
+    .tour-hud__count { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--fg-dim); }
+    .tour-hud__count [data-tour-count] { color: var(--fg); }
+    .tour-hud__count i { width: 2.25rem; height: 1px; background: var(--line-strong); }
+    .pillars__list { position: absolute; inset: 0; }
+    .pillar, .pillar:nth-child(even) {
+      position: absolute; left: 0; right: 0; top: auto; bottom: 9svh; margin: 0; padding: 0;
+      opacity: 0; visibility: hidden; will-change: transform, opacity, filter;
+    }
+    .pillar__title { font-size: clamp(1.7rem, 1rem + 4vw, 2.4rem); line-height: 1.05; }
+    .pillar__text { font-size: var(--text-base, 1rem); max-width: 32rem; }
   }
 
   /* ---- statement: words at different depths over the fly-through ---- */
@@ -100,7 +131,6 @@ const pillarSpeeds = [0.88, 1.16, 1.08, 0.9];
   @media (max-width: 760px) {
     .prog { row-gap: 5rem; }
     .pillars { margin-top: 6rem; }
-    .pillar { margin-bottom: 10vh; }
     .statement { min-height: 110vh; margin-top: 4rem; }
     .statement__text { letter-spacing: 0.08em; }
   }

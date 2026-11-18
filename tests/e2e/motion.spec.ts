@@ -87,3 +87,32 @@ test('the scale ruler is gone', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-ruler]')).toHaveCount(0);
 });
+
+test('phones tour the programme one chapter at a time', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'mobile only');
+  await page.goto('/');
+  const tour = page.locator('[data-tour]');
+  const chapters = tour.locator('[data-pillar]');
+  await expect(chapters).toHaveCount(5);
+  await page.locator('#about[data-island-ready]').waitFor({ state: 'attached', timeout: 15_000 }).catch(() => {});
+  // park the scroll in the middle of chapter i's share of the pinned block
+  const park = (i: number) =>
+    page.evaluate((i) => {
+      const el = document.querySelector<HTMLElement>('[data-tour]')!;
+      const r = el.getBoundingClientRect();
+      window.scrollTo(0, r.top + window.scrollY + ((r.height - window.innerHeight) / 5) * (i + 0.5));
+    }, i);
+  for (const i of [0, 2, 4]) {
+    await park(i);
+    await expect(tour.locator('[data-tour-count]')).toHaveText(`0${i + 1}`, { timeout: 10_000 });
+    await expect(chapters.nth(i)).toBeVisible();
+    await expect(tour.locator('[data-pillar]:visible')).toHaveCount(1);
+  }
+});
+
+test('desktop shows all five programme chapters around the α', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'desktop only');
+  await page.goto('/');
+  await expect(page.locator('[data-tour] [data-pillar]')).toHaveCount(5);
+  await expect(page.locator('[data-tour] .tour-hud')).toBeHidden();
+});
