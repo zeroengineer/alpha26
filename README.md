@@ -7,7 +7,7 @@ Industry Relations Committee of IEEE Malabar Subsection.
 - [Astro 5](https://astro.build) — static output, zero JS by default
 - Vanilla-TS **islands** (`src/lib/island.ts`) — each section's behaviour is lazy-loaded when it nears the viewport
 - [GSAP 3](https://gsap.com) (ScrollTrigger, SplitText) + [Lenis](https://lenis.darkroom.engineering) for motion
-- [three.js](https://threejs.org) — the persistent α stage only (built on the visitor's first interaction)
+- [three.js](https://threejs.org) — the persistent α stage, desktop only (built on the visitor's first interaction; phones never download it)
 - Vitest (unit) · Playwright (e2e) · Sharp via `astro:assets` (AVIF/WebP)
 - Hosted on **Cloudflare Pages** — build `npm run build`, output `dist`
 
@@ -32,14 +32,17 @@ npm run build      # production build to dist/
   long "poster" lens into the tour, then stations (`stations.ts`, unit-tested) — turned aside for the programme, low
   blueprint view for the pillars, through the bowl for the statement, behind for the team, plan view under the photo
   collage, back to the poster frame for contact. Static poster / α outline for reduced motion, missing WebGL2 or
-  software-only GPUs (`?gl=1` forces WebGL).
+  software-only GPUs (`?gl=1` forces WebGL). **Desktop only** — see Mobile below.
 - **Opening loader → hero** (`src/components/Loader/`): the α outline draws itself exactly where the hero α sits, metal
   rises inside it, the black clears and the chrome α resolves inside the outline as the poster type settles — one
   sequence. Once per session; never for reduced motion.
-- **Hero**: caption, COMING SOON and handle placed as in the poster; on scroll each leaves on its own path — the caption
-  rises and opens its tracking, COMING SOON sinks and spreads, the handle drops — while the camera dollies in.
-- **Mobile**: on portrait screens the tour camera pulls back and keeps the α centred and dimmed behind copy; spacing
-  tightens; the stage is built on first touch.
+- **Hero**: caption and the event dates (`site.dates.display`, set in Sora — Switella's stencil digits misread)
+  placed as in the poster; on scroll each leaves on its own path — the caption's letters lift away, the date's
+  letters scatter along their line — while the camera dollies in.
+- **Mobile** (touch devices and viewports ≤ 900px, `lite()` in `src/lib/motion/core.ts`): **no WebGL and no
+  three.js download**. The hero poster recedes on scroll and the α outline behind the page drifts, turns and grows
+  with the scroll (`src/components/Stage/lite.ts`, one transform-only scrubbed timeline) with a slow CSS "breath".
+  Spacing tightens.
 - **Layout**: no tidy column — blocks hold different columns and corners, and every `data-speed` element drifts at
   its own speed (`src/lib/motion/parallax.ts`). Text focuses in out of a blur line by line and blurs away as it
   leaves (`src/lib/motion/reveal.ts`).
@@ -60,7 +63,7 @@ public/fonts/             subset woff2 (regenerate with `npm run fonts:subset`)
 ```
 
 ## Launching hidden sections
-The event is currently "coming soon". Speakers, venue, partners, dates and registration are fully built but
+The dates (12 – 13 December 2026) are public. Speakers, venue, partners and registration are fully built but
 **not rendered** (neither the section nor its nav link appears in the HTML) while their flag is off.
 
 1. Open `src/content/site.ts` and flip the flag(s) in `features` to `true`.
@@ -81,7 +84,7 @@ npm run e2e:launched               # Playwright suite for the launched layout
 | `host` | The Venue (nav: Venue) | `content/organisers.ts` → `host` |
 | `sponsors` | Powered Together (nav: Partners) | `data/sponsors.json` |
 | `collaborators` | collaborators strip inside Partners | `data/collaborators.json` |
-| `dates` | dates in hero + schedule | `site.dates` |
+| `dates` (on) | dates in JSON-LD + schedule header (the hero always shows them) | `site.dates` |
 | `registration` | register CTA in hero + footer | `site.registrationUrl` |
 
 ## Deployment (Cloudflare Pages)

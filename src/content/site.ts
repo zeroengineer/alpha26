@@ -1,7 +1,7 @@
 /**
  * Single source of truth for event copy, links and launch flags.
- * While the event is "coming soon" every flag below is false: the matching section and its
- * nav link are not rendered at all. To launch a section, set its flag to true and fill in the
+ * Until launch every section flag below is false: the matching section and its nav link are not
+ * rendered at all (only `dates` is on — the dates are public and shown in the hero). To launch a section, set its flag to true and fill in the
  * data under src/content/data/. Nothing else needs to change.
  */
 /**
@@ -15,8 +15,8 @@ const forced = String(import.meta.env.ALPHA_FLAGS ?? '')
 const on = (key: string, value: boolean) => value || forced.includes('all') || forced.includes(key);
 
 export const features = {
-  /** Show event dates in the hero / schedule. */
-  dates: on('dates', false),
+  /** Event dates in the structured data (JSON-LD) and the schedule header. The hero always shows them. */
+  dates: on('dates', true),
   /** "The Lineup" — speakers and sessions. */
   speakers: on('speakers', false),
   /** "The Venue" — host institution. */
@@ -42,8 +42,7 @@ export const site = {
   url: 'https://alpha26.pages.dev',
   description:
     "ALPHA '26 is a two-day residential industry-readiness programme by the Industry Relations Committee of IEEE Malabar Subsection, built to help engineering graduates adapt, upskill and thrive in an AI-driven job market.",
-  // Placeholders until the schedule is announced (hidden while features.dates is false).
-  dates: { start: '2026-03-07', end: '2026-03-08', display: '07 – 08 March 2026' },
+  dates: { start: '2026-12-12', end: '2026-12-13', display: '12 – 13 December 2026' },
   registrationUrl: '#register',
   socials: {
     instagram: { handle: 'ieeemalabarsubsection', url: 'https://www.instagram.com/ieeemalabarsubsection/' },

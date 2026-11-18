@@ -16,7 +16,7 @@ const overlay = Buffer.from(`
   </defs>
   <rect width="${W}" height="${H}" fill="url(#v)"/>
   <text x="600" y="78" text-anchor="middle" font-family="Sora, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="11" fill="#d9d9d9">IEEE MSS ALPHA’26 - BUILT TO BECOME</text>
-  <text x="600" y="590" text-anchor="middle" font-family="Georgia, serif" font-size="40" letter-spacing="22" fill="#f2f2f2">COMING SOON</text>
+  <text x="600" y="590" text-anchor="middle" font-family="Georgia, serif" font-size="40" letter-spacing="14" fill="#f2f2f2">12 – 13 DECEMBER 2026</text>
 </svg>`);
 
 await sharp({ create: { width: W, height: H, channels: 3, background: '#000' } })

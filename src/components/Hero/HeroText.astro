@@ -1,13 +1,12 @@
 ---
-/** Poster copy: caption and COMING SOON (+ dates/CTA when flagged). The Instagram handle lives in Contact. */
+/** Poster copy: caption and the event dates (+ CTA when flagged). The Instagram handle lives in Contact. */
 import { site, features } from '@/content/site';
 ---
 <div class="hero__copy" data-hero-copy>
   <p class="hero__caption metal-text" data-caption>IEEE MSS ALPHA’26 - BUILT TO BECOME</p>
 
   <div class="hero__bottom">
-    {features.dates && <p class="hero__dates eyebrow" data-dates>{site.dates.display}</p>}
-    <h1 class="hero__title display metal-text" data-title>Coming Soon</h1>
+    <h1 class="hero__title display metal-text" data-title>{site.dates.display}</h1>
     {features.registration && (
       <a class="hero__cta" href={site.registrationUrl} data-cta>Register</a>
     )}
@@ -39,12 +38,14 @@ import { site, features } from '@/content/site';
   }
 
   .hero__bottom { display: grid; justify-items: center; gap: clamp(1rem, 3svh, 2.5rem); }
-  .hero__dates { letter-spacing: var(--track-wide); }
 
   .hero__title {
-    --title-track: var(--track-display);
+    /* The date line is set in Sora, not the display face: Switella's stencil digits misread (2 → Z, 3 → 5).
+       It is long, so it is tracked tighter than --track-display to stay inside the poster width. */
+    --title-track: 0.5em;
     position: relative; white-space: nowrap;
-    font-size: clamp(1.1rem, calc(var(--copy-w) * 0.044), 3.4rem);
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: clamp(0.9rem, calc(var(--copy-w) * 0.034), 2.6rem);
     letter-spacing: var(--title-track); text-indent: var(--title-track);
     filter: drop-shadow(0 0 4px #000);
     opacity: 0;
@@ -59,6 +60,6 @@ import { site, features } from '@/content/site';
   /* narrow screens: tighter tracking so both lines fit inside the viewport */
   @media (max-width: 640px) {
     .hero__caption { --cap-track: 0.28em; font-size: 0.56rem; }
-    .hero__title { --title-track: 0.55em; font-size: 1.15rem; }
+    .hero__title { --title-track: 0.26em; font-size: calc(var(--copy-w) * 0.044); }
   }
 </style>

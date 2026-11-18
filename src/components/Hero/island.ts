@@ -8,7 +8,7 @@ export default function hero(section: HTMLElement): () => void {
   const copy = section.querySelector<HTMLElement>('[data-hero-copy]')!;
   const caption = section.querySelector<HTMLElement>('[data-caption]')!;
   const title = section.querySelector<HTMLElement>('[data-title]')!;
-  const extras = Array.from(section.querySelectorAll<HTMLElement>('[data-dates], [data-cta]'));
+  const extras = Array.from(section.querySelectorAll<HTMLElement>('[data-cta]'));
   const cue = section.querySelector<HTMLElement>('[data-cue]')!;
   const rm = reducedMotion();
 
@@ -26,7 +26,7 @@ export default function hero(section: HTMLElement): () => void {
     tl.fromTo(scene, { opacity: 0, ...soft(10) }, { opacity: 1, ...soft(0), duration: 1.5, ease: 'power2.out' }, 0)
       // settle to whatever tracking the CSS sets for this viewport (tighter on phones)
       .add(settleTracking(caption, `${parseFloat(capTrack) * 2.6}px`, capTrack), 0.9)
-      .add(settleTracking(title, `${parseFloat(titleTrack) * 1.8}px`, titleTrack), 1.2)
+      .add(settleTracking(title, `${parseFloat(titleTrack) * 1.4}px`, titleTrack), 1.2)
       .to(cue, { opacity: 1, duration: 1 }, 2.3);
     if (extras.length) tl.fromTo(extras, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.1 }, 1.5);
   });
@@ -35,7 +35,7 @@ export default function hero(section: HTMLElement): () => void {
 
   // ---- Scroll: the type disperses letter by letter while the hero holds still (sticky) ----
   //   caption       letters lift and blur away, from the centre outwards
-  //   COMING SOON   letters scatter outward along their own line, blurring — never crossing the α
+  //   the dates     letters scatter outward along their own line, blurring — never crossing the α
   // The split happens after the entrance has settled, so the two never fight over the same props.
   const scrollTl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.7 } });
   scrollTl.to(cue, { opacity: 0, ease: 'none', duration: 0.12 }, 0)

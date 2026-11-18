@@ -13,7 +13,7 @@ test.describe('launched build', () => {
 
   test('hero shows dates and the register CTA', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('#hero [data-dates]')).toHaveCount(1);
+    await expect(page.locator('#hero [data-title]')).toHaveText('12 – 13 December 2026');
     await expect(page.locator('#hero [data-cta]')).toHaveText('Register');
   });
 

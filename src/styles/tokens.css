@@ -22,7 +22,7 @@
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   --track-wide: 0.5em;      /* caption "IEEE MSS ALPHA'26 - BUILT TO BECOME" */
-  --track-display: 1em;     /* "COMING SOON" */
+  --track-display: 1em;     /* display lines */
   --track-eyebrow: 0.3em;
   --track-nav: 0.18em;
 

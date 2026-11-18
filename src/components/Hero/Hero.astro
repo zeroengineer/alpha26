@@ -8,8 +8,9 @@
 import { Picture } from 'astro:assets';
 import poster from '@/assets/figma/alpha-render.png';
 import HeroText from './HeroText.astro';
+import { site } from '@/content/site';
 ---
-<section id="hero" class="hero" data-hero data-station="hero" data-station-at="top" aria-label="ALPHA '26 — coming soon">
+<section id="hero" class="hero" data-hero data-station="hero" data-station-at="top" aria-label={`${site.name} — ${site.dates.display}`}>
   <div class="hero__sticky" data-hero-sticky>
   <div class="hero__frame" data-hero-frame>
     <div class="hero__scene" data-scene aria-hidden="true">

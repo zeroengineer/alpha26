@@ -5,9 +5,11 @@ import { features, type Features } from '@/content/site';
 const allOn: Features = { dates: true, speakers: true, host: true, sponsors: true, collaborators: true, registration: true };
 
 describe('launch flags', () => {
-  it('ship with every flag off while the event is coming soon', () => {
+  it('ship with every section flag off until launch — only the dates are public', () => {
     if (import.meta.env.ALPHA_FLAGS) return; // build-time override in use
-    expect(Object.values(features).every((v) => v === false)).toBe(true);
+    const { dates, ...sections } = features;
+    expect(dates).toBe(true);
+    expect(Object.values(sections).every((v) => v === false)).toBe(true);
   });
 });
 
