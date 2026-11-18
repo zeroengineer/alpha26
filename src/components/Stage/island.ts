@@ -55,14 +55,12 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
 
   const THREE = await import('./three-lite');
   await yieldToMain();
-  const small = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
 
-  // No canvas MSAA anywhere: phones can't afford it (fill rate is the bottleneck there), and on
-  // desktop the scene is drawn into the bloom composer's own targets, so canvas MSAA only cost memory.
-  // Phones also get ≤1.25× pixel density and fewer points.
+  // Desktop only — phones and small screens get the outline animation instead (lite.ts, chosen in Stage.astro).
+  // No canvas MSAA: the scene is drawn into the bloom composer's own targets, so it would only cost memory.
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
-  let pixelRatio = Math.min(window.devicePixelRatio, small ? 1.25 : 1.75);
-  const minPixelRatio = Math.min(pixelRatio, small ? 1 : 1.25);
+  let pixelRatio = Math.min(window.devicePixelRatio, 1.75);
+  const minPixelRatio = Math.min(pixelRatio, 1.25);
   renderer.setPixelRatio(pixelRatio);
   renderer.setClearColor(0x000000, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -113,7 +111,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     else if (c === 'C') { for (let i = 0; i < v.length; i += 6) { sp.bezierCurveTo(v[i], v[i + 1], v[i + 2], v[i + 3], v[i + 4], v[i + 5]); [cx, cy] = [v[i + 4], v[i + 5]]; } }
   }
   const geo = new THREE.ExtrudeGeometry(sp.toShapes(), {
-    depth: 150, bevelEnabled: true, bevelThickness: 30, bevelSize: 16, bevelSegments: small ? 3 : 5, curveSegments: small ? 10 : 18,
+    depth: 150, bevelEnabled: true, bevelThickness: 30, bevelSize: 16, bevelSegments: 5, curveSegments: 18,
   });
   const s = ALPHA_H / ALPHA_VIEWBOX.h;
   geo.translate(-ALPHA_VIEWBOX.w / 2, -ALPHA_VIEWBOX.h / 2, -75);
@@ -167,7 +165,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const bowlX = (0.42 - POSTER.alphaCx) * posterW;
 
   // ---- swirling points in the bowl (the crowd, abstracted, for the tour) ----
-  const N = small ? 1400 : 6500;
+  const N = 6500;
   const pos = new Float32Array(N * 3);
   const rnd = new Float32Array(N);
   for (let i = 0; i < N; i++) {
@@ -196,21 +194,17 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   grid.position.y = -2.1;
   scene.add(grid);
 
-  // ---- post: a soft bloom on the chrome highlights (desktop) ----
-  let composer: { render(): void; setSize(w: number, h: number): void; setPixelRatio(r: number): void; dispose(): void } | null = null;
-  if (!small) {
-    const [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }] = await Promise.all([
-      import('three/examples/jsm/postprocessing/EffectComposer.js'),
-      import('three/examples/jsm/postprocessing/RenderPass.js'),
-      import('three/examples/jsm/postprocessing/UnrealBloomPass.js'),
-      import('three/examples/jsm/postprocessing/OutputPass.js'),
-    ]);
-    const c = new EffectComposer(renderer);
-    c.addPass(new RenderPass(scene, camera));
-    c.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.2, 0.4, 0.92));
-    c.addPass(new OutputPass());
-    composer = c;
-  }
+  // ---- post: a soft bloom on the chrome highlights ----
+  const [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }] = await Promise.all([
+    import('three/examples/jsm/postprocessing/EffectComposer.js'),
+    import('three/examples/jsm/postprocessing/RenderPass.js'),
+    import('three/examples/jsm/postprocessing/UnrealBloomPass.js'),
+    import('three/examples/jsm/postprocessing/OutputPass.js'),
+  ]);
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 0.2, 0.4, 0.92));
+  composer.addPass(new OutputPass());
 
   // compile every shader off the critical path (parallel compile where supported) before the first frame
   await yieldToMain();
@@ -241,8 +235,8 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     const w = window.innerWidth;
     const h = window.innerHeight;
     renderer.setSize(w, h, false);
-    composer?.setPixelRatio(renderer.getPixelRatio());
-    composer?.setSize(w, h);
+    composer.setPixelRatio(renderer.getPixelRatio());
+    composer.setSize(w, h);
     camera.aspect = w / h;
     // two lenses: a long one that reproduces the poster from the hero position, and the tour's normal
     // one; the loop blends between them by the lens weight (a dolly-zoom as the camera moves in)
@@ -273,9 +267,6 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const onVis = () => { hidden = document.hidden; };
   document.addEventListener('visibilitychange', onVis);
 
-  // phones: while the page is still, draw every other frame (the scene only drifts slowly then);
-  // while scrolling, draw every frame so the camera move stays smooth
-  let frame = 0;
   let lastScroll = -1;
   let stillFrames = 0;
   // adaptive resolution: if frames run long while the camera is moving, shed pixels (never the motion)
@@ -284,11 +275,9 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
   const EPS = 1e-8;
   const tick = (t: number, dt: number) => {
     if (hidden) return;
-    frame++;
     const sy = window.scrollY;
     stillFrames = sy === lastScroll ? stillFrames + 1 : 0;
     lastScroll = sy;
-    if (small && stillFrames > 10 && frame % 2) return;
     const p = poseAt(stops, window.scrollY);
     // Portrait screens: the tour poses were composed for wide frames. Pull the camera back from the
     // α, keep the α nearer the centre and dim it behind body copy — everywhere except the exact
@@ -337,16 +326,14 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     crowd.visible = p.crowd > 0.01;
     gridMat.opacity = p.stage * 0.06 * (1 - p.lens);
 
-    const sec = (small && stillFrames > 10 ? 2 : 1) * dt / 1000; // keep animation speed when skipping frames
-    crowdU.uTime.value += sec;
+    crowdU.uTime.value += dt / 1000;
 
     // Nothing on screen changes once the camera has settled and no points are swirling (the hero
     // poster view, mostly) — stop drawing until something moves again instead of repainting an
     // identical frame 60 times a second.
     settle = moving || crowd.visible ? 0 : settle + 1;
     if (settle > 3) return;
-    if (composer) composer.render();
-    else renderer.render(scene, camera);
+    composer.render();
 
     // sample frame time only while scrolling at full rate; after 45 slow-ish frames drop a step
     if (stillFrames < 10 && dt < 250 && pixelRatio > minPixelRatio) {
@@ -381,7 +368,7 @@ export default async function stage(root: HTMLElement): Promise<() => void> {
     document.removeEventListener('visibilitychange', onVis);
     [geo, edges, tickGeo, crowdGeo, grid.geometry as BufferGeometry].forEach((g) => g.dispose());
     [chromeMat, wireMat, tickMat, crowdMat, gridMat].forEach((m) => m.dispose());
-    composer?.dispose();
+    composer.dispose();
     envTex.dispose();
     renderer.dispose();
   };
