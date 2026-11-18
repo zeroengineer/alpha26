@@ -40,34 +40,37 @@ export const site = {
   committee: 'Industry Relations Committee',
   shortOrganiser: 'IEEE MSS',
   url: 'https://alpha26.pages.dev',
+  theme: 'Careers and Ventures in the Age of AI',
   description:
-    "ALPHA '26 is a two-day residential industry-readiness programme by the Industry Relations Committee of IEEE Malabar Subsection, built to help engineering graduates adapt, upskill and thrive in an AI-driven job market.",
+    "ALPHA '26 is a two-day residential programme by the Industry Relations Committee of IEEE Malabar Subsection, preparing engineering students for careers and ventures in a job market that AI is reshaping.",
   dates: { start: '2026-12-12', end: '2026-12-13', display: '12 – 13 December 2026' },
   registrationUrl: '#register',
   socials: {
     instagram: { handle: 'ieeemalabarsubsection', url: 'https://www.instagram.com/ieeemalabarsubsection/' },
+    linkedin: { handle: 'IEEE MSS', url: 'https://www.linkedin.com/company/ieee-mss/' },
   },
   about: {
     heading: 'The Programme',
-    eyebrow: 'Built to Become',
+    eyebrow: 'Careers and Ventures in the Age of AI',
     paragraphs: [
-      "As Artificial Intelligence reshapes the professional landscape, traditional engineering roles are evolving, and new opportunities demand a different set of skills. ALPHA '26, organised by the Industry Relations Committee of IEEE Malabar Subsection, is a two-day residential industry-readiness programme designed to help engineering graduates adapt, upskill, and thrive in an AI-driven job market.",
-      'The event aims to bridge the gap between academic learning and industry expectations through expert-led sessions, hands-on technical training, industry exposure, and direct interactions with professionals. Participants will explore emerging AI technologies, understand evolving job roles, develop industry-relevant skills, and gain insights into navigating the changing employment landscape.',
-      "More than just a learning experience, ALPHA '26 is an opportunity to build professional connections, discover career pathways, and prepare to turn engineering potential into real-world opportunities.",
+      'The question is no longer whether AI will change engineering careers, but how quickly students can adapt. The routine work through which freshers once entered industry, such as coding, testing, documentation and data analysis, is increasingly handled with AI, and employers expect graduates to use these tools confidently from the start.',
+      "ALPHA '26 responds on three fronts: showing budding entrepreneurs how to build ventures with AI, training students for job roles that have evolved with AI, and guiding them towards careers that stay relevant as AI advances. Industry-led talks, hands-on workshops and an overnight build sprint bring 100 pre-final and final-year students from all engineering branches together with the people who hire, build and lead.",
+      'Every participant leaves with more than a certificate: an AI-powered project and venture pitch built on a real industry problem, a personal career map, and a network of professionals, founders and peers from other branches and colleges.',
     ],
-    closing: "The future of engineering is evolving. ALPHA '26 is where you prepare to become part of it.",
-    /** The four things the programme is built from — lifted straight from the brief. */
+    closing: "Don't just pursue opportunities. Create them.",
+    /** The five chapters of the programme, from the event plan (three tracks, the sprint, the meetup). */
     pillars: [
-      { title: 'Expert-led sessions', text: 'Professionals who are hiring, building and leading in an AI-first industry.' },
-      { title: 'Hands-on training', text: 'Technical workshops where you ship something, not just watch it being shipped.' },
-      { title: 'Industry exposure', text: 'How roles are changing, what teams actually need, and where the openings are.' },
-      { title: 'Direct interaction', text: 'Two residential days of conversations, mentoring and connections that outlast the event.' },
+      { title: 'Entrepreneurship with AI', text: 'Founders show how to use AI to identify problems, validate ideas, build prototypes and run lean ventures with small teams.' },
+      { title: 'Job roles evolved with AI', text: 'Industry professionals explain how roles work today; practitioner-led workshops train you in the AI skills those roles demand.' },
+      { title: 'Careers that stay relevant', text: 'Core and field engineering, hardware, power, infrastructure and manufacturing: what employers look for and how to prepare.' },
+      { title: 'AI Venture Sprint', text: 'An overnight sprint. Cross-branch teams build a working prototype on a real industry problem, mentored through the night, and pitch it to an industry jury.' },
+      { title: 'Industry meetup & networking', text: 'A meetup with professionals and founders, a dedicated session with young professionals, and a career mapping session to set your target role and next steps.' },
     ],
     facts: [
       { value: '02', label: 'Days' },
       { value: 'Residential', label: 'Format' },
-      { value: 'Graduates', label: 'Built for' },
-      { value: 'AI-first', label: 'Focus' },
+      { value: '100', label: 'Students' },
+      { value: '03', label: 'Tracks' },
     ],
   },
 } as const;

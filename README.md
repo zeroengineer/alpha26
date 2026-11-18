@@ -1,7 +1,8 @@
 # ALPHA '26 — Built to Become
 
-Single-page event website for **ALPHA '26**, the two-day residential industry-readiness programme by the
-Industry Relations Committee of IEEE Malabar Subsection.
+Single-page event website for **ALPHA '26**, the two-day residential programme by the
+Industry Relations Committee of IEEE Malabar Subsection that prepares engineering students for careers and ventures in
+the age of AI.
 
 ## Stack
 - [Astro 5](https://astro.build) — static output, zero JS by default
