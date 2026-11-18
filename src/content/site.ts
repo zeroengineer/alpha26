@@ -46,7 +46,6 @@ export const site = {
   registrationUrl: '#register',
   socials: {
     instagram: { handle: 'ieeemalabarsubsection', url: 'https://www.instagram.com/ieeemalabarsubsection/' },
-    email: 'irc@ieeemalabar.org',
   },
   about: {
     heading: 'The Programme',
