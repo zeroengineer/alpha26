@@ -50,6 +50,27 @@ export default function nav(bar: HTMLElement): void {
     },
   });
   ScrollTrigger.addEventListener('refresh', resolveActive);
+
+  // --- Register CTA: lives in the hero, then docks in the bar once the hero's sticky stretch ends ---
+  const navCta = bar.querySelector<HTMLAnchorElement>('[data-nav-cta]');
+  const hero = document.getElementById('hero');
+  if (navCta && hero) {
+    const heroCta = hero.querySelector<HTMLElement>('[data-cta]');
+    const dock = (on: boolean) => {
+      bar.classList.toggle('has-cta', on);
+      navCta.toggleAttribute('aria-hidden', !on);
+      navCta.tabIndex = on ? 0 : -1;
+      if (heroCta) {
+        gsap.to(heroCta, { autoAlpha: on ? 0 : 1, y: on ? 12 : 0, duration: reducedMotion() ? 0 : 0.4, ease: 'power2.out', overwrite: 'auto' });
+      }
+    };
+    ScrollTrigger.create({
+      trigger: hero,
+      start: 'bottom 85%', // just after the hero stops holding still and the next part begins
+      end: 'max',
+      onToggle: (self) => dock(self.isActive),
+    });
+  }
   resolveActive();
 
   // --- Anchor scrolling through Lenis (or native). Sections carry scroll-margin-top = nav height. ---
