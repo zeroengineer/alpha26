@@ -1,28 +1,39 @@
 ---
-/** The Venue (flag: host). Host institution card with photo, description and an optional map embed. */
+/**
+ * The Venue (flag: host). Host institution card with description and facts. The media slot shows the
+ * campus photo when one is set; until then it holds the map, and the separate map strip is skipped.
+ */
 import { Image } from 'astro:assets';
 import Section from '@/components/Section/Section.astro';
 import { host } from '@/content/organisers';
+import { site } from '@/content/site';
 import { resolveImage } from '@/lib/images';
+const mapTitle = `Map: ${host.name}`;
 ---
 <Section id="venue" heading={host.heading} eyebrow={host.eyebrow} station="venue" align="center" class="venue">
   <div class="venue__grid" data-venue>
     <figure class="venue__media" data-venue-media>
-      <Image src={resolveImage(host.image.src)} alt={host.image.alt} widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 60vw" loading="lazy" decoding="async" />
+      {host.image ? (
+        <Image src={resolveImage(host.image.src)} alt={host.image.alt} widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 60vw" loading="lazy" decoding="async" />
+      ) : (
+        <iframe src={host.mapEmbedUrl} title={mapTitle} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      )}
     </figure>
     <div class="venue__body" data-venue-body>
       <p class="eyebrow">{host.city}</p>
       <h3 class="venue__name">{host.name}</h3>
       <p class="venue__text">{host.description}</p>
       <dl class="venue__facts">
+        <div><dt>Dates</dt><dd>{site.dates.display}</dd></div>
         <div><dt>Format</dt><dd>Two-day residential</dd></div>
-        <div><dt>Stay</dt><dd>On campus (details to follow)</dd></div>
+        <div><dt>Address</dt><dd>{host.address}</dd></div>
       </dl>
+      <a class="venue__directions" href={host.mapUrl} target="_blank" rel="noopener noreferrer">Get directions <span aria-hidden="true">↗</span></a>
     </div>
   </div>
-  {host.mapEmbedUrl && (
+  {host.image && host.mapEmbedUrl && (
     <div class="venue__map">
-      <iframe src={host.mapEmbedUrl} title={`Map: ${host.name}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      <iframe src={host.mapEmbedUrl} title={mapTitle} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
     </div>
   )}
 </Section>
@@ -32,6 +43,9 @@ import { resolveImage } from '@/lib/images';
   @media (min-width: 900px) { .venue__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: end; } }
   .venue__media { aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid var(--line); background: var(--surface); opacity: 0; }
   .venue__media :global(img) { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+  .venue__media iframe { display: block; width: 100%; height: 100%; border: 0; filter: grayscale(1) invert(0.92) contrast(1.1); }
+  .venue__directions { justify-self: start; font-size: var(--text-xs); letter-spacing: var(--track-eyebrow); text-transform: uppercase; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+  .venue__directions:hover, .venue__directions:focus-visible { border-color: var(--fg); }
   .venue__body { display: grid; gap: var(--space-4); opacity: 0; }
   .venue__name { font-size: var(--text-xl); font-weight: 400; letter-spacing: -0.01em; }
   .venue__text { font-weight: 300; color: var(--fg-dim); }

@@ -3,11 +3,12 @@ import { test, expect } from '@playwright/test';
 test.describe('navigation', () => {
   test('renders only the launched sections and their links', async ({ page }) => {
     await page.goto('/');
-    for (const id of ['hero', 'about', 'organisers', 'contact']) {
+    for (const id of ['hero', 'about', 'venue', 'organisers', 'contact']) {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
+    await expect(page.locator('[data-nav-link="venue"]').first()).toBeAttached();
     // flagged-off sections must not exist in the DOM at all
-    for (const id of ['speakers', 'venue', 'partners']) {
+    for (const id of ['speakers', 'partners']) {
       await expect(page.locator(`#${id}`)).toHaveCount(0);
       await expect(page.locator(`[data-nav-link="${id}"]`)).toHaveCount(0);
     }

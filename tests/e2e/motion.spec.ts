@@ -50,7 +50,7 @@ test('the α stage mounts WebGL and visits every station in order', async ({ pag
   await page.mouse.move(400, 400);
   await expect(page.locator('[data-stage]')).toHaveClass(/is-webgl/, { timeout: 15_000 });
   const stations = await page.locator('[data-station]').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.station));
-  expect(stations).toEqual(['hero', 'intro', 'about', 'pillars', 'statement', 'team', 'frames', 'contact']);
+  expect(stations).toEqual(['hero', 'intro', 'about', 'pillars', 'statement', 'venue', 'team', 'frames', 'contact']);
 });
 
 test('the hero poster stays centred on an ultra-wide screen', async ({ page, isMobile }) => {

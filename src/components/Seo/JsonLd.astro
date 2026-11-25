@@ -27,7 +27,11 @@ if (features.dates) {
   event.endDate = site.dates.end;
 }
 if (features.host) {
-  event.location = { '@type': 'Place', name: host.name, address: host.city };
+  event.location = {
+    '@type': 'Place',
+    name: host.name,
+    address: { '@type': 'PostalAddress', streetAddress: 'Manassery, Thazhecode', addressLocality: 'Kozhikode', addressRegion: 'Kerala', postalCode: '673582', addressCountry: 'IN' },
+  };
 }
 if (features.registration) {
   event.offers = { '@type': 'Offer', url: new URL(site.registrationUrl, site.url).href, availability: 'https://schema.org/InStock' };

@@ -5,18 +5,16 @@ import { features, type Features } from '@/content/site';
 const allOn: Features = { dates: true, speakers: true, host: true, sponsors: true, collaborators: true, registration: true };
 
 describe('launch flags', () => {
-  it('ship with every section flag off until launch — only the dates are public', () => {
+  it('ship with only the dates, venue and registration public', () => {
     if (import.meta.env.ALPHA_FLAGS) return; // build-time override in use
-    const { dates, ...sections } = features;
-    expect(dates).toBe(true);
-    expect(Object.values(sections).every((v) => v === false)).toBe(true);
+    expect(features).toEqual({ dates: true, speakers: false, host: true, sponsors: false, collaborators: false, registration: true });
   });
 });
 
 describe('buildNav', () => {
   it('hides gated sections when their flag is off', () => {
     const ids = buildNav(features).map((s) => s.id);
-    expect(ids).toEqual(['hero', 'about', 'organisers', 'contact']);
+    expect(ids).toEqual(['hero', 'about', 'venue', 'organisers', 'contact']);
   });
 
   it('shows every section when all flags are on, in canonical order', () => {
@@ -27,7 +25,8 @@ describe('buildNav', () => {
 describe('sectionNumber', () => {
   it('numbers only visible sections, skipping the hero', () => {
     expect(sectionNumber('about', features)).toBe('01');
-    expect(sectionNumber('organisers', features)).toBe('02');
+    expect(sectionNumber('venue', features)).toBe('02');
+    expect(sectionNumber('organisers', features)).toBe('03');
     expect(sectionNumber('organisers', allOn)).toBe('05');
   });
 

@@ -16,9 +16,13 @@ export const organisers = {
 export const host = {
   heading: 'The Venue',
   eyebrow: 'Where it happens',
-  name: 'Host Institution',
-  city: 'Malabar, Kerala',
-  description: 'Placeholder description of the host institution and campus facilities for the two-day residential programme.',
-  mapEmbedUrl: '',
-  image: { src: 'pexels-1709003.jpg', alt: 'Campus building placeholder' },
-} as const;
+  name: 'KMCT Institute of Emerging Technology and Management',
+  city: 'Manassery, Kozhikode',
+  description:
+    "ALPHA '26 runs on the KMCT Institute of Emerging Technology and Management campus in Manassery, Kozhikode. Talks, workshops, the overnight AI Venture Sprint and the industry meetup all take place here across both days.",
+  address: 'Manassery, Thazhecode, Kerala 673582',
+  mapEmbedUrl: 'https://www.google.com/maps?q=KMCT+Institute+of+Emerging+Technology+and+Management,+Manassery&output=embed',
+  mapUrl: 'https://www.google.com/maps/search/?api=1&query=KMCT+Institute+of+Emerging+Technology+and+Management+Manassery',
+  /** No campus photo yet — the map fills the media slot until one is added. */
+  image: null as { src: string; alt: string } | null,
+};

@@ -20,13 +20,13 @@ export const features = {
   /** "The Lineup" — speakers and sessions. */
   speakers: on('speakers', false),
   /** "The Venue" — host institution. */
-  host: on('host', false),
+  host: on('host', true),
   /** "Powered Together" — sponsors tiers. */
   sponsors: on('sponsors', false),
   /** Collaborators marquee inside the partners section. */
   collaborators: on('collaborators', false),
   /** Registration CTA in the hero and footer. */
-  registration: on('registration', false),
+  registration: on('registration', true),
 } satisfies Record<string, boolean>;
 
 export type FeatureKey = keyof typeof features;
@@ -44,7 +44,8 @@ export const site = {
   description:
     "ALPHA '26 is a two-day residential programme by the Industry Relations Committee of IEEE Malabar Subsection, preparing engineering students for careers and ventures in a job market that AI is reshaping.",
   dates: { start: '2026-12-12', end: '2026-12-13', display: '12 – 13 December 2026' },
-  registrationUrl: '#register',
+  /** Snaptiqz permanent event link (never changes, unlike the custom-handle link). */
+  registrationUrl: 'https://discover.snaptiqz.com/event/V6XxPRDV7w0rbfWiMa3rF',
   socials: {
     instagram: { handle: 'ieeemalabarsubsection', url: 'https://www.instagram.com/ieeemalabarsubsection/' },
     linkedin: { handle: 'IEEE MSS', url: 'https://www.linkedin.com/company/ieee-mss/' },
