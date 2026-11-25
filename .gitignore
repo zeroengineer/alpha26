@@ -9,3 +9,7 @@ test-results/
 .env
 .env.*
 !.env.example
+
+# Marketing exports (posters, Snaptiqz banners) — kept locally / in Figma, not part of the site
+/early-bird/
+/SNAPTIQZ *.png
